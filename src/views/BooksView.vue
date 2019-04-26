@@ -23,10 +23,6 @@
                         <v-card-title>要素</v-card-title>
                         <v-flex row sx-12>
                             <v-btn outline round class="green">カテゴリ１</v-btn>
-                            <v-btn outline round class="green">カテゴリ１</v-btn>
-                            <v-btn outline round class="green">カテゴリ１</v-btn>
-                            <v-btn outline round class="green">カテゴリ１</v-btn>
-                            <v-btn outline round class="green">カテゴリ１</v-btn>
                         </v-flex>
                         <v-card-title>要素</v-card-title>
                         <v-card-title>要素</v-card-title>
