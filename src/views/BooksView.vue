@@ -111,17 +111,18 @@
 <script lang="ts">
     import { Component, Prop, Vue } from 'vue-property-decorator';
 
-    interface Books{
-        title:string;
+    interface Books {
+        title: string;
         author: string;
         startAt: string;
         endAt: string;
         nextBook: number | null;
         prevBook: number | null;
-        categorys: Array;
-        charactors: Array;
+        categorys: string[];
+        charactors: string[];
+        isOpen: boolean;
     }
-    enum ReadStatus{
+    enum ReadStatus {
         notRead = 0,
         reading = 1,
         read = 2,
@@ -129,73 +130,73 @@
 
     @Component
     export default class BooksView extends Vue {
-        isOpen = true;
-        text = "メモメモメモメモメモメモメモメモメモメモメモメモメモメモメモメモメモメモメモメモ";
-        inputCategory = "";
+        private isOpen = true;
+        private text = 'メモメモメモメモメモメモメモメモメモメモメモメモメモメモメモメモメモメモメモメモ';
+        private inputCategory = '';
 
-        books = Array(
+        private books = Array(
             {
-                title:"本のタイトル",
-                author: "作者",
-                startAt: "2019/04/22",
-                endAt: "2019/04/23",
-                nextBook: "次の本ああああ",
-                prevBook: "前の本えええええ",
-                categorys: Array("カテゴリー１","カテゴリー２","カテゴリー３"),
-                charactors: Array("キャラ１","キャラ２","キャラ３"),
-                isOpen: false
+                title: '本のタイトル',
+                author: '作者',
+                startAt: '2019/04/22',
+                endAt: '2019/04/23',
+                nextBook: 1,
+                prevBook: 2,
+                categorys: Array('カテゴリー１', 'カテゴリー２', 'カテゴリー３'),
+                charactors: Array('キャラ１', 'キャラ２', 'キャラ３'),
+                isOpen: false,
             } as Books,
             {
-                title:"本のタイトル2",
-                author: "作者2",
-                startAt: "2019/04/10",
-                endAt: "2019/04/15",
+                title: '本のタイトル2',
+                author: '作者2',
+                startAt: '2019/04/10',
+                endAt: '2019/04/15',
                 nextBook: null,
                 prevBook: null,
-                categorys: Array("カテゴリー4","カテゴリー5"),
-                charactors:Array("キャラ4","キャラ5"),
-                isOpen: false
+                categorys: Array('カテゴリー4', 'カテゴリー5'),
+                charactors: Array('キャラ4', 'キャラ5'),
+                isOpen: false,
             } as Books,
         );
 
-        open(){
-            this.isOpen = !this.isOpen
+        private open() {
+            this.isOpen = !this.isOpen;
         }
 
-        addCategory(add:string, categorys: Array[string]) {
+        private addCategory(add: string, categorys: string[]) {
             categorys.push(add);
-            add = "";
+            add = '';
         }
-        addCharactor(charactors: Array[string]) {
-            charactors.push("charactor");
+        private addCharactor(charactors: string[]) {
+            charactors.push('charactor');
         }
 
 
-        bookStatus(startAt: string|null, endAt: string|null): ReadStatus {
+        private bookStatus(startAt: string | null, endAt: string | null): ReadStatus {
             if (endAt == null && startAt == null) {
-                return ReadStatus.notRead
-            }else if (endAt == null) {
-                return ReadStatus.reading
+                return ReadStatus.notRead;
+            } else if (endAt == null) {
+                return ReadStatus.reading;
             } else {
-                return ReadStatus.read
+                return ReadStatus.read;
             }
         }
 
 
-        changeState(startAt: string|null, endAt: string|null){
+        private changeState(startAt: string | null, endAt: string | null) {
             if (endAt == null && startAt == null) {
-                const res = confirm("読み始めた本に設定しますか？");
-                if (res){
-                    startAt = "2019/4/23"
+                const res = confirm('読み始めた本に設定しますか？');
+                if (res) {
+                    startAt = '2019/4/23';
                 }
-            }else if (endAt == null) {
-                const res = confirm("読み終わった本に設定しますか？");
-                if (res){
-                    endAt = "2019/4/23"
+            } else if (endAt == null) {
+                const res = confirm('読み終わった本に設定しますか？');
+                if (res) {
+                    endAt = '2019/4/23';
                 }
             } else {
-                const res = confirm("読み始めた本に設定しますか？");
-                if (res){
+                const res = confirm('読み始めた本に設定しますか？');
+                if (res) {
                     endAt = null;
                 }
             }
