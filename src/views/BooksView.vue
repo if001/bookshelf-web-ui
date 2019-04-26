@@ -54,7 +54,7 @@
 <script lang="ts">
     import { Component, Vue } from 'vue-property-decorator';
 
-    interface Book{
+    interface Book {
         status: number;
         isOpen: boolean;
 
@@ -64,34 +64,34 @@
     export default class BooksView extends Vue {
         private books = [
             {
-                status:1,
+                status: 1,
                 isOpen: false,
             },
             {
-                status:2,
+                status: 2,
                 isOpen: false,
             },
             {
-                status:3,
+                status: 3,
                 isOpen: false,
             },
             {
-                status:3,
+                status: 3,
                 isOpen: false,
             },
             {
-                status:3,
+                status: 3,
                 isOpen: false,
             },
             {
-                status:3,
+                status: 3,
                 isOpen: false,
             },
 
         ] as Book[];
 
         private chengeBookDiscribe(book: Book) {
-            book.isOpen = !book.isOpen
+            book.isOpen = !book.isOpen;
         }
 
 
