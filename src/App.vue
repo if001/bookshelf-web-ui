@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-<!--    <div id="nav">-->
-<!--      <router-link to="/">booksview</router-link>-->
-<!--    </div>-->
+    <div id="nav">
+      <router-link to="/vuetify">veuetify</router-link>
+    </div>
     <router-view/>
   </div>
 </template>

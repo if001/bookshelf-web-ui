@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import BooksViews from './views/BooksView.vue';
+import VuetifyTest from './views/VuetifyTest.vue';
 
 Vue.use(Router);
 
@@ -14,5 +15,11 @@ export default new Router({
       name: 'booksView',
       component: BooksViews,
     },
+    {
+      path: '/vuetify',
+      name: 'vuetify',
+      component: VuetifyTest,
+    },
+
   ],
 });
