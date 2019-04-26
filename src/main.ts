@@ -4,10 +4,6 @@ import router from './router';
 import store from './store';
 import './registerServiceWorker';
 
-import BootstrapVue from 'bootstrap-vue';
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
-Vue.use(BootstrapVue);
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
@@ -17,6 +13,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 library.add(fas, far, fab);
 Vue.component('v-fa', FontAwesomeIcon);
 
+import Vuetify from 'vuetify';
+Vue.use(Vuetify);
 
 Vue.config.productionTip = false;
 
