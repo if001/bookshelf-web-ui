@@ -1,5 +1,5 @@
 <template>
-    <v-app id="inspire" v-cloak>
+    <v-app light>
         <v-header></v-header>
         <books-view></books-view>
     </v-app>
