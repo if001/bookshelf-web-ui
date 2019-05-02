@@ -10,22 +10,19 @@
                         <v-form v-model="valid">
                             <v-text-field
                                     v-model="email"
-                                    :rules="nameRules"
                                     label="Email"
                                     required
                             ></v-text-field>
                             <v-text-field
                                     v-model="password"
-                                    :rules="emailRules"
                                     label="Password"
+                                    :type="'password'"
                                     required
                             ></v-text-field>
                         </v-form>
                         <v-layout justify-center>
-                            <v-btn class="mr-4">
-                                <router-link to="/bookshelf">
-                                    ログイン
-                                </router-link>
+                            <v-btn class="mr-4" @click="login">
+                                ログイン
                             </v-btn>
                             <v-btn class="ml-4">
                                 <router-link to="/bookshelf">サインイン</router-link>
@@ -36,7 +33,7 @@
             </v-layout>
 
 
-            <v-layout justify-center>
+            <v-layout justify-center class="ma-2">
                 <v-flex lg8 md8 sm8>
                     <v-layout justify-center>
                         <v-btn
@@ -49,7 +46,7 @@
                 </v-flex>
             </v-layout>
 
-            <v-layout justify-center>
+            <v-layout justify-center class="ma-2">
                 <v-flex lg8 md8 sm8>
                     <v-layout justify-center>
                         <img src="@/assets/btn_google.png" height="50px">
@@ -61,11 +58,27 @@
 </template>
 <script lang="ts">
     import { Component, Vue } from 'vue-property-decorator';
+    import firebase from 'firebase';
+    import store from '@/store';
 
     @Component
     export default class BookViews extends Vue {
-        // TODO バリデーションつける
+        private email: string = '';
+        private password: string = '';
 
+        public login() {
+            firebase.auth().signInWithEmailAndPassword(this.email, this.password).then((user) => {
+                console.log(user);
+                store.dispatch('login').then(() => {
+                    this.$router.push('/bookshelf');
+                }).catch(() => {
+                    alert('login err');
+                });
+            }).catch((err) => {
+                // console.log(err);
+                alert('login err');
+            });
+        }
     }
 
 </script>

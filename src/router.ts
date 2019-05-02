@@ -6,13 +6,15 @@ import BooksViewsOld from './views/BooksViewOld.vue';
 import VuetifyTest from './views/VuetifyTest.vue';
 import MainViews from '@/views/MainViews.vue';
 import LoginViews from '@/views/LoginViews.vue';
+import store from '@/store';
+import NotFoundViews from "@/views/NotFoundViews.vue";
 
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes: [
+  routes:  [
     {
       path: '/login',
       name: 'loginViews',
@@ -22,6 +24,7 @@ export default new Router({
       path: '/bookshelf',
       name: 'mainViews',
       component: MainViews,
+      meta: { requiresAuth: true },
       children: [
         {
           path: '/books',
@@ -38,9 +41,28 @@ export default new Router({
           name: 'vuetify',
           component: VuetifyTest,
         },
-      ]
+      ],
     },
-
-
+    {
+      path: '*',
+      component: NotFoundViews,
+    },
   ],
 });
+
+router.beforeEach((to, from, next) => {
+  const isLogin = store.getters.loginStatus;
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    if (isLogin) {
+      console.log('success');
+      next();
+    } else {
+      next({path: '/login'});
+    }
+  } else {
+    console.log('error');
+    next();
+  }
+});
+
+export default router;

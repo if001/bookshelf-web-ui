@@ -9,17 +9,27 @@
                 ></v-text-field>
             </v-flex>
             <v-icon right>exit_to_app</v-icon>
-            <router-link to="/login">ログアウト</router-link>
+            <v-btn @click="logout">ログアウト</v-btn>
         </v-toolbar>
     </v-content>
 </template>
 
 <script lang="ts">
     import { Component, Vue } from 'vue-property-decorator';
+    import store from '@/store';
 
     @Component
     export default class Header extends Vue {
-
+        private logout() {
+            store.dispatch('logout').then(() => {
+                console.log(store.getters.loginStatus);
+                if (!store.getters.loginStatus) {
+                    this.$router.push('/login');
+                } else {
+                    alert('ログアウトエラー');
+                }
+            });
+        }
     }
 
 </script>
