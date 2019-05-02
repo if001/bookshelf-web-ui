@@ -2,35 +2,44 @@
     <v-container>
         <v-layout row wrap>
 
+            <v-flex class="ma-2" v-for="book in books">
+                <v-card>
+                    <v-layout row>
+                        <v-flex class="font-weight-light font title pa-2">タイトル５６７８９０１２３４</v-flex>
+                        <v-icon large right v-if="book.status==1">bookmark</v-icon>
+                        <v-icon large right v-if="book.status==2">done</v-icon>
+                        <v-icon large right v-if="book.status==3">close</v-icon>
+                    </v-layout>
 
-            <v-card class="ma-2" v-for="book in books">
-                <v-layout row>
-                    <v-card-title class="font-weight-light font title pa-2">タイトル５６７８９０１２３４</v-card-title>
-                    <v-icon large right v-if="book.status==1">bookmark</v-icon>
-                    <v-icon large right v-if="book.status==2">done</v-icon>
-                    <v-icon large right v-if="book.status==3">close</v-icon>
-                </v-layout>
-                <v-card-text class="font-weight-thin　subheading pa-2">著者３４５６７８９０</v-card-text>
+                    <v-flex row class="font-weight-thin　subheading pa-2">著者３４５６７８９０</v-flex>
 
-                <v-flex row sx-12 grey lighten-1>
-                    <!-- TODO 無理やり１００％にして真ん中寄せにしたけどあってる？-->
-                    <v-icon v-if="book.isOpen" style="width: 100%" @click="chengeBookDiscribe(book)">arrow_drop_up</v-icon>
-                    <v-icon v-else style="width: 100%" @click="chengeBookDiscribe(book)">arrow_drop_down</v-icon>
-                </v-flex>
+                    <v-btn block small>
+                        <v-icon v-if="book.isOpen" style="width: 100%" @click="chengeBookDiscribe(book)">arrow_drop_up</v-icon>
+                        <v-icon v-else style="width: 100%" @click="chengeBookDiscribe(book)">arrow_drop_down</v-icon>
+                    </v-btn>
 
-                <v-flex row sx-12 v-if="book.isOpen">
-                    <v-card>
-                        <v-card-title>要素</v-card-title>
-                        <v-flex row sx-12>
-                            <v-btn outline round class="green">カテゴリ１</v-btn>
+                    <v-layout v-if="book.isOpen" row>
+                        <v-flex md6>
+                            <v-card-title>要素</v-card-title>
+                            <v-flex row sx-12>
+                                <v-btn outline round class="green">カテゴリ１</v-btn>
+                                <v-btn outline round class="green">カテゴリ１</v-btn>
+                            </v-flex>
+                            <v-card-title>要素</v-card-title>
+                            <v-card-title>要素</v-card-title>
                         </v-flex>
-                        <v-card-title>要素</v-card-title>
-                        <v-card-title>要素</v-card-title>
-                    </v-card>
-                </v-flex>
+                        <v-flex md6>
+                            <v-textarea
+                                    outline
+                                    rows=3
+                                    label="Outline textarea"
+                                    value="The Woodman set to work at once"
+                            ></v-textarea>
+                        </v-flex>
+                    </v-layout>
 
-            </v-card>
-
+                </v-card>
+            </v-flex>
 
         </v-layout>
 
