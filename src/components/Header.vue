@@ -8,9 +8,9 @@
                         append-icon=search
                 ></v-text-field>
             </v-flex>
-            <v-icon right>exit_to_app</v-icon><span>ログアウト</span>
+            <v-icon right>exit_to_app</v-icon>
+            <router-link to="/login">ログアウト</router-link>
         </v-toolbar>
-
     </v-content>
 </template>
 
