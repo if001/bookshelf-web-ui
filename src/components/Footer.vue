@@ -1,10 +1,10 @@
 <template>
-    <v-footer
-            color="primary lighten-1">
-        <v-layout>
-            footer
-        </v-layout>
-    </v-footer>
+<!--    <v-footer-->
+<!--            color="primary lighten-1">-->
+<!--        <v-layout>-->
+<!--            footer-->
+<!--        </v-layout>-->
+<!--    </v-footer>-->
 </template>
 
 <script lang="ts">

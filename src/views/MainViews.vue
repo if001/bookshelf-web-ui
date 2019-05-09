@@ -9,7 +9,7 @@
     import { Component, Vue } from 'vue-property-decorator';
     import BooksView from '@/views/BooksView.vue';
     import Header from '@/components/Header.vue';
-    import Footer from "@/components/Footer.vue";
+    import Footer from '@/components/Footer.vue';
 
     @Component({
         components: {

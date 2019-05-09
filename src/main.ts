@@ -16,6 +16,19 @@ Vue.component('v-fa', FontAwesomeIcon);
 import Vuetify from 'vuetify';
 Vue.use(Vuetify);
 
+import firebase from 'firebase';
+
+const config = {
+  apiKey: 'AIzaSyBh6MRgQ9i9L8rlrLxE3mKCiBQo4GS038A',
+  authDomain: 'bookshelf-239408.firebaseapp.com',
+  databaseURL: 'https://bookshelf-239408.firebaseio.com',
+  projectId: 'bookshelf-239408',
+  storageBucket: 'bookshelf-239408.appspot.com',
+  messagingSenderId: '489604966508',
+};
+firebase.initializeApp(config);
+
+
 Vue.config.productionTip = false;
 
 new Vue({
