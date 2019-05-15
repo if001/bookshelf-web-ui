@@ -1,7 +1,10 @@
 {
   "name": "bookshelf-web-ui",
   "version": "0.1.0",
-  "private": true,
+    "private": true,
+    "engines": {
+    "node": "10.x"
+  },
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
