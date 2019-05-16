@@ -1,1 +1,1 @@
-'web: bookshelf-ui'
+web: npm start
