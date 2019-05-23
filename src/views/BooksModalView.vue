@@ -5,7 +5,8 @@
                 <div class="modal-container">
                     <div class="modal-header">
                         <slot name="header">
-                            <h3 blue lighten-1>タイトル
+                            <h3 blue lighten-1>
+                                {{ bookName }}
                                 <v-btn flat
                                        icon
                                        small>
@@ -26,7 +27,9 @@
                                     <v-icon small color="blue-grey darken-3">edit</v-icon>
                                 </v-btn>
                             </h2>
-                            <div class="pl-2 pb-2">作者名</div>
+                            <div class="pl-2 pb-2">
+                                {{ authorName }}
+                            </div>
 
                             <h2>
                                 ステータス
@@ -61,10 +64,9 @@
 
                             <div>
                                 <div style="display: flex; flex-wrap: wrap;">
-                                    <div class="ma-0;width:auto;">
-
+                                    <div class="ma-0;width:auto;" v-for="category in categories">
                                         <v-btn small outline round class="blue lighten-1">
-                                            ようそ４５６
+                                            {{ category.name }}
                                             <v-btn v-if="isOpen"
                                                    icon
                                                    color="blue-grey darken-3"
@@ -75,10 +77,7 @@
                                                 <v-icon small color="white" size="1">clear</v-icon>
                                             </v-btn>
                                         </v-btn>
-
                                     </div>
-
-
                                 </div>
                             </div>
 
@@ -116,18 +115,17 @@
 
 
                             <div>
-                                <div v-for="bookDescribe in bookDescribes" class=" pa-3">
-                                    <div class="ma-2">{{bookDescribe.content}}</div>
+                                <div v-for="description in descriptions" class=" pa-3">
+                                    <div class="ma-2">{{description.content}}</div>
 
                                     <div style="display: flex;flex-wrap: wrap;justify-content: flex-end;">
-                                        <div class="ma-2 mr-5" style="color:dimgray">{{bookDescribe.date}}</div>
+                                        <div class="ma-2 mr-5" style="color:dimgray">{{description.updatedAt}}</div>
                                         <v-btn color="info" small>share</v-btn>
                                         <v-btn color="success" small>share</v-btn>
                                     </div>
                                     <v-divider></v-divider>
                                 </div>
                             </div>
-
 
                         </div>
                     </div>
@@ -155,6 +153,11 @@
 <script lang="ts">
     import {Component, Prop, Vue} from 'vue-property-decorator';
     import TextAreaComponent from '@/components/TextAreaComponent.vue';
+    import {Book} from '../api';
+
+    interface BookShow extends Book {
+        isOpen: boolean;
+    }
 
     @Component({
         components: {
@@ -162,70 +165,82 @@
         },
     })
     export default class BookModal extends Vue {
-        private bookDescribes = [
-            {
-                content: '１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２' +
-                '３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９' +
-                '０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６' +
-                '７８９０',
-                date: 'YYYY/mm/dd',
-            },
-            {
-                content: 'description',
-                date: 'YYYY/mm/dd',
-            },
-            {
-                content: 'description',
-                date: 'YYYY/mm/dd',
-            },
-            {
-                content: 'description',
-                date: 'YYYY/mm/dd',
-            },
-            {
-                content: 'description',
-                date: 'YYYY/mm/dd',
-            },
-            {
-                content: 'description',
-                date: 'YYYY/mm/dd',
-            },
-            {
-                content: 'description',
-                date: 'YYYY/mm/dd',
-            },
-            {
-                content: 'description',
-                date: 'YYYY/mm/dd',
-            },
-            {
-                content: 'hogehogee',
-                date: 'YYYY/mm/dd',
-            },
-            {
-                content: 'hogehogee',
-                date: 'YYYY/mm/dd',
-            },
-            {
-                content: 'hogehogee',
-                date: 'YYYY/mm/dd',
-            },
-            {
-                content: 'hogehogee',
-                date: 'YYYY/mm/dd',
-            },
-            {
-                content: 'hogehogee',
-                date: 'YYYY/mm/dd',
-            },
-            {
-                content: 'hogehogee',
-                date: 'YYYY/mm/dd',
-            },
-        ];
+        @Prop()
+        private readonly bookDetailProp!: BookShow;
+
+        private bookDetail: BookShow | null = null;
 
         private isOpen = false;
         private openComment = false;
+
+        public mounted() {
+            if (this.bookDetailProp != null) {
+                this.bookDetail = {
+                    id: this.bookDetailProp.id,
+                    name: this.bookDetailProp.name,
+                    author: this.bookDetailProp.author,
+                    publishedAt: this.bookDetailProp.publishedAt,
+                    publisher: this.bookDetailProp.publisher,
+                    accountId: this.bookDetailProp.accountId,
+                    startAt: this.bookDetailProp.startAt,
+                    endAt: this.bookDetailProp.endAt,
+                    nextBookId: this.bookDetailProp.nextBookId,
+                    prevBookId: this.bookDetailProp.prevBookId,
+                    descriptions: this.bookDetailProp.descriptions,
+                    categories: this.bookDetailProp.categories,
+                    createdAt: this.bookDetailProp.createdAt,
+                    updatedAt: this.bookDetailProp.updatedAt,
+                    isOpen: this.bookDetailProp.isOpen,
+                };
+            }
+        }
+
+        get bookName() {
+            if (this.bookDetail != null) {
+                return this.bookDetail.name;
+            }  else {
+                return 'not set';
+            }
+        }
+
+        get authorName() {
+            if (this.bookDetail != null) {
+                if (this.bookDetail.author != null) {
+                    return this.bookDetail.author.name;
+                } else {
+                    return 'not set';
+                }
+            } else {
+                return 'not set';
+            }
+        }
+
+        get categories() {
+            if (this.bookDetail != null) {
+                if (this.bookDetail.categories != null) {
+                    return this.bookDetail.categories;
+                } else {
+                    return [];
+                }
+            } else {
+                return [];
+            }
+        }
+
+        get descriptions() {
+            if (this.bookDetail != null) {
+                if (this.bookDetail.descriptions != null) {
+                    return this.bookDetail.descriptions;
+                } else {
+                    return [];
+                }
+            } else {
+                return [];
+            }
+        }
+
+
+
     }
 </script>
 
@@ -250,9 +265,9 @@
     .modal-container {
         width: 90%;
         margin: 0 auto;
-        min-height: 200px;
+        min-height: 100px;
         max-height: 580px;
-        height: 85%;
+        height: 80%;
         background-color: #fff;
         border-radius: 2px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
@@ -272,9 +287,9 @@
     }
 
     .modal-body {
-        min-height: 200px;
+        min-height: 100px;
         max-height: 580px;
-        height: 85%;
+        height: 80%;
         margin: 0 20px;
         overflow: auto;
     }
@@ -298,7 +313,7 @@
         display: flex;
         flex-wrap: nowrap;
         flex-direction: column;
-        height: 100%;
+        height: 95%;
         overflow: auto;
     }
 
