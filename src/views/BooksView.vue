@@ -1,47 +1,40 @@
 <template>
-    <v-container>
-        <v-layout row wrap>
-
-            <v-flex class="ma-2" v-for="book in books">
+    <v-container  style="height: 1000px;">
+        <v-layout row wrap justify-start>
+            <v-flex class="pa-2" v-for="book in books" lg4 md6 sm12 xs12>
                 <v-card>
-                    <v-layout row>
-                        <v-flex class="font-weight-light font title pa-2">タイトル５６７８９０１２３４</v-flex>
-                        <v-icon large right v-if="book.status==1">bookmark</v-icon>
-                        <v-icon large right v-if="book.status==2">done</v-icon>
-                        <v-icon large right v-if="book.status==3">close</v-icon>
+                    <v-layout class="font-weight-light font title pt-2 pl-2 pr-2 pb-0" row>
+                        <v-flex align-self-center="true">{{book.title}}</v-flex>
+                        <v-btn flat
+                               icon
+                               color="dark"
+                               class="ma-0">
+                            <v-icon large
+                                    color="blue-grey darken-1">bookmark</v-icon>
+                        </v-btn>
                     </v-layout>
 
-                    <v-flex row class="font-weight-thin　subheading pa-2">著者３４５６７８９０</v-flex>
+                    <!--<v-icon large right v-if="book.status==1">bookmark</v-icon>-->
+                    <!--<v-icon large right v-if="book.status==2">done</v-icon>-->
+                    <!--<v-icon large right v-if="book.status==3">close</v-icon>-->
+                    <v-layout class="font-weight-thin pt-0 pl-3 pr-2 pb-2" row>
+                        <v-flex align-self-center="true">１２３４５６７８９０</v-flex>
+                        <!--<v-btn outline small fab color="indigo" class="ma-0">-->
+                        <!--<v-icon small>edit</v-icon>-->
+                        <!--</v-btn>-->
+                        <v-btn outline small fab color="light-blue darken-1" class="ma-0" @click="book.isOpen = true">
+                            <v-icon small>edit</v-icon>
+                        </v-btn>
+                        <book-modal v-if="book.isOpen" @close="book.isOpen = false">
+                        </book-modal>
 
-                    <v-btn block small>
-                        <v-icon v-if="book.isOpen" style="width: 100%" @click="chengeBookDiscribe(book)">arrow_drop_up</v-icon>
-                        <v-icon v-else style="width: 100%" @click="chengeBookDiscribe(book)">arrow_drop_down</v-icon>
-                    </v-btn>
-
-                    <v-layout v-if="book.isOpen" row>
-                        <v-flex md6>
-                            <v-card-title>要素</v-card-title>
-                            <v-flex row sx-12>
-                                <v-btn outline round class="green">カテゴリ１</v-btn>
-                                <v-btn outline round class="green">カテゴリ１</v-btn>
-                            </v-flex>
-                            <v-card-title>要素</v-card-title>
-                            <v-card-title>要素</v-card-title>
-                        </v-flex>
-                        <v-flex md6>
-                            <v-textarea
-                                    outline
-                                    rows=3
-                                    label="Outline textarea"
-                                    value="The Woodman set to work at once"
-                            ></v-textarea>
-                        </v-flex>
                     </v-layout>
-
                 </v-card>
+                <!--<v-divider></v-divider>a-->
             </v-flex>
 
         </v-layout>
+
 
         <v-btn
                 fab
@@ -57,49 +50,159 @@
 </template>
 
 <script lang="ts">
-    import { Component, Vue } from 'vue-property-decorator';
+    import {Component, Vue} from 'vue-property-decorator';
+    import BookModal from './BooksModalView.vue';
 
-    interface Book {
-        status: number;
-        isOpen: boolean;
-
-    }
-
-    @Component
+    @Component({
+        components: {
+            BookModal,
+        },
+    })
     export default class BooksView extends Vue {
         private books = [
             {
-                status: 1,
+                title: '１２３４５６７８９０１２３',
                 isOpen: false,
+                describe: [
+                    {
+                        content: 'hogehogee',
+                        date: 'YYYY/mm/dd',
+                    },
+                    {
+                        content: 'hogehogee',
+                        date: 'YYYY/mm/dd',
+                    },
+                    {
+                        content: 'hogehogee',
+                        date: 'YYYY/mm/dd',
+                    },
+                    {
+                        content: 'hogehogee',
+                        date: 'YYYY/mm/dd',
+                    },
+                    {
+                        content: 'hogehogee',
+                        date: 'YYYY/mm/dd',
+                    },
+                    {
+                        content: 'hogehogee',
+                        date: 'YYYY/mm/dd',
+                    },
+                    {
+                        content: 'hogehogee',
+                        date: 'YYYY/mm/dd',
+                    },
+                    {
+                        content: 'hogehogee',
+                        date: 'YYYY/mm/dd',
+                    },
+                    {
+                        content: 'hogehogee',
+                        date: 'YYYY/mm/dd',
+                    },
+                    {
+                        content: 'hogehogee',
+                        date: 'YYYY/mm/dd',
+                    },
+                    {
+                        content: 'hogehogee',
+                        date: 'YYYY/mm/dd',
+                    },
+                    {
+                        content: 'hogehogee',
+                        date: 'YYYY/mm/dd',
+                    },
+                    {
+                        content: 'hogehogee',
+                        date: 'YYYY/mm/dd',
+                    },
+                    {
+                        content: 'hogehogee',
+                        date: 'YYYY/mm/dd',
+                    },
+                ],
             },
             {
-                status: 2,
+                title: '１２３４５６７８９０１',
                 isOpen: false,
+                describe: {
+                    content: 'hogehogee',
+                    date: 'YYYY/mm/dd',
+                },
             },
             {
-                status: 3,
+                title: '１２３４',
                 isOpen: false,
+                describe: {
+                    content: 'hogehogee',
+                    date: 'YYYY/mm/dd',
+                },
             },
             {
-                status: 3,
+                title: '１２３４５６７８９',
                 isOpen: false,
+                describe: {
+                    content: 'hogehogee',
+                    date: 'YYYY/mm/dd',
+                },
             },
             {
-                status: 3,
+                title: '１２３４５６７８９０１２３',
                 isOpen: false,
+                describe: {
+                    content: 'hogehogee',
+                    date: 'YYYY/mm/dd',
+                },
             },
             {
-                status: 3,
+                title: '１２３４５６７８９',
                 isOpen: false,
+                describe: {
+                    content: 'hogehogee',
+                    date: 'YYYY/mm/dd',
+                },
             },
-
-        ] as Book[];
-
-        private chengeBookDiscribe(book: Book) {
-            book.isOpen = !book.isOpen;
-        }
-
-
+            {
+                title: '１２３４５６７８９',
+                isOpen: false,
+                describe: {
+                    content: 'hogehogee',
+                    date: 'YYYY/mm/dd',
+                },
+            },
+            {
+                title: '１２３４５６７８９',
+                isOpen: false,
+                describe: {
+                    content: 'hogehogee',
+                    date: 'YYYY/mm/dd',
+                },
+            },
+            {
+                title: '１２３４５６７８９',
+                isOpen: false,
+                describe: {
+                    content: 'hogehogee',
+                    date: 'YYYY/mm/dd',
+                },
+            },
+            {
+                title: '１２３４５６７８９',
+                isOpen: false,
+                describe: {
+                    content: 'hogehogee',
+                    date: 'YYYY/mm/dd',
+                },
+            },
+            {
+                title: '１２３４５６７８９',
+                isOpen: false,
+                describe: {
+                    content: 'hogehogee',
+                    date: 'YYYY/mm/dd',
+                },
+            },
+        ];
     }
 
 </script>

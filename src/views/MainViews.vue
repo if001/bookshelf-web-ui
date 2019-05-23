@@ -1,7 +1,14 @@
 <template>
     <v-app light>
         <v-header></v-header>
-        <books-view></books-view>
+        <div
+                id="scrolling-techniques"
+                class="scroll-y"
+                style="max-height: 600px;"
+        >
+            <books-view></books-view>
+        </div>
+
         <v-footer></v-footer>
     </v-app>
 </template>
