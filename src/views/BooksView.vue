@@ -20,46 +20,60 @@
 
         <v-layout row wrap justify-start>
             <p v-if="booksShow.length == 0">loading...</p>
-            <v-flex v-if="booksShow.length != 0" class="pa-2" v-for="book in booksShow" :key="book.id" lg4 md6 sm12 xs12>
-                <v-card>
-                    <v-layout class="font-weight-light font title pt-2 pl-3 pr-2 pb-0" row>
-                        <v-flex align-self-center="true">{{book.name}}</v-flex>
-                        <v-btn flat
-                               icon
-                               color="dark"
-                               class="ma-0">
-                            <v-icon large
-                                    color="blue-grey darken-1">bookmark</v-icon>
-                        </v-btn>
-                    </v-layout>
+            <v-flex v-if="booksShow.length != 0" class="pa-2" v-for="book in booksShow" :key="book.id" lg4 md6 sm12
+                    xs12>
+                <v-hover>
 
-                    <!--<v-icon large right v-if="book.status==1">bookmark</v-icon>-->
-                    <!--<v-icon large right v-if="book.status==2">done</v-icon>-->
-                    <!--<v-icon large right v-if="book.status==3">close</v-icon>-->
-                    <v-layout class="font-weight-thin pt-0 pl-4 pr-2 pb-2" row>
-                        <v-flex align-self-center="true">
-                            {{ (book.author != null) ? book.author.name : "hoge" }}
-                        </v-flex>
-                        <!--<v-btn outline small fab color="indigo" class="ma-0">-->
-                        <!--<v-icon small>edit</v-icon>-->
-                        <!--</v-btn>-->
-                        <v-btn outline small fab color="light-blue darken-1" class="ma-0" @click="book.isOpen = true">
-                            <v-icon small>edit</v-icon>
-                        </v-btn>
-                        <book-modal
-                                v-if="book.isOpen"
-                                @close="book.isOpen = false"
-                                :bookDetailProp="book">
-                        </book-modal>
+                    <v-card
+                            slot-scope="{ hover }"
+                            :class="`elevation-${hover ? 12 : 2}`"
+                    >
+                        <v-layout class="font-weight-light font title pt-2 pl-3 pr-2 pb-0" row>
+                            <v-flex align-self-center="true">{{book.name}}</v-flex>
+                            <v-btn flat
+                                   icon
+                                   color="dark"
+                                   class="ma-0">
+                                <v-icon large
+                                        color="blue-grey darken-1">bookmark
+                                </v-icon>
+                            </v-btn>
+                        </v-layout>
 
-                    </v-layout>
-                </v-card>
-                <!--<v-divider></v-divider>a-->
+                        <!--<v-icon large right v-if="book.status==1">bookmark</v-icon>-->
+                        <!--<v-icon large right v-if="book.status==2">done</v-icon>-->
+                        <!--<v-icon large right v-if="book.status==3">close</v-icon>-->
+                        <v-layout class="font-weight-thin pt-0 pl-4 pr-2 pb-2" row>
+                            <v-flex align-self-center="true">
+                                {{ (book.author != null) ? book.author.name : "hoge" }}
+                            </v-flex>
+                            <!--<v-btn outline small fab color="indigo" class="ma-0">-->
+                            <!--<v-icon small>edit</v-icon>-->
+                            <!--</v-btn>-->
+                            <v-btn outline small fab color="light-blue darken-1" class="ma-0"
+                                   @click="book.isOpen = true">
+                                <v-icon small>edit</v-icon>
+                            </v-btn>
+                            <book-modal
+                                    v-if="book.isOpen"
+                                    @close="book.isOpen = false"
+                                    :bookDetailProp="book">
+                            </book-modal>
+
+
+
+                        </v-layout>
+                    </v-card>
+                </v-hover>
+                <!--<v-divider></v-divider>-->
             </v-flex>
 
         </v-layout>
 
-
+        <book-create-modal
+                v-if="isOpen"
+                @close="isOpen = false">
+        </book-create-modal>
         <v-btn
                 fab
                 bottom
@@ -67,7 +81,7 @@
                 color="pink"
                 dark
                 fixed
-                @click="dialog = !dialog">
+                @click="isOpen = !isOpen">
             <v-icon>add</v-icon>
         </v-btn>
     </v-container>
@@ -76,6 +90,7 @@
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
     import BookModal from './BooksModalView.vue';
+    import BookCreateModal from './BookCreateModalView.vue';
     import api, {Book} from '@/api';
 
     interface BookShow extends Book {
@@ -85,12 +100,15 @@
     @Component({
         components: {
             BookModal,
+            BookCreateModal,
         },
     })
 
     export default class BooksView extends Vue {
         private booksShow: BookShow[] = [];
         private books: Book[] = [];
+        private isOpen: boolean = false;
+        private sort = ['Foo', 'Bar', 'Fizz', 'Buzz'];
 
         public mounted() {
             api.book.list().then((response) => {
@@ -113,7 +131,7 @@
                         createdAt: book.createdAt,
                         updatedAt: book.updatedAt,
                         isOpen: false,
-                    } as BookShow
+                    } as BookShow;
                 });
             }).catch(() => {
                 console.log('error');
