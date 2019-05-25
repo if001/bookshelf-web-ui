@@ -1,5 +1,23 @@
 <template>
-    <v-container  style="height: 1000px;">
+    <!--<v-container  style="height: 1000px;">-->
+    <v-container>
+
+        <v-layout row nowrap justify-start>
+            <v-flex md6 class="ma-3">
+                <v-select
+                        :items="sort"
+                        label="sort"
+                ></v-select>
+            </v-flex>
+            <v-flex md6  class="ma-3">
+                <v-text-field
+                        label="search"
+                        append-icon=search
+                ></v-text-field>
+            </v-flex>
+
+        </v-layout>
+
         <v-layout row wrap justify-start>
             <p v-if="booksShow.length == 0">loading...</p>
             <v-flex v-if="booksShow.length != 0" class="pa-2" v-for="book in booksShow" :key="book.id" lg4 md6 sm12 xs12>
