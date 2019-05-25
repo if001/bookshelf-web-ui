@@ -5,14 +5,33 @@
                 <div class="modal-container">
                     <div class="modal-header">
                         <slot name="header">
-                            <h3 blue lighten-1>
+                            <h3 v-if="!openFlag.name">
                                 {{ bookName }}
                                 <v-btn flat
                                        icon
-                                       small>
+                                       small
+                                       v-on:click="openFlag.name = !openFlag.name">
                                     <v-icon small>edit</v-icon>
                                 </v-btn>
                             </h3>
+
+                            <h3 v-if="openFlag.name">
+                                <div style="width: 40%">
+                                    <v-text-field
+                                            :counter="10"
+                                            v-model="bookDetail.name"
+                                            :append-outer-icon="'done'"
+                                            @click:append-outer="openFlag.name = !openFlag.name"
+                                    ></v-text-field>
+                                </div>
+                                <!--<v-btn flat-->
+                                <!--icon-->
+                                <!--small-->
+                                <!--v-on:click="openFlag.name = !openFlag.name">-->
+                                <!--<v-icon small>done</v-icon>-->
+                                <!--</v-btn>-->
+                            </h3>
+
                             <v-divider></v-divider>
                         </slot>
                     </div>
@@ -23,13 +42,28 @@
                                 作者
                                 <v-btn flat
                                        icon
-                                       small>
-                                    <v-icon small color="blue-grey darken-3">edit</v-icon>
+                                       small
+                                       v-on:click="openFlag.author = !openFlag.author">
+                                    <v-icon small color="blue-grey darken-3">
+                                        {{ openFlag.author ? 'done' : 'edit' }}
+                                    </v-icon>
+
                                 </v-btn>
                             </h2>
-                            <div class="pl-2 pb-2">
+
+                            <div class="pl-2 pb-2" v-if="!openFlag.author">
                                 {{ authorName }}
                             </div>
+
+                            <div class="pl-2 pb-2" v-if="openFlag.author">
+                                <div style="width: 40%">
+                                    <v-text-field
+                                            :counter="10"
+                                            v-model="bookDetail.author.name"
+                                    ></v-text-field>
+                                </div>
+                            </div>
+
 
                             <h2>
                                 ステータス
@@ -49,34 +83,40 @@
                                        icon
                                        color="dark"
                                        small
-                                       v-on:click="isOpen = !isOpen">
-                                    <v-icon small color="blue-grey darken-3">edit</v-icon>
+                                       v-on:click="openFlag.category = !openFlag.category">
+                                    <v-icon small color="blue-grey darken-3">
+                                        {{ openFlag.category ? 'done' : 'edit' }}
+                                    </v-icon>
                                 </v-btn>
                             </h2>
 
-                            <div v-if="isOpen" style="padding: 10px;padding-top: 0;">
+                            <div v-if="openFlag.category" style="padding: 10px;padding-top: 0;">
                                 <v-text-field
-                                        :counter="10"
+                                        counter="10"
+                                        maxlength="10"
                                         label="label"
                                         style="width:40%"
+                                        v-model="inputCategory"
+                                        v-on:keydown.enter="appendCategory"
                                 ></v-text-field>
+                                <div class="warning-font">{{msg}}</div>
                             </div>
 
                             <div>
                                 <div style="display: flex; flex-wrap: wrap;">
-                                    <div class="ma-0;width:auto;" v-for="category in categories">
-                                        <v-btn small outline round class="blue lighten-1">
-                                            {{ category.name }}
-                                            <v-btn v-if="isOpen"
-                                                   icon
-                                                   color="blue-grey darken-3"
-                                                   small
-                                                   left
-                                                   class="ma-0"
-                                                   v-on:click="">
-                                                <v-icon small color="white" size="1">clear</v-icon>
-                                            </v-btn>
-                                        </v-btn>
+                                    <div class="ma-0;width:auto;" v-for="category in getCategories">
+                                        <v-chip v-if="!openFlag.category"
+                                                v-model="category.chip"
+                                                color="blue lighten-1"
+                                                outline
+                                                text-color="black">{{ category.name }}</v-chip>
+                                        <v-chip v-else
+                                                v-model="category.chip"
+                                                close
+                                                color="blue lighten-1"
+                                                outline
+                                                text-color="black"
+                                        >{{ category.name }}</v-chip>
                                     </div>
                                 </div>
                             </div>
@@ -86,7 +126,7 @@
                                 <v-btn flat
                                        icon
                                        small
-                                       v-on:click="openComment = !openComment">
+                                       v-on:click="openFlag.description  = !openFlag.description">
                                     <v-icon small color="blue-grey darken-3">edit</v-icon>
                                 </v-btn>
                             </h2>
@@ -101,13 +141,17 @@
                             <!--color="blue" class="ml-2">add_comment</v-icon>-->
                             <!--</v-btn>-->
 
-                            <div v-if="openComment">
-                                <div class="pa-2 ml-2 box-shadow" style="width: 98%">
-                                    <text-area-component></text-area-component>
+                            <div v-if="openFlag.description">
+                                <div class="pt-4 pr-2 pl-2 pb-2 ml-2 box-shadow" style="width: 98%">
+                                    <text-area-component
+                                            v-on:textarea-event="inputHandle"
+                                    ></text-area-component>
+                                    <div class="ml-5 pl-5 warning-font">{{msg}}</div>
                                     <v-btn class="ma-0"
                                            outline
                                            small
-                                           color="info">SEND
+                                           color="info"
+                                           v-on:click="appendDiscription">SEND
                                         <v-icon small color="blue" class="ml-2">add_box</v-icon>
                                     </v-btn>
                                 </div>
@@ -115,11 +159,18 @@
 
 
                             <div>
-                                <div v-for="description in descriptions" class=" pa-3">
+                                <div v-for="description in getDescriptions" class=" pa-3">
                                     <div class="ma-2">{{description.content}}</div>
 
                                     <div style="display: flex;flex-wrap: wrap;justify-content: flex-end;">
                                         <div class="ma-2 mr-5" style="color:dimgray">{{description.updatedAt}}</div>
+                                        <v-btn flat
+                                               icon
+                                               color="dark"
+                                               small
+                                               v-on:click="">
+                                            <v-icon small color="red darken-2">delete</v-icon>
+                                        </v-btn>
                                         <v-btn color="info" small>share</v-btn>
                                         <v-btn color="success" small>share</v-btn>
                                     </div>
@@ -134,7 +185,11 @@
                         <v-divider></v-divider>
                         <slot name="footer">
                         </slot>
-                        <v-btn small v-on:click="$emit('close')">CLOSE</v-btn>
+                        <v-btn small
+                               outline
+                               color="black"
+                               v-on:click="$emit('close')">CLOSE
+                        </v-btn>
                         <v-btn small
                                color="success"
                                outline
@@ -153,10 +208,20 @@
 <script lang="ts">
     import {Component, Prop, Vue} from 'vue-property-decorator';
     import TextAreaComponent from '@/components/TextAreaComponent.vue';
-    import {Book} from '../api';
+    import {Author, Book, Category, Description} from '../api';
 
     interface BookShow extends Book {
         isOpen: boolean;
+    }
+    interface CategoryWithChip extends Book {
+        chip: boolean;
+    }
+
+    class OpenFlag {
+        public name: boolean = false;
+        public author: boolean = false;
+        public category: boolean = false;
+        public description: boolean = false;
     }
 
     @Component({
@@ -169,16 +234,64 @@
         private readonly bookDetailProp!: BookShow;
 
         private bookDetail: BookShow | null = null;
+        private author: Author | null = null;
+        private categories: Category[] = [];
+        private descriptions: Description[] = [];
 
-        private isOpen = false;
-        private openComment = false;
+        private openFlag: OpenFlag = new OpenFlag();
+        private inputDescription: string = '';
+        private inputCategory: string = '';
+        private msg = '';
 
         public mounted() {
+            this.msg = '';
+            this.bookDetail = null;
+            this.author = null;
+            this.categories = [];
+            this.descriptions = [];
+            this.copyValue();
+        }
+
+        private inputHandle(description: any) {
+            this.msg = '';
+            this.inputDescription = description;
+        }
+
+        private copyValue() {
             if (this.bookDetailProp != null) {
+                if (this.bookDetailProp.author != null) {
+                    this.author = {
+                        id: this.bookDetailProp.author.id,
+                        name: this.bookDetailProp.author.name,
+                    } as Author;
+                }
+                if (this.bookDetailProp.categories != null) {
+                    for (const category of this.bookDetailProp.categories) {
+                        const c: Category = category;
+                        const newC = {
+                            id: c.id,
+                            name: c.name,
+                            chip: true,
+                        } as CategoryWithChip;
+                        this.categories.push(newC);
+                    }
+                }
+
+                if (this.bookDetailProp.descriptions != null) {
+                    for (const description of this.bookDetailProp.descriptions) {
+                        const d: Description = description;
+                        const newD = {
+                            id: d.id,
+                            content: d.content,
+                        } as Description;
+                        this.descriptions.push(newD);
+                    }
+                }
+
                 this.bookDetail = {
                     id: this.bookDetailProp.id,
                     name: this.bookDetailProp.name,
-                    author: this.bookDetailProp.author,
+                    author: this.author,
                     publishedAt: this.bookDetailProp.publishedAt,
                     publisher: this.bookDetailProp.publisher,
                     accountId: this.bookDetailProp.accountId,
@@ -186,8 +299,8 @@
                     endAt: this.bookDetailProp.endAt,
                     nextBookId: this.bookDetailProp.nextBookId,
                     prevBookId: this.bookDetailProp.prevBookId,
-                    descriptions: this.bookDetailProp.descriptions,
-                    categories: this.bookDetailProp.categories,
+                    descriptions: this.descriptions,
+                    categories: this.categories,
                     createdAt: this.bookDetailProp.createdAt,
                     updatedAt: this.bookDetailProp.updatedAt,
                     isOpen: this.bookDetailProp.isOpen,
@@ -198,7 +311,7 @@
         get bookName() {
             if (this.bookDetail != null) {
                 return this.bookDetail.name;
-            }  else {
+            } else {
                 return 'not set';
             }
         }
@@ -215,7 +328,7 @@
             }
         }
 
-        get categories() {
+        get getCategories() {
             if (this.bookDetail != null) {
                 if (this.bookDetail.categories != null) {
                     return this.bookDetail.categories;
@@ -227,7 +340,7 @@
             }
         }
 
-        get descriptions() {
+        get getDescriptions() {
             if (this.bookDetail != null) {
                 if (this.bookDetail.descriptions != null) {
                     return this.bookDetail.descriptions;
@@ -239,8 +352,52 @@
             }
         }
 
+        private appendDiscription(event: any) {
+            console.log(event.keyCode);
+            if (event.keyCode !== 13) {
+                return;
+            }
 
+            const len = this.inputDescription.length;
+            if (len === 0) {
+                this.msg = 'no input';
+            } else if (len > 140) {
+                this.msg = 'too many input';
+            } else {
+                this.descriptions.push(
+                    {
+                        id: 0,
+                        content: this.inputDescription,
+                    }  as Description,
+                );
+                this.msg = '';
+                this.openFlag.description = false;
+            }
+        }
 
+        private appendCategory(event: any) {
+            if (event.keyCode !== 13) {
+                return;
+            }
+            const len = this.inputCategory.length;
+
+            if (len === 0) {
+                this.msg = 'no input';
+            } else if ( len > 10) {
+                this.msg = 'too many input';
+            } else {
+                this.categories.push(
+                    {
+                        id: 0,
+                        name: this.inputCategory,
+                        chip: true,
+                    }  as CategoryWithChip,
+                );
+                this.inputCategory = '';
+                this.msg = '';
+                this.openFlag.category = false;
+            }
+        }
     }
 </script>
 
@@ -317,27 +474,14 @@
         overflow: auto;
     }
 
-    .describe-box {
-        width: 97%;
-        flex-grow: 5;
-        height: 80%;
-        overflow: auto;
-        /* background: gray; */
-        margin: 10px;
-    }
-
-    .describe-card {
-        padding: 10px;
-    }
-
-    .v-expansion-panel__header {
-        padding-left: 0;
-    }
-
     .box-shadow {
         box-shadow: 2px 2px 8px rgba(0, 0, 0, .33);
     }
 
+    .warning-font {
+        color: palevioletred;
+        font-size: 1.0em;
+    }
     /*
      * The following styles are auto-applied to elements with
      * transition="modal" when their visibility is toggled
