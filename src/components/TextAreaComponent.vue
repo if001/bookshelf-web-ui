@@ -3,22 +3,36 @@
         <v-textarea
                 outline
                 rows="3"
-                label="lavel"
+                label="comment"
                 auto-grow
-                value="The Woodman value"
+                value=""
+                single-line
+                counter="140"
+                maxlength="140"
+                v-model="description"
+                v-on:keyup="onChangeInput"
         ></v-textarea>
     </v-container>
 </template>
 
 <script lang="ts">
     import {Component, Prop, Vue} from 'vue-property-decorator';
+
     @Component
     export default class TextAreaComponent extends Vue {
-        private value = '１２３４５６７８９０１２３４５６７８９０１２３４５６７' +
+        private description = '';
+
+        // TODO 最大文字数、cssの確認用
+        private full = '１２３４５６７８９０１２３４５６７８９０１２３４５６７' +
             '８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０' +
             '１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３' +
             '４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６' +
             '７８９０１２３４５６７８９０';
+
+        private onChangeInput(event: any) {
+            this.$emit('textarea-event', this.description);
+        }
+
     }
 </script>
 
