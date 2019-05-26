@@ -9,7 +9,7 @@
                         label="sort"
                 ></v-select>
             </v-flex>
-            <v-flex md6  class="ma-3">
+            <v-flex md6 class="ma-3">
                 <v-text-field
                         label="search"
                         append-icon=search
@@ -20,13 +20,14 @@
 
         <v-layout row wrap justify-start>
             <p v-if="booksShow.length == 0">loading...</p>
-            <v-flex v-if="booksShow.length != 0" class="pa-2" v-for="book in booksShow" :key="book.id" lg4 md6 sm12
+            <v-flex v-else class="pa-2" v-for="book in booksShow" :key="book.id" lg4 md6 sm12
                     xs12>
                 <v-hover>
 
                     <v-card
                             slot-scope="{ hover }"
                             :class="`elevation-${hover ? 12 : 2}`"
+                            @click="book.isOpen = !book.isOpen"
                     >
                         <v-layout class="font-weight-light font title pt-2 pl-3 pr-2 pb-0" row>
                             <v-flex align-self-center="true">{{book.name}}</v-flex>
@@ -47,32 +48,22 @@
                             <v-flex align-self-center="true">
                                 {{ (book.author != null) ? book.author.name : "hoge" }}
                             </v-flex>
-                            <!--<v-btn outline small fab color="indigo" class="ma-0">-->
-                            <!--<v-icon small>edit</v-icon>-->
-                            <!--</v-btn>-->
-                            <v-btn outline small fab color="light-blue darken-1" class="ma-0"
-                                   @click="book.isOpen = true">
-                                <v-icon small>edit</v-icon>
-                            </v-btn>
-                            <book-modal
-                                    v-if="book.isOpen"
-                                    @close="book.isOpen = false"
-                                    :bookDetailProp="book">
-                            </book-modal>
-
-
-
                         </v-layout>
                     </v-card>
                 </v-hover>
                 <!--<v-divider></v-divider>-->
+                <book-modal
+                        v-if="book.isOpen"
+                        @closeDetail="book.isOpen = false"
+                        :bookDetailProp="book">
+                </book-modal>
             </v-flex>
 
         </v-layout>
 
         <book-create-modal
                 v-if="isOpen"
-                @close="isOpen = false">
+                @closeCreate="isOpen = false">
         </book-create-modal>
         <v-btn
                 fab

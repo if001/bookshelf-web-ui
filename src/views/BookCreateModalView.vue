@@ -7,6 +7,7 @@
                         <slot name="header">
                             <h3>本の追加</h3>
                         </slot>
+                        <v-divider></v-divider>
                     </div>
 
                     <div class="modal-body">
@@ -96,7 +97,7 @@
                                color="success"
                                outline
                                style="float: right"
-                               @click="$emit('close')">SAVE
+                               @click="$emit('closeCreate')">SAVE
                             <v-icon small color="green" class="ml-2">done</v-icon>
                         </v-btn>
                         <v-btn v-else
@@ -105,7 +106,7 @@
                                outline
                                style="float: right"
                                disabled
-                               @click="$emit('close')">SAVE
+                               @click="$emit('closeCreate')">SAVE
                             <v-icon small color="green" class="ml-2">done</v-icon>
                         </v-btn>
 

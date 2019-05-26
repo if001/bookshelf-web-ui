@@ -188,12 +188,12 @@
                         <v-btn small
                                outline
                                color="black"
-                               v-on:click="$emit('close')">CLOSE
+                               v-on:click="$emit('closeDetail')">CLOSE
                         </v-btn>
                         <v-btn small
                                color="success"
                                outline
-                               style="float: right" @click="$emit('close')">SAVE
+                               style="float: right" @click="$emit('closeDetail')">SAVE
                             <v-icon small color="green" class="ml-2">done</v-icon>
                         </v-btn>
                     </div>
@@ -213,7 +213,7 @@
     interface BookShow extends Book {
         isOpen: boolean;
     }
-    interface CategoryWithChip extends Book {
+    interface CategoryWithChip extends Category {
         chip: boolean;
     }
 
