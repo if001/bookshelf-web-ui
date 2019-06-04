@@ -5,7 +5,7 @@
                 <div class="modal-container">
                     <div class="modal-header">
                         <slot name="header">
-                            <h3 v-if="!openFlag.name">
+                            <h2 v-if="!openFlag.name">
                                 {{ bookName }}
                                 <v-btn flat
                                        icon
@@ -13,9 +13,9 @@
                                        v-on:click="openFlag.name = !openFlag.name">
                                     <v-icon small>edit</v-icon>
                                 </v-btn>
-                            </h3>
+                            </h2>
 
-                            <h3 v-if="openFlag.name">
+                            <h2 v-if="openFlag.name">
                                 <div style="width: 40%">
                                     <v-text-field
                                             :counter="10"
@@ -30,7 +30,7 @@
                                 <!--v-on:click="openFlag.name = !openFlag.name">-->
                                 <!--<v-icon small>done</v-icon>-->
                                 <!--</v-btn>-->
-                            </h3>
+                            </h2>
 
                             <v-divider></v-divider>
                         </slot>
@@ -38,7 +38,7 @@
 
                     <div class="modal-body">
                         <div class="modal-flex-box">
-                            <h2>
+                            <h3>
                                 作者
                                 <v-btn flat
                                        icon
@@ -49,7 +49,7 @@
                                     </v-icon>
 
                                 </v-btn>
-                            </h2>
+                            </h3>
 
                             <div class="pl-2 pb-2" v-if="!openFlag.author">
                                 {{ authorName }}
@@ -65,19 +65,46 @@
                             </div>
 
 
-                            <h2>
+                            <h3>
+                                出版社
+                                <v-btn flat
+                                       icon
+                                       small
+                                       v-on:click="openFlag.publisher = !openFlag.publisher">
+                                    <v-icon small color="blue-grey darken-3">
+                                        {{ openFlag.publisher ? 'done' : 'edit' }}
+                                    </v-icon>
+
+                                </v-btn>
+                            </h3>
+
+                            <div class="pl-2 pb-2" v-if="!openFlag.publisher">
+                                出版社
+                            </div>
+
+                            <!--<div class="pl-2 pb-2" v-if="openFlag.publisher">-->
+                            <!--<div style="width: 40%">-->
+                            <!--<v-text-field-->
+                            <!--:counter="10"-->
+                            <!--v-model="bookDetail.author.name"-->
+                            <!--&gt;</v-text-field>-->
+                            <!--</div>-->
+                            <!--</div>-->
+
+
+                            <h3>
                                 ステータス
                                 <v-btn flat
                                        icon
                                        small>
                                     <v-icon small color="blue-grey darken-3">edit</v-icon>
                                 </v-btn>
-                            </h2>
+                            </h3>
                             <div class="pl-2 pb-2">
                                 YYYY/mm/dd 〜 YYYY/mm/dd
                             </div>
 
-                            <h2 style="display: inline">
+                            <h3 style="display: inline">
                                 カテゴリ
                                 <v-btn flat
                                        icon
@@ -88,7 +115,7 @@
                                         {{ openFlag.category ? 'done' : 'edit' }}
                                     </v-icon>
                                 </v-btn>
-                            </h2>
+                            </h3>
 
                             <div v-if="openFlag.category" style="padding: 10px;padding-top: 0;">
                                 <v-text-field
@@ -121,7 +148,39 @@
                                 </div>
                             </div>
 
-                            <h2>
+                            <h3>
+                                評価
+                                <v-btn flat
+                                       icon
+                                       color="dark"
+                                       small
+                                       v-on:click="openFlag.rating = !openFlag.rating">
+                                    <v-icon small color="blue-grey darken-3">
+                                        {{ openFlag.rating ? 'done' : 'edit' }}
+                                    </v-icon>
+                                </v-btn>
+                            </h3>
+
+                            <v-rating v-if="!openFlag.rating"
+                                      v-model="rating"
+                                      color="yellow darken-3"
+                                      background-color="grey darken-1"
+                                      empty-icon="$vuetify.icons.ratingFull"
+                                      half-increments
+                                      hover
+                                      readonly
+                            ></v-rating>
+                            <v-rating v-else
+                                      v-model="rating"
+                                      color="yellow darken-3"
+                                      background-color="grey darken-1"
+                                      empty-icon="$vuetify.icons.ratingFull"
+                                      half-increments
+                                      hover
+                            ></v-rating>
+
+
+                            <h3>
                                 コメント
                                 <v-btn flat
                                        icon
@@ -129,7 +188,7 @@
                                        v-on:click="openFlag.description  = !openFlag.description">
                                     <v-icon small color="blue-grey darken-3">edit</v-icon>
                                 </v-btn>
-                            </h2>
+                            </h3>
 
                             <!--<v-btn small-->
                             <!--outline-->
@@ -220,8 +279,10 @@
     class OpenFlag {
         public name: boolean = false;
         public author: boolean = false;
+        public publisher: boolean = false;
         public category: boolean = false;
         public description: boolean = false;
+        public rating: boolean = false;
     }
 
     @Component({
@@ -242,6 +303,7 @@
         private inputDescription: string = '';
         private inputCategory: string = '';
         private msg = '';
+        private rating = 0;
 
         public mounted() {
             this.msg = '';
@@ -432,15 +494,14 @@
         font-family: Helvetica, Arial, sans-serif;
     }
 
-    .modal-header h3 {
-        font-size: 1.4em;
-        margin-top: 0;
-        color: #1E88E5;
-    }
-
     .modal-header {
         padding: 10px 20px;
         /* height: 10%; */
+    }
+    .modal-header h2 {
+        margin: 0;
+        font-size: 1.7em;
+        color: #1E88E5;
     }
 
     .modal-body {
@@ -450,12 +511,13 @@
         margin: 0 20px;
         overflow: auto;
     }
-
-    .modal-body h2 {
-        margin: 0;
-        font-size: 1.2em;
+    .modal-body h3 {
+        font-size: 1.3em;
+        margin-top: 0;
         color: #989898;
     }
+
+
 
     .modal-footer {
         /* padding: 10px 20px; */

@@ -32,7 +32,7 @@
                         <v-card
                                 slot-scope="{ hover }"
                                 :class="`elevation-${hover ? 12 : 2}`"
-                                :to="{ name: 'booksDetail', params: { bookId: book.id }}"
+                                :to="{ name: 'bookDetail', params: { bookId: book.id }}"
                         >
                             <v-layout class="font-weight-light font title pt-2 pl-3 pr-2 pb-0" row>
                                 <v-flex align-self-center="true">{{book.name}}({{book.id}})</v-flex>
@@ -88,8 +88,6 @@
 
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
-    import BookModal from './BooksModalView.vue';
-    import BookDetail from './BooksModalView2.vue';
     import BookCreateModal from './BookCreateModalView.vue';
     import Toolbar from '../components/Toolbar.vue';
     import api, {Book} from '@/api';
@@ -100,7 +98,6 @@
 
     @Component({
         components: {
-            BookModal,
             BookCreateModal,
             Toolbar,
         },
@@ -141,15 +138,15 @@
         }
 
         private search() {
-            console.log("search");
+            console.log('search');
         }
         private bookState(startAt: string | null, endAt: string | null) {
             if (endAt == null && startAt == null) {
-                return { 'icon':'fa-book', 'label':'未読' };
+                return { icon : 'fa-book', label : '未読' };
             } else if (endAt == null) {
-                return { 'icon':'bookmark', 'label':'読中' };
+                return { icon : 'bookmark', label : '読中' };
             } else {
-                return { 'icon':'done', 'label':'了読' };
+                return { icon : 'done', label : '了読' };
             }
         }
 

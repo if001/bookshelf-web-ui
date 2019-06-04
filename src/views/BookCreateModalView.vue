@@ -155,11 +155,13 @@
         }
 
         private appendCategory(event: any) {
-            if (event.keyCode !== 13) return;
+            if (event.keyCode !== 13) {
+                return;
+            }
             const len = this.inputCategory.length;
 
             if (len === 0 && len >= 10) {
-                return
+                return;
             } else {
                 this.categories.push(
                     {
@@ -173,7 +175,7 @@
         }
 
         get validateInput() {
-             return this.bookName.length !== 0 && this.bookName.length <= 10 && this.authorName.length <= 10
+             return this.bookName.length !== 0 && this.bookName.length <= 10 && this.authorName.length <= 10;
         }
     }
 </script>

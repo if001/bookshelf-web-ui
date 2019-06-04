@@ -278,16 +278,6 @@
         public rating: boolean = false;
     }
 
-    class W {
-        private w3Class = 'w3';
-        private w4Class = 'w4';
-        private w5Class = 'w5';
-        private w6Class = 'w6';
-        private w7Class = 'w7';
-        private w9Class = 'w9';
-        private w10Class = 'w10';
-    }
-
     @Component({
         components: {
             TextAreaComponent,
@@ -306,7 +296,6 @@
         private inputCategory: string = '';
         private msg = '';
         private rating = 0;
-        private w: W = new W();
 
         private isOpen: boolean = false;
         private expandDescription: boolean = false;
@@ -494,7 +483,7 @@
         private format(d: string | null) {
             if (d != null) {
                 const date = moment(d, 'YYYY-MM-DD HH:mm:ss');
-                return date.year().toString() + '/'+ (date.month() + 1).toString() + '/' + date.date();
+                return date.year().toString() + '/' + (date.month() + 1).toString() + '/' + date.date();
             } else {
                 return '----/--/--';
             }

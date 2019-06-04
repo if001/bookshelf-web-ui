@@ -52,7 +52,7 @@
         }
 
         private search() {
-            console.log("search!!");
+            console.log('search!!');
         }
     }
 
