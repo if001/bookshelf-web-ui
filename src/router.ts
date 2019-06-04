@@ -7,6 +7,7 @@ import VuetifyTest from './views/VuetifyTest.vue';
 import MainViews from '@/views/MainViews.vue';
 import LoginViews from '@/views/LoginViews.vue';
 import store from '@/store';
+import BookModal2 from '@/views/BooksModalView2.vue';
 import NotFoundViews from '@/views/NotFoundViews.vue';
 
 Vue.use(Router);
@@ -26,11 +27,17 @@ const router = new Router({
       component: MainViews,
       meta: { requiresAuth: false },
       children: [
-        {
-          path: '/books',
-          name: 'booksView',
-          component: BooksViews,
-        },
+          {
+              path: '/',
+              name: 'booksView',
+              component: BooksViews,
+          },
+          {
+              path: ':bookId',
+              name: 'booksDetail',
+              component: BookModal2,
+          },
+
         {
           path: '/old',
           name: 'booksViewOld',

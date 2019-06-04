@@ -6,7 +6,8 @@
                 class="scroll-y"
                 style="max-height: 600px;"
         >
-            <books-view></books-view>
+            <!--<books-view></books-view>-->
+            <router-view/>
         </div>
 
         <v-footer></v-footer>
@@ -26,7 +27,6 @@
         },
     })
     export default class MainViews extends Vue {
-
     }
 
 </script>
