@@ -7,7 +7,7 @@ import VuetifyTest from './views/VuetifyTest.vue';
 import MainViews from '@/views/MainViews.vue';
 import LoginViews from '@/views/LoginViews.vue';
 import store from '@/store';
-import BookModal2 from '@/views/BooksModalView2.vue';
+import BookDetailView from '@/views/BookDetailView.vue';
 import NotFoundViews from '@/views/NotFoundViews.vue';
 
 Vue.use(Router);
@@ -34,8 +34,8 @@ const router = new Router({
           },
           {
               path: ':bookId',
-              name: 'booksDetail',
-              component: BookModal2,
+              name: 'bookDetail',
+              component: BookDetailView,
           },
 
         {

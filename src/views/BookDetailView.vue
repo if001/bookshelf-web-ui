@@ -145,16 +145,6 @@
                     </v-btn>
                 </h3>
 
-                <!--<v-btn small-->
-                <!--outline-->
-                <!--color="info"-->
-                <!--style="width: 20%"-->
-                <!--v-on:click="openComment = !openComment">コメント-->
-                <!--<v-app style="height: 0"></v-app>-->
-                <!--<v-icon small-->
-                <!--color="blue" class="ml-2">add_comment</v-icon>-->
-                <!--</v-btn>-->
-
                 <div v-if="openFlag.description">
                     <v-card class="pa-3">
                         <text-area-component
@@ -476,18 +466,18 @@
         }
 
         set authorName(v: string) {
-            const __author = {
+            const tmpAuthor = {
                 id: 0,
                 name: v,
             } as Author;
             if (this.bookDetail != null) {
-                this.bookDetail.author = __author;
+                this.bookDetail.author = tmpAuthor;
             }
         }
 
         get startAtFormatted() {
             if (this.bookDetail != null) {
-                return this.format(this.startAt)
+                return this.format(this.startAt);
             } else {
                 return '';
             }
@@ -503,12 +493,9 @@
 
         private format(d: string | null) {
             if (d != null) {
-                console.log(d);
                 const date = moment(d, 'YYYY-MM-DD HH:mm:ss');
-                console.log(date.year(), date.month()+1, date.date());
-                return date.year().toString() + "/"+ (date.month()+1).toString() + "/" + date.date();
-            }
-            else {
+                return date.year().toString() + '/'+ (date.month() + 1).toString() + '/' + date.date();
+            } else {
                 return '----/--/--';
             }
         }
@@ -538,7 +525,6 @@
         }
 
         get ratingSize() {
-            console.log(this.$vuetify.breakpoint.name);
             switch (this.$vuetify.breakpoint.name) {
                 case 'xs':
                     return 20;
@@ -605,7 +591,7 @@
         get startAt() {
             if (this.bookDetail == null) {
                 return null;
-            } else{
+            } else {
                 return this.bookDetail.startAt;
             }
         }
@@ -613,7 +599,7 @@
         get endAt() {
             if (this.bookDetail == null) {
                 return null;
-            } else{
+            } else {
                 return this.bookDetail.endAt;
             }
         }
@@ -639,11 +625,11 @@
 
         private bookState(startAt: string | null, endAt: string | null) {
             if (endAt == null && startAt == null) {
-                return { 'icon':'fa-book', 'label':'未読' };
+                return { icon : 'fa-book', label : '未読' };
             } else if (endAt == null) {
-                return  { 'icon':'bookmark', 'label':'読中' };
+                return  { icon : 'bookmark', label : '読中' };
             } else {
-                return  { 'icon':'done', 'label':'了読' };
+                return  { icon : 'done', label : '了読' };
             }
         }
 
