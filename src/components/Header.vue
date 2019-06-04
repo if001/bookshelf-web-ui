@@ -28,6 +28,8 @@
                    v-else>ログアウト
                 <v-icon small>exit_to_app</v-icon>
             </v-btn>
+
+
         </v-toolbar>
     </div>
 </template>
@@ -47,6 +49,10 @@
                     alert('ログアウトエラー');
                 }
             });
+        }
+
+        private search() {
+            console.log("search!!");
         }
     }
 
