@@ -131,7 +131,7 @@ export interface Book {
 
 export interface Description {
     id: number;
-    name: string;
+    content: string;
 }
 export interface Category {
     id: number;
