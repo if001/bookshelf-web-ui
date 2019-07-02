@@ -10,7 +10,9 @@
                 scroll-off-screen
                 scroll-target="#scrolling-techniques"
         >
-            <v-toolbar-title>サイトタイトル</v-toolbar-title>
+            <v-toolbar-title>
+                <router-link :to="{name:'booksView'}" class="title">{{title}}</router-link>
+            </v-toolbar-title>
             <v-spacer></v-spacer>
             <v-btn icon
                    flat
@@ -37,17 +39,22 @@
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
     import store from '@/store';
+    import firebase from 'firebase';
 
     @Component
     export default class Header extends Vue {
+        private title: string = 'SmartBookStorage';
+
         private logout() {
-            store.dispatch('logout').then(() => {
-                console.log(store.getters.loginStatus);
-                if (!store.getters.loginStatus) {
+            store.dispatch('removeToken').then(() => {
+                firebase.auth().signOut().then(() => {
+                    localStorage.clear();
                     this.$router.push('/login');
-                } else {
-                    alert('ログアウトエラー');
-                }
+                }).catch(() => {
+                    console.log('firebase sign out error');
+                });
+            }).catch(() => {
+                console.log('vuex remove token error');
             });
         }
 
@@ -59,5 +66,8 @@
 </script>
 
 <style scoped>
-
+.title {
+    text-decoration: none;
+    color:white;
+}
 </style>

@@ -6,63 +6,80 @@ const axios = Axios.create({
     // baseURL: process.env.VUE_APP_API_URL_BASE,
 });
 
-function getToken() {
-    // return store.state.token;
-    return 'hogehoge';
+function getToken(): string {
+    const token = localStorage.getItem('token');
+    if (token !== null) {
+        return token;
+    } else {
+        return '';
+    }
+
 }
 
 export default {
-    accounts: {
-        login(email: string, password: string) {
-            return axios({
-                method: 'POST',
-                url: '/accounts/login',
-                data: {
-                    email,
-                    password,
-                },
-            });
-        },
-
-        logout() {
-            return axios({
-                method: 'POST',
-                url: '/accounts/logout',
-                data: {},
-                params: {
-                    token: getToken(),
-                },
-            });
-        },
-        own() {
-            return axios({
-                method: 'GET',
-                url: '/accounts/own',
-                params: {
-                    token: getToken(),
-                },
-            });
-        },
-    },
+    // accounts: {
+    //     login(email: string, password: string) {
+    //         return axios({
+    //             method: 'POST',
+    //             url: '/accounts/login',
+    //             data: {
+    //                 email,
+    //                 password,
+    //             },
+    //         });
+    //     },
+    //
+    //     logout() {
+    //         return axios({
+    //             method: 'POST',
+    //             headers: {'Authorization': `Bearer ${getToken()}`},
+    //             url: '/accounts/logout',
+    //             data: {},
+    //         });
+    //     },
+    //     own() {
+    //         return axios({
+    //             method: 'GET',
+    //             headers: {'Authorization': `Bearer ${getToken()}`},
+    //             url: '/accounts/own',
+    //         });
+    //     },
+    // },
 
     book: {
         list() {
             return axios.request<MultiContentResult<Book>>({
                 method: 'GET',
+                headers: {'Authorization': `Bearer ${getToken()}`},
                 url: '/books',
-                params: {
-                    token: getToken(),
-                },
             });
         },
         create(data: any) {
             return axios({
                 method: 'POST',
+                headers: {'Authorization': `Bearer ${getToken()}`},
                 url: '/books',
-                params: {
-                    token: getToken(),
-                },
                 data,
+            });
+        },
+        startRead(id: number) {
+            return axios.request<ContentResult<Book>>({
+                method: 'PUT',
+                url: `/book/${id}/state/start`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}`,
+                },
+            });
+        },
+        endRead(id: number) {
+            return axios.request<ContentResult<Book>>({
+                method: 'PUT',
+                url: `/book/${id}/state/end`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}`,
+                },
             });
         },
     },
@@ -71,18 +88,14 @@ export default {
             return axios.request<ContentResult<Book>>({
                 method: 'GET',
                 url: `/book/${id}`,
-                params: {
-                    token: getToken(),
-                },
+                headers: {'Authorization': `Bearer ${getToken()}`},
             });
         },
         update(id: number, data: any) {
             return axios({
                 method: 'PUT',
                 url: `/book/${id}`,
-                params: {
-                    token: getToken(),
-                },
+                headers: {'Authorization': `Bearer ${getToken()}`},
                 data,
             });
         },
@@ -90,9 +103,24 @@ export default {
             return axios({
                 method: 'DELETE',
                 url: `/book/${id}`,
-                params: {
-                    token: getToken(),
-                },
+                headers: {'Authorization': `Bearer ${getToken()}`},
+            });
+        },
+    },
+    description: {
+        get(id: number) {
+            return axios.request<MultiContentResult<Description>>({
+                method: 'GET',
+                url: `/book/${id}/description`,
+                headers: {'Authorization': `Bearer ${getToken()}`},
+            });
+        },
+        create(id: number, data: any) {
+            return axios.request<ContentResult<Description>>({
+                method: 'POST',
+                url: `/book/${id}/description`,
+                headers: {'Authorization': `Bearer ${getToken()}`},
+                data,
             });
         },
     },
@@ -114,25 +142,25 @@ export interface MultiContentResult<T> {
 
 export interface Book {
     id: number;
-    name: string;
+    title: string;
     author: Author | null;
     publishedAt: string | null;
     publisher: string | null;
     accountId: number | null;
-    startAt: string | null;
-    endAt: string | null;
+    start_at: string | null;
+    end_at: string | null;
     nextBookId: number | null;
     prevBookId: number | null;
-    descriptions: Description[];
     categories: Category[];
-    createdAt: string;
-    updatedAt: string;
+    created_at: string;
+    updated_at: string;
 }
 
 export interface Description {
     id: number;
     content: string;
 }
+
 export interface Category {
     id: number;
     name: string;

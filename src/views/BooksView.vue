@@ -2,14 +2,14 @@
     <!--<v-container  style="height: 1000px;">-->
     <div>
         <v-container>
-            <v-layout row nowrap justify-start>
-                <v-flex md6 class="ma-3">
-                    <v-select
-                            :items="sort"
-                            label="sort"
-                    ></v-select>
-                </v-flex>
-                <v-flex md6 class="ma-3">
+            <v-layout row nowrap justify-center>
+                <!--<v-flex md6 class="ma-3">-->
+                    <!--<v-select-->
+                            <!--:items="sort"-->
+                            <!--label="sort"-->
+                    <!--&gt;</v-select>-->
+                <!--</v-flex>-->
+                <v-flex md8 class="ma-3">
                     <v-text-field
                             flat
                             label="Search"
@@ -35,15 +35,14 @@
                                 :to="{ name: 'bookDetail', params: { bookId: book.id }}"
                         >
                             <v-layout class="font-weight-light font title pt-2 pl-3 pr-2 pb-0" row>
-                                <v-flex align-self-center="true">{{book.name}}({{book.id}})</v-flex>
+                                <v-flex align-self-center="true">{{book.title}}({{book.id}})</v-flex>
                                 <v-btn flat
                                        icon
                                        color="dark"
                                        class="ma-0">
                                     <v-icon large
                                             color="blue-grey darken-1"
-                                            v-bind:class="{ reverse : bookState(book.startAt, book.endAt).label === '未読' }"
-                                    >{{ bookState(book.startAt, book.endAt).icon }}
+                                    >{{ bookState(book.start_at, book.end_at).icon }}
                                     </v-icon>
                                 </v-btn>
                             </v-layout>
@@ -59,18 +58,14 @@
                         </v-card>
                     </v-hover>
                     <!--<v-divider></v-divider>-->
-                    <book-modal
-                            v-if="book.isOpen"
-                            @closeDetail="book.isOpen = false"
-                            :bookDetailProp="book">
-                    </book-modal>
                 </v-flex>
 
             </v-layout>
 
             <book-create-modal
                     v-if="isOpen"
-                    @closeCreate="isOpen = false">
+                    @close="isOpen = false"
+                    @closeCreate="closeCreate()">
             </book-create-modal>
             <v-btn
                     fab
@@ -110,33 +105,42 @@
         private sort = ['Foo', 'Bar', 'Fizz', 'Buzz'];
 
         public mounted() {
+          this.load();
+        }
+
+        private load() {
             api.book.list().then((response) => {
                 this.books = response.data.content as Book[];
             }).then(() => {
                 this.booksShow = this.books.map((book) => {
                     return {
                         id: book.id,
-                        name: book.name,
+                        title: book.title,
                         author: book.author,
                         publishedAt: book.publishedAt,
                         publisher: book.publisher,
                         accountId: book.accountId,
-                        startAt: book.startAt,
-                        endAt: book.endAt,
+                        start_at: book.start_at,
+                        end_at: book.end_at,
                         nextBookId: book.nextBookId,
                         prevBookId: book.prevBookId,
-                        descriptions: book.descriptions,
                         categories: book.categories,
-                        createdAt: book.createdAt,
-                        updatedAt: book.updatedAt,
+                        created_at: book.created_at,
+                        updated_at: book.updated_at,
                         isOpen: false,
                     } as BookShow;
                 });
-            }).catch(() => {
-                console.log('error');
+            }).catch((err) => {
+                console.log('/books api error');
+                console.log(err);
+                this.$router.push('/login');
             });
         }
 
+        private closeCreate() {
+            this.isOpen = false;
+            this.load();
+        }
         private search() {
             console.log('search');
         }

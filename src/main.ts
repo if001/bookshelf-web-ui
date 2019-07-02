@@ -5,34 +5,29 @@ import store from './store';
 import './registerServiceWorker';
 
 
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { fas } from '@fortawesome/free-solid-svg-icons';
-import { far } from '@fortawesome/free-regular-svg-icons';
-import { fab } from '@fortawesome/free-brands-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import {library} from '@fortawesome/fontawesome-svg-core';
+import {fas} from '@fortawesome/free-solid-svg-icons';
+import {far} from '@fortawesome/free-regular-svg-icons';
+import {fab} from '@fortawesome/free-brands-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
+
 library.add(fas, far, fab);
 Vue.component('v-fa', FontAwesomeIcon);
 
 import Vuetify from 'vuetify';
+
 Vue.use(Vuetify);
 
 import firebase from 'firebase';
+import {fireBaseConfig} from '@/firebaes_config';
 
-const config = {
-  apiKey: 'AIzaSyBh6MRgQ9i9L8rlrLxE3mKCiBQo4GS038A',
-  authDomain: 'bookshelf-239408.firebaseapp.com',
-  databaseURL: 'https://bookshelf-239408.firebaseio.com',
-  projectId: 'bookshelf-239408',
-  storageBucket: 'bookshelf-239408.appspot.com',
-  messagingSenderId: '489604966508',
-};
-firebase.initializeApp(config);
-
+firebase.initializeApp(fireBaseConfig);
 
 Vue.config.productionTip = false;
 
+
 new Vue({
-  router,
-  store,
-  render: (h) => h(App),
+    router,
+    store,
+    render: (h) => h(App),
 }).$mount('#app');

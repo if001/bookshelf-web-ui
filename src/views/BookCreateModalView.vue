@@ -48,35 +48,35 @@
                                 </div>
                             </div>
 
+                                <!-- TODO カテゴリは一旦消しとく-->
+                            <!--<h2 blue lighten-1>-->
+                                <!--カテゴリ-->
+                            <!--</h2>-->
+                            <!--<div class="pl-2 pb-2">-->
+                                <!--<div style="width:40%">-->
+                                    <!--<v-text-field-->
+                                            <!--:counter="10"-->
+                                            <!--maxlength="10"-->
+                                            <!--label="category"-->
+                                            <!--v-model="inputCategory"-->
+                                            <!--v-on:keydown.enter="appendCategory"-->
+                                    <!--&gt;</v-text-field>-->
+                                <!--</div>-->
+                            <!--</div>-->
 
-                            <h2 blue lighten-1>
-                                カテゴリ
-                            </h2>
-                            <div class="pl-2 pb-2">
-                                <div style="width:40%">
-                                    <v-text-field
-                                            :counter="10"
-                                            maxlength="10"
-                                            label="category"
-                                            v-model="inputCategory"
-                                            v-on:keydown.enter="appendCategory"
-                                    ></v-text-field>
-                                </div>
-                            </div>
-
-                            <div>
-                                <div style="display: flex; flex-wrap: wrap;">
-                                    <div class="ma-0;width:auto;" v-for="category in categories">
-                                        <v-chip v-model="category.chip"
-                                                close
-                                                color="blue lighten-1"
-                                                outline
-                                                text-color="black"
-                                        >{{ category.name }}
-                                        </v-chip>
-                                    </div>
-                                </div>
-                            </div>
+                            <!--<div>-->
+                                <!--<div style="display: flex; flex-wrap: wrap;">-->
+                                    <!--<div class="ma-0;width:auto;" v-for="category in categories">-->
+                                        <!--<v-chip v-model="category.chip"-->
+                                                <!--close-->
+                                                <!--color="blue lighten-1"-->
+                                                <!--outline-->
+                                                <!--text-color="black"-->
+                                        <!--&gt;{{ category.name }}-->
+                                        <!--</v-chip>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                            <!--</div>-->
 
                             </v-form>
 
@@ -97,7 +97,7 @@
                                color="success"
                                outline
                                style="float: right"
-                               @click="$emit('closeCreate')">SAVE
+                               @click="createBook()">SAVE
                             <v-icon small color="green" class="ml-2">done</v-icon>
                         </v-btn>
                         <v-btn v-else
@@ -105,8 +105,7 @@
                                color="success"
                                outline
                                style="float: right"
-                               disabled
-                               @click="$emit('closeCreate')">SAVE
+                               disabled>SAVE
                             <v-icon small color="green" class="ml-2">done</v-icon>
                         </v-btn>
 
@@ -122,9 +121,9 @@
 <script lang="ts">
     import {Component, Prop, Vue} from 'vue-property-decorator';
     import TextAreaComponent from '@/components/TextAreaComponent.vue';
-    import {Author, Book, Category, Description} from '../api';
+    import {default as api, Author, Book, Category, Description} from '../api';
 
-    interface CategoryWithChip extends Book {
+    interface CategoryWithChip extends Category {
         chip: boolean;
     }
 
@@ -173,9 +172,22 @@
                 this.inputCategory = '';
             }
         }
+        private createBook() {
+            const book = {
+                book: this.bookName,
+                author: {name: this.authorName} as Author,
+            };
+
+            api.book.create(book).then((res) => {
+                this.$emit('closeCreate');
+            }).catch(() => {
+                console.log('book create error');
+            });
+
+        }
 
         get validateInput() {
-             return this.bookName.length !== 0 && this.bookName.length <= 10 && this.authorName.length <= 10;
+             return this.bookName.length !== 0 && this.bookName.length <= 10 && this.authorName.length !== 0 && this.authorName.length <= 10;
         }
     }
 </script>

@@ -13,63 +13,62 @@ import NotFoundViews from '@/views/NotFoundViews.vue';
 Vue.use(Router);
 
 const router = new Router({
-  mode: 'history',
-  base: process.env.BASE_URL,
-  routes:  [
-    {
-      path: '/login',
-      name: 'loginViews',
-      component: LoginViews,
-    },
-    {
-      path: '/bookshelf',
-      name: 'mainViews',
-      component: MainViews,
-      meta: { requiresAuth: false },
-      children: [
-          {
-              path: '/',
-              name: 'booksView',
-              component: BooksViews,
-          },
-          {
-              path: ':bookId',
-              name: 'bookDetail',
-              component: BookDetailView,
-          },
+    mode: 'history',
+    base: process.env.BASE_URL,
+    routes: [
+        {
+            path: '/login',
+            name: 'loginViews',
+            component: LoginViews,
+        },
+        {
+            path: '/bookshelf',
+            name: 'mainViews',
+            component: MainViews,
+            meta: {requiresAuth: true},
+            children: [
+                {
+                    path: '/',
+                    name: 'booksView',
+                    component: BooksViews,
+                },
+                {
+                    path: ':bookId',
+                    name: 'bookDetail',
+                    component: BookDetailView,
+                },
 
-        {
-          path: '/old',
-          name: 'booksViewOld',
-          component: BooksViewsOld,
+                {
+                    path: '/old',
+                    name: 'booksViewOld',
+                    component: BooksViewsOld,
+                },
+                {
+                    path: '/vuetify',
+                    name: 'vuetify',
+                    component: VuetifyTest,
+                },
+            ],
         },
         {
-          path: '/vuetify',
-          name: 'vuetify',
-          component: VuetifyTest,
+            path: '*',
+            redirect: 'loginViews',
         },
-      ],
-    },
-    {
-      path: '*',
-      component: NotFoundViews,
-    },
-  ],
+    ],
 });
 
 router.beforeEach((to, from, next) => {
-  const isLogin = store.getters.loginStatus;
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (isLogin) {
-      console.log('success');
-      next();
+    const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+    // const token = store.getters.getToken;
+    const token = localStorage.getItem('token');
+    if (requiresAuth && token == null) {
+        console.log('token not hold');
+        localStorage.setItem('token', '');
+        next({path: '/login'});
     } else {
-      next({path: '/login'});
+        console.log('success');
+        next();
     }
-  } else {
-    console.log('error');
-    next();
-  }
 });
 
 export default router;

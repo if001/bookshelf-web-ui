@@ -49,7 +49,7 @@
             <v-layout justify-center class="ma-2">
                 <v-flex lg8 md8 sm8>
                     <v-layout justify-center>
-                        <img src="@/assets/btn_google.png" height="50px">
+                        <img src="@/assets/btn_google.png" height="50px" @click="loginWithGoogle">
                     </v-layout>
                 </v-flex>
             </v-layout>
@@ -57,7 +57,7 @@
     </v-app>
 </template>
 <script lang="ts">
-    import { Component, Vue } from 'vue-property-decorator';
+    import {Component, Vue} from 'vue-property-decorator';
     import firebase from 'firebase';
     import store from '@/store';
 
@@ -67,20 +67,52 @@
         private password: string = '';
 
         public login() {
-            firebase.auth().signInWithEmailAndPassword(this.email, this.password).then((user) => {
-                console.log(user);
-                store.dispatch('login').then(() => {
-                    this.$router.push('/bookshelf');
-                }).catch(() => {
-                    alert('login err');
+            firebase.auth().signInWithEmailAndPassword(this.email, this.password).then((res) => {
+                if (res == null) {
+                    alert('auth failed');
+                    return;
+                }
+                if (res.user == null) {
+                    alert('auth failed');
+                    return;
+                }
+
+                res.user.getIdToken()
+                    .then((idToken) => {
+                        localStorage.setItem('token', idToken.toString());
+                        this.$router.push('/bookshelf');
+                    }).catch((err) => {
+                    // console.log(err);
+                    console.log('firebase get token error');
                 });
-            }).catch((err) => {
                 // console.log(err);
-                alert('login err');
+                console.log('firebase auth error');
             });
         }
-    }
 
+        public loginWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithPopup(provider).then((res) => {
+                if (res == null) {
+                    alert('auth failed');
+                    return;
+                }
+                if (res.user == null) {
+                    alert('auth failed');
+                    return;
+                }
+                res.user.getIdToken()
+                    .then((idToken) => {
+                        localStorage.setItem('token', idToken.toString());
+                        this.$router.push('/bookshelf');
+                    }).catch((err) => {
+                    // console.log(err);
+                    console.log('firebase get token error');
+                });
+            });
+        }
+
+    }
 </script>
 
 <style scoped>

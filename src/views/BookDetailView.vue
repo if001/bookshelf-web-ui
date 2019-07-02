@@ -5,50 +5,63 @@
                 <v-card color="white" class="black--text">
                     <v-layout row>
                         <v-flex xs7>
-                            <v-card-title primary-title class="pb-1">
+                            <v-card-title primary-title class="">
                                 <div v-if="!isOpen">
                                     <div class="headline">{{ bookName }}</div>
                                     <div>{{ authorName }}</div>
                                     <div>publisher</div>
                                     <div>(2013)</div>
                                 </div>
-
                                 <div v-if="isOpen">
-                                    <div style="width: 100%">
+                                    <div class="pt-1" style="width: 100%">
                                         <v-text-field
-                                                :counter="10"
+                                                :counter="12"
                                                 v-model="bookName"
+                                                height="18"
                                                 label="Book Title"
                                         ></v-text-field>
                                     </div>
-                                    <div style="width: 100%">
+                                    <div class="pt-1" style="width: 100%">
                                         <v-text-field
                                                 :counter="15"
+                                                height="18"
                                                 v-model="authorName"
                                                 label="Author Name"
                                         ></v-text-field>
                                     </div>
-                                    <div style="width: 100%">
+                                    <div class="pt-1" style="width: 100%">
                                         <v-text-field
                                                 :counter="15"
-                                                v-model="hoge"
+                                                height="18"
                                                 label="Publisher"
                                         ></v-text-field>
                                     </div>
                                 </div>
-                                <v-btn icon
+                                <v-btn v-if="!isOpen"
+                                       icon
                                        fab
                                        dark
                                        color="blue"
                                        small
-                                       @click="isOpen=!isOpen;"
-                                       style="position:absolute; top: 0px; right: 0px;">
-                                    <v-icon small dark>{{ !isOpen ? "edit" : "done" }}</v-icon>
+                                       @click="isOpen=!isOpen"
+                                       style="position:absolute; top: 0; right: 0;">
+                                    <v-icon small dark>edit</v-icon>
+                                </v-btn>
+
+                                <v-btn v-if="isOpen"
+                                       icon
+                                       fab
+                                       dark
+                                       :color="validateInput ? 'blue' : 'black' "
+                                       small
+                                       @click="updateBook"
+                                       style="position:absolute; top: 0; right: 0;">
+                                    <v-icon small dark>done</v-icon>
                                 </v-btn>
                             </v-card-title>
                         </v-flex>
                         <v-flex xs5>
-                            <img style="float:right;" src="@/assets/claudia.jpg" height="170px;">
+                            <img style="float:right;" src="@/assets/claudia.jpg" height="120px;">
                         </v-flex>
                     </v-layout>
                     <v-divider light></v-divider>
@@ -70,19 +83,21 @@
                             <v-spacer></v-spacer>
                             <div class="pa-2" style="color: gray;">{{startAtFormatted}} 〜 {{endAtFormatted}}</div>
                         </v-layout>
-                        <v-divider light></v-divider>
-                        <v-card-actions class="pl-3 pb-2 pt-2">
-                            Rate this book
-                            <v-spacer></v-spacer>
-                            <v-rating v-model="rating"
-                                      color="yellow darken-3"
-                                      background-color="grey darken-1"
-                                      half-increments
-                                      hover
-                                      class="mb-0 mr-2 ml-2 mt-2"
-                                      :size=ratingSize
-                            ></v-rating>
-                        </v-card-actions>
+
+                        <!-- TODO Ratingもひとまずつけない -->
+                        <!--<v-divider light></v-divider>-->
+                        <!--<v-card-actions class="pl-3 pb-2 pt-2">-->
+                            <!--Rate this book-->
+                            <!--<v-spacer></v-spacer>-->
+                            <!--<v-rating v-model="rating"-->
+                                      <!--color="yellow darken-3"-->
+                                      <!--background-color="grey darken-1"-->
+                                      <!--half-increments-->
+                                      <!--hover-->
+                                      <!--class="mb-0 mr-2 ml-2 mt-2"-->
+                                      <!--:size=ratingSize-->
+                            <!--&gt;</v-rating>-->
+                        <!--</v-card-actions>-->
 
                         <!-- TODO カテゴリ機能はひとまずつけない -->
                         <!--<v-divider light></v-divider>-->
@@ -174,7 +189,7 @@
                             <div class="ma-2">{{description.content}}</div>
                             <!--<div style="display: flex;flex-wrap: wrap;justify-content: flex-end;">-->
                             <v-layout>
-                                <div class="ma-2 mr-5" style="color:dimgray">{{description.updatedAt}}</div>
+                                <div class="ma-2 mr-5" style="color:dimgray; font-size: 0.8em;">{{createdAtFormatted}}</div>
                                 <v-spacer></v-spacer>
                                 <v-btn flat
                                        icon
@@ -183,8 +198,8 @@
                                        v-on:click="">
                                     <v-icon small color="red darken-2">delete</v-icon>
                                 </v-btn>
-                                <v-btn color="info" small>share</v-btn>
-                                <v-btn color="success" small>share</v-btn>
+                                <!--<v-btn color="info" small>share</v-btn>-->
+                                <!--<v-btn color="success" small>share</v-btn>-->
                             </v-layout>
                             <v-divider></v-divider>
                         </div>
@@ -285,8 +300,8 @@
     })
     export default class BookModal2 extends Vue {
         private book: Book | null = null;
+        private bookMount: BookDetail | null = null;
         private bookDetail: BookDetail | null = null;
-        private bookDetailShow: BookDetail | null = null;
         private author: Author | null = null;
         private categories: Category[] = [];
         private descriptions: Description[] = [];
@@ -300,9 +315,14 @@
         private isOpen: boolean = false;
         private expandDescription: boolean = false;
 
+        private rules: any =  {
+            counter12: (value: any) => value.length <= 12 || 'Max 12 characters',
+            counter15: (value: any) => value.length <= 15 || 'Max 15 characters',
+        };
+
         public mounted() {
             this.msg = '';
-            this.bookDetail = null;
+            this.bookMount = null;
             this.author = null;
             this.categories = [];
             this.descriptions = [];
@@ -313,7 +333,6 @@
         private inputHandle(description: any) {
             this.msg = '';
             this.inputDescription = description;
-            console.log(this.inputDescription);
         }
 
         private load() {
@@ -329,43 +348,39 @@
                         name: this.book.author.name,
                     } as Author;
                 }
-                if (this.book.categories != null) {
-                    for (const category of this.book.categories) {
-                        const c: Category = category;
-                        const newC = {
-                            id: c.id,
-                            name: c.name,
-                            chip: true,
-                        } as CategoryWithChip;
-                        this.categories.push(newC);
-                    }
-                }
-                if (this.book.descriptions != null) {
-                    for (const description of this.book.descriptions) {
-                        const d: Description = description;
-                        const newD = {
-                            id: d.id,
-                            content: d.content,
-                        } as Description;
-                        this.descriptions.push(newD);
-                    }
-                }
+                // TODO カテゴリは一旦off
+                // if (this.book.categories != null) {
+                //     for (const category of this.book.categories) {
+                //         const c: Category = category;
+                //         const newC = {
+                //             id: c.id,
+                //             name: c.name,
+                //             chip: true,
+                //         } as CategoryWithChip;
+                //         this.categories.push(newC);
+                //     }
+                // }
 
-                this.bookDetail = {
+                api.description.get(this.book.id).then((response) => {
+                    this.descriptions = response.data.content as Description[];
+                }).catch(() => {
+                    console.log('book detail view: description get error');
+                });
+
+                this.bookMount = {
                     id: this.book.id,
-                    name: this.book.name,
+                    title: this.book.title,
                     author: this.author,
                     publishedAt: this.book.publishedAt,
                     publisher: this.book.publisher,
                     accountId: this.book.accountId,
-                    startAt: this.book.startAt,
-                    endAt: this.book.endAt,
+                    start_at: this.book.start_at,
+                    end_at: this.book.end_at,
                     nextBookId: this.book.nextBookId,
                     prevBookId: this.book.prevBookId,
-                    descriptions: this.descriptions,
                     categories: this.categories,
-                    createdAt: this.book.createdAt,
-                    updatedAt: this.book.updatedAt,
+                    created_at: this.book.created_at,
+                    updated_at: this.book.updated_at,
                     isOpen: false,
                 } as BookDetail;
             }).catch(() => {
@@ -378,74 +393,62 @@
         }
 
         private copyValue() {
-            if (this.bookDetailShow != null) {
-                if (this.bookDetailShow.author != null) {
-                    this.author = {
-                        id: this.bookDetailShow.author.id,
-                        name: this.bookDetailShow.author.name,
+            let author: Author | null = null;
+            if (this.bookMount != null) {
+                if (this.bookMount.author != null) {
+                    author = {
+                        id: this.bookMount.author.id,
+                        name: this.bookMount.author.name,
                     } as Author;
                 }
-                if (this.bookDetailShow.categories != null) {
-                    for (const category of this.bookDetailShow.categories) {
-                        const c: Category = category;
-                        const newC = {
-                            id: c.id,
-                            name: c.name,
-                            chip: true,
-                        } as CategoryWithChip;
-                        this.categories.push(newC);
-                    }
-                }
-
-                if (this.bookDetailShow.descriptions != null) {
-                    for (const description of this.bookDetailShow.descriptions) {
-                        const d: Description = description;
-                        const newD = {
-                            id: d.id,
-                            content: d.content,
-                        } as Description;
-                        this.descriptions.push(newD);
-                    }
-                }
-
-                this.bookDetailShow = {
-                    id: this.bookDetailShow.id,
-                    name: this.bookDetailShow.name,
-                    author: this.author,
-                    publishedAt: this.bookDetailShow.publishedAt,
-                    publisher: this.bookDetailShow.publisher,
-                    accountId: this.bookDetailShow.accountId,
-                    startAt: this.bookDetailShow.startAt,
-                    endAt: this.bookDetailShow.endAt,
-                    nextBookId: this.bookDetailShow.nextBookId,
-                    prevBookId: this.bookDetailShow.prevBookId,
-                    descriptions: this.descriptions,
+                // if (this.bookDetailShow.categories != null) {
+                //     for (const category of this.bookDetailShow.categories) {
+                //         const c: Category = category;
+                //         const newC = {
+                //             id: c.id,
+                //             name: c.name,
+                //             chip: true,
+                //         } as CategoryWithChip;
+                //         this.categories.push(newC);
+                //     }
+                // }
+                this.bookDetail = {
+                    id: this.bookMount.id,
+                    title: this.bookMount.title,
+                    author: author,
+                    publishedAt: this.bookMount.publishedAt,
+                    publisher: this.bookMount.publisher,
+                    accountId: this.bookMount.accountId,
+                    start_at: this.bookMount.start_at,
+                    end_at: this.bookMount.end_at,
+                    nextBookId: this.bookMount.nextBookId,
+                    prevBookId: this.bookMount.prevBookId,
                     categories: this.categories,
-                    createdAt: this.bookDetailShow.createdAt,
-                    updatedAt: this.bookDetailShow.updatedAt,
-                    isOpen: this.bookDetailShow.isOpen,
+                    created_at: this.bookMount.created_at,
+                    updated_at: this.bookMount.updated_at,
+                    isOpen: this.bookMount.isOpen,
                 };
             }
         }
 
         get bookName(): string {
-            if (this.bookDetail != null) {
-                return this.bookDetail.name;
+            if (this.bookMount != null) {
+                return this.bookMount.title;
             } else {
                 return 'Title not set';
             }
         }
 
         set bookName(v: string) {
-            if (this.bookDetail != null) {
-                this.bookDetail.name = v;
+            if (this.bookMount != null) {
+                this.bookMount.title = v;
             }
         }
 
         get authorName() {
-            if (this.bookDetail != null) {
-                if (this.bookDetail.author != null) {
-                    return this.bookDetail.author.name;
+            if (this.bookMount != null) {
+                if (this.bookMount.author != null) {
+                    return this.bookMount.author.name;
                 } else {
                     return 'Author not set';
                 }
@@ -459,24 +462,32 @@
                 id: 0,
                 name: v,
             } as Author;
-            if (this.bookDetail != null) {
-                this.bookDetail.author = tmpAuthor;
+            if (this.bookMount != null) {
+                this.bookMount.author = tmpAuthor;
             }
         }
 
         get startAtFormatted() {
-            if (this.bookDetail != null) {
-                return this.format(this.startAt);
+            if (this.bookMount != null) {
+                return this.format(this.bookMount.start_at);
             } else {
                 return '';
             }
         }
 
         get endAtFormatted() {
-            if (this.bookDetail != null) {
-                return this.format(this.endAt);
+            if (this.bookMount != null) {
+                return this.format(this.bookMount.end_at);
             } else {
                 return '----/--/--';
+            }
+        }
+
+        get createdAtFormatted() {
+            if (this.bookMount != null) {
+                return this.formatDateTime(this.bookMount.created_at);
+            } else {
+                return '----/--/-- --:--';
             }
         }
 
@@ -489,28 +500,18 @@
             }
         }
 
-        get getCategories() {
-            if (this.bookDetail != null) {
-                if (this.bookDetail.categories != null) {
-                    return this.bookDetail.categories;
-                } else {
-                    return [];
-                }
+        private formatDateTime(d: string | null) {
+            if (d != null) {
+                const date = moment(d, 'YYYY-MM-DD HH:mm:ss');
+                return date.year().toString() + '/' + (date.month() + 1).toString() + '/' + date.date()
+                    + ' ' + date.hour() + ':' + date.minute();
             } else {
-                return [];
+                return '----/--/--';
             }
         }
 
         get getDescriptions() {
-            if (this.bookDetail != null) {
-                if (this.bookDetail.descriptions != null) {
-                    return this.bookDetail.descriptions.reverse();
-                } else {
-                    return [];
-                }
-            } else {
-                return [];
-            }
+            return this.descriptions.reverse();
         }
 
         get ratingSize() {
@@ -522,12 +523,7 @@
             }
         }
         private appendDiscription(event: any) {
-            // console.log(event.keyCode);
-            // if (event.keyCode !== 13) {
-            //     return;
-            // }
-
-            if (this.bookDetail == null) {
+            if (this.bookMount == null) {
                 return;
             }
             const len = this.inputDescription.length;
@@ -536,12 +532,18 @@
             } else if (len > 140) {
                 this.msg = 'too many input!';
             } else {
-                this.bookDetail.descriptions.push(
-                    {
-                        id: 0,
-                        content: this.inputDescription,
-                    }  as Description,
-                );
+                const description = {
+                    book_id: this.bookMount.id,
+                    content: this.inputDescription,
+                };
+
+                api.description.create(this.bookMount.id, description).then((res) => {
+                    // console.log(res);
+                    this.load();
+                }).catch(() => {
+                    console.log('append discription error');
+                });
+
                 this.msg = '';
                 this.openFlag.description = false;
             }
@@ -551,7 +553,7 @@
             if (event.keyCode !== 13) {
                 return;
             }
-            if (this.bookDetail == null) {
+            if (this.bookMount == null) {
                 return;
             }
             const len = this.inputCategory.length;
@@ -560,7 +562,7 @@
             } else if (len > 10) {
                 this.msg = 'too many input!';
             } else {
-                this.bookDetail.categories.push(
+                this.bookMount.categories.push(
                     {
                         id: 0,
                         name: this.inputCategory,
@@ -573,41 +575,43 @@
             }
         }
 
-        private setBookDetail() {
-            console.log(this.bookDetail);
-        }
-
         get startAt() {
-            if (this.bookDetail == null) {
+            if (this.bookMount == null) {
                 return null;
             } else {
-                return this.bookDetail.startAt;
+                return this.bookMount.start_at;
             }
         }
 
         get endAt() {
-            if (this.bookDetail == null) {
+            if (this.bookMount == null) {
                 return null;
             } else {
-                return this.bookDetail.endAt;
+                return this.bookMount.end_at;
             }
         }
 
         private changeState(startAt: string | null, endAt: string | null) {
             if (endAt == null && startAt == null) {
                 const res = confirm('読み始めた本に設定しますか？');
-                if (res) {
-                    startAt = '2019/4/23';
+                if (res && this.bookMount != null) {
+                    api.book.startRead(this.bookMount.id).then(() => {
+                        this.load();
+                    });
                 }
             } else if (endAt == null) {
                 const res = confirm('読み終わった本に設定しますか？');
-                if (res) {
-                    endAt = '2019/4/23';
+                if (res && this.bookMount != null) {
+                    api.book.endRead(this.bookMount.id).then(() => {
+                        this.load();
+                    });
                 }
             } else {
                 const res = confirm('読み始めた本に設定しますか？');
-                if (res) {
-                    endAt = null;
+                if (res && this.bookMount != null) {
+                    api.book.startRead(this.bookMount.id).then(() => {
+                        this.load();
+                    });
                 }
             }
         }
@@ -622,6 +626,26 @@
             }
         }
 
+        private updateBook() {
+            if (this.validateInput()) {
+                this.isOpen = false;
+            }
+        }
+
+        private validateInput(): boolean {
+            if (this.bookMount != null) {
+                if (this.bookMount.title.length > 15) {
+                    return false;
+                }
+
+                if (this.bookMount.author != null) {
+                    if (this.bookMount.author.name.length > 12) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
     }
 </script>
 
@@ -660,7 +684,7 @@
     .weight600 {
         font-weight: 400;
     }
-    
+
     .warning-font {
         color: #db4448;
         font-size: 1.0em;
