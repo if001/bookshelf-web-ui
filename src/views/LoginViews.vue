@@ -75,7 +75,7 @@
 
         private emailRules =  [
             (v: any) => !!v || 'E-mail is required',
-            (v: any) => /.+@.+/.test(v) || 'E-mail must be valid'
+            (v: any) => /.+@.+/.test(v) || 'E-mail must be valid',
         ];
 
         private message = '';

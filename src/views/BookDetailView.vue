@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <v-layout row wrap justify-space-around class="mb-3" v-if="!expandDescription">
+        <v-layout row wrap justify-space-around class="mb-3">
             <v-flex xs12 md5 class="ma-2">
                 <v-card color="white" class="black--text">
                     <v-layout row>
@@ -84,7 +84,7 @@
                             <div class="pa-2" style="color: gray;">{{startAtFormatted}} 〜 {{endAtFormatted}}</div>
                         </v-layout>
 
-                        <!-- TODO Ratingもひとまずつけない -->
+                        <!-- TODO Ratingはひとまずつけない -->
                         <!--<v-divider light></v-divider>-->
                         <!--<v-card-actions class="pl-3 pb-2 pt-2">-->
                             <!--Rate this book-->
@@ -173,7 +173,7 @@
                                    outline
                                    small
                                    color="info"
-                                   v-on:click="appendDiscription">SEND
+                                   v-on:click="appendDiscription()">SEND
                                 <v-icon small color="blue" class="ml-2">send</v-icon>
                             </v-btn>
                         </div>
@@ -208,64 +208,6 @@
 
             </v-flex>
         </v-layout>
-
-
-        <!--<div class="box-shadow m1p pa-2" style="display: flex;flex-wrap: wrap;"-->
-        <!--v-bind:class="[ this.$vuetify.breakpoint.xs ? w.w10Class : w.w5Class ]">-->
-
-        <!--<div style="display: flex;flex-wrap: nowrap;overflow: auto; width: 100%;max-height: 250px;">-->
-        <!--<div style="display: flex; flex-direction:column; flex-wrap: nowrap;overflow: auto; width: 50%; max-width: 50%;">-->
-        <!--<div class="pr-1 pl-1 pt-1 pb-0 weight600" style="font-size: 2.1em;">title</div>-->
-        <!--<div class="pa-1">author</div>-->
-        <!--<div class="pa-1">publisher</div>-->
-        <!--<div class="pa-1">publishedAt</div>-->
-        <!--</div>-->
-        <!--<div style="width: 50%;">-->
-        <!--<img style="float:right;" src="@/assets/claudia.jpg" height="150px;">-->
-        <!--</div>-->
-        <!--</div>-->
-        <!--</div>-->
-
-        <!--<div class="box-shadow m1p pa-2" style="display: flex;flex-wrap: wrap;"-->
-        <!--v-bind:class="[ this.$vuetify.breakpoint.xs ? w.w10Class : w.w4Class ]">-->
-        <!--<div style="display: flex;flex-wrap: nowrap;">-->
-        <!--<div class="">-->
-        <!--<v-btn flat-->
-        <!--icon-->
-        <!--color="dark"-->
-        <!--class="ma-0">-->
-        <!--<v-icon large-->
-        <!--color="blue-grey darken-1">bookmark-->
-        <!--</v-icon>-->
-        <!--</v-btn>-->
-        <!--</div>-->
-        <!--<div class="pa-2">未読</div>-->
-        <!--<div class="pa-2" style="color: gray; font-size: 0.8em;">yyyy/mm/dd〜yyyy/mm/dd</div>-->
-        <!--</div>-->
-        <!--<div class="ma-2" style="width: 100%;">-->
-        <!--<v-divider></v-divider>-->
-        <!--</div>-->
-
-        <!--<div class="pa-1">カテゴリ</div>-->
-
-        <!--<div class="ma-2" style="width: 100%;">-->
-        <!--<v-divider></v-divider>-->
-        <!--</div>-->
-
-        <!--<div style="width: 100%;display:flex;flex-wrap:nowrap;">-->
-        <!--<div class="ma-2">rating</div>-->
-        <!--<v-spacer style=""></v-spacer>-->
-        <!--<v-rating v-model="rating"-->
-        <!--color="yellow darken-3"-->
-        <!--background-color="grey darken-1"-->
-        <!--half-increments-->
-        <!--hover-->
-        <!--small-->
-        <!--class="mb-0 mr-2 ml-2 mt-2"-->
-        <!--&gt;</v-rating>-->
-        <!--</div>-->
-        <!--</div>-->
-
 
     </v-container>
 </template>
@@ -310,10 +252,9 @@
         private inputDescription: string = '';
         private inputCategory: string = '';
         private msg = '';
-        private rating = 0;
+        // private rating = 0;
 
         private isOpen: boolean = false;
-        private expandDescription: boolean = false;
 
         private rules: any =  {
             counter12: (value: any) => value.length <= 12 || 'Max 12 characters',
@@ -383,6 +324,7 @@
                     updated_at: this.book.updated_at,
                     isOpen: false,
                 } as BookDetail;
+                this.copyValue();
             }).catch(() => {
                 console.log('error');
             });
@@ -393,10 +335,10 @@
         }
 
         private copyValue() {
-            let author: Author | null = null;
+            let authorCopy: Author | null = null;
             if (this.bookMount != null) {
                 if (this.bookMount.author != null) {
-                    author = {
+                    authorCopy = {
                         id: this.bookMount.author.id,
                         name: this.bookMount.author.name,
                     } as Author;
@@ -415,7 +357,7 @@
                 this.bookDetail = {
                     id: this.bookMount.id,
                     title: this.bookMount.title,
-                    author: author,
+                    author: authorCopy,
                     publishedAt: this.bookMount.publishedAt,
                     publisher: this.bookMount.publisher,
                     accountId: this.bookMount.accountId,
@@ -432,23 +374,23 @@
         }
 
         get bookName(): string {
-            if (this.bookMount != null) {
-                return this.bookMount.title;
+            if (this.bookDetail != null) {
+                return this.bookDetail.title;
             } else {
                 return 'Title not set';
             }
         }
 
         set bookName(v: string) {
-            if (this.bookMount != null) {
-                this.bookMount.title = v;
+            if (this.bookDetail != null) {
+                this.bookDetail.title = v;
             }
         }
 
         get authorName() {
-            if (this.bookMount != null) {
-                if (this.bookMount.author != null) {
-                    return this.bookMount.author.name;
+            if (this.bookDetail != null) {
+                if (this.bookDetail.author != null) {
+                    return this.bookDetail.author.name;
                 } else {
                     return 'Author not set';
                 }
@@ -462,22 +404,22 @@
                 id: 0,
                 name: v,
             } as Author;
-            if (this.bookMount != null) {
-                this.bookMount.author = tmpAuthor;
+            if (this.bookDetail != null) {
+                this.bookDetail.author = tmpAuthor;
             }
         }
 
         get startAtFormatted() {
-            if (this.bookMount != null) {
-                return this.format(this.bookMount.start_at);
+            if (this.bookDetail != null) {
+                return this.format(this.bookDetail.start_at);
             } else {
                 return '';
             }
         }
 
         get endAtFormatted() {
-            if (this.bookMount != null) {
-                return this.format(this.bookMount.end_at);
+            if (this.bookDetail != null) {
+                return this.format(this.bookDetail.end_at);
             } else {
                 return '----/--/--';
             }
@@ -522,8 +464,8 @@
                     return 20;
             }
         }
-        private appendDiscription(event: any) {
-            if (this.bookMount == null) {
+        private appendDiscription() {
+            if (this.bookDetail == null) {
                 return;
             }
             const len = this.inputDescription.length;
@@ -533,11 +475,11 @@
                 this.msg = 'too many input!';
             } else {
                 const description = {
-                    book_id: this.bookMount.id,
+                    book_id: this.bookDetail.id,
                     content: this.inputDescription,
                 };
 
-                api.description.create(this.bookMount.id, description).then((res) => {
+                api.description.create(this.bookDetail.id, description).then((res) => {
                     // console.log(res);
                     this.load();
                 }).catch(() => {
@@ -553,7 +495,7 @@
             if (event.keyCode !== 13) {
                 return;
             }
-            if (this.bookMount == null) {
+            if (this.bookDetail == null) {
                 return;
             }
             const len = this.inputCategory.length;
@@ -562,7 +504,7 @@
             } else if (len > 10) {
                 this.msg = 'too many input!';
             } else {
-                this.bookMount.categories.push(
+                this.bookDetail.categories.push(
                     {
                         id: 0,
                         name: this.inputCategory,
@@ -576,40 +518,40 @@
         }
 
         get startAt() {
-            if (this.bookMount == null) {
+            if (this.bookDetail == null) {
                 return null;
             } else {
-                return this.bookMount.start_at;
+                return this.bookDetail.start_at;
             }
         }
 
         get endAt() {
-            if (this.bookMount == null) {
+            if (this.bookDetail == null) {
                 return null;
             } else {
-                return this.bookMount.end_at;
+                return this.bookDetail.end_at;
             }
         }
 
         private changeState(startAt: string | null, endAt: string | null) {
             if (endAt == null && startAt == null) {
                 const res = confirm('読み始めた本に設定しますか？');
-                if (res && this.bookMount != null) {
-                    api.book.startRead(this.bookMount.id).then(() => {
+                if (res && this.bookDetail != null) {
+                    api.book.startRead(this.bookDetail.id).then(() => {
                         this.load();
                     });
                 }
             } else if (endAt == null) {
                 const res = confirm('読み終わった本に設定しますか？');
-                if (res && this.bookMount != null) {
-                    api.book.endRead(this.bookMount.id).then(() => {
+                if (res && this.bookDetail != null) {
+                    api.book.endRead(this.bookDetail.id).then(() => {
                         this.load();
                     });
                 }
             } else {
                 const res = confirm('読み始めた本に設定しますか？');
-                if (res && this.bookMount != null) {
-                    api.book.startRead(this.bookMount.id).then(() => {
+                if (res && this.bookDetail != null) {
+                    api.book.startRead(this.bookDetail.id).then(() => {
                         this.load();
                     });
                 }
@@ -643,13 +585,13 @@
             }
         }
         private validateInput(): boolean {
-            if (this.bookMount != null) {
-                if (this.bookMount.title.length > 15) {
+            if (this.bookDetail != null) {
+                if (this.bookDetail.title.length > 15) {
                     return false;
                 }
 
-                if (this.bookMount.author != null) {
-                    if (this.bookMount.author.name.length > 12) {
+                if (this.bookDetail.author != null) {
+                    if (this.bookDetail.author.name.length > 12) {
                         return false;
                     }
                 }
@@ -660,71 +602,4 @@
 </script>
 
 <style scoped>
-    /*
-    .reverse{
-        transform: scale(-1, 1);
-    }
-    .w3 {
-        width: 30%;
-    }
-
-    .w4 {
-        width: 40%;
-    }
-
-    .w5 {
-        width: 50%;
-    }
-
-    .w6 {
-        width: 60%;
-    }
-
-    .w9 {
-        width: 90%;
-    }
-
-    .w10 {
-        width: 100%;
-    }
-
-    .m1p {
-        margin: 1%;
-    }
-
-    .weight600 {
-        font-weight: 400;
-    }
-
-    .warning-font {
-        color: #db4448;
-        font-size: 1.0em;
-    }
- */
-    /*
-     * The following styles are auto-applied to elements with
-     * transition="modal" when their visibility is toggled
-     * by Vue.js.
-     *
-     * You can easily play with the modal transition by editing
-     * these styles.
-     */
-    /*
-    .font-small {
-        font-size: 0.8em;
-    }
-
-    .modal-enter {
-        opacity: 0;
-    }
-
-    .modal-leave-active {
-        opacity: 0;
-    }
-
-    .modal-enter .modal-container,
-    .modal-leave-active .modal-container {
-        -webkit-transform: scale(1.1);
-        transform: scale(1.1);
-    } */
 </style>

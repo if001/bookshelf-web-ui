@@ -188,7 +188,8 @@
         }
 
         get validateInput() {
-             return this.bookName.length !== 0 && this.bookName.length <= 10 && this.authorName.length !== 0 && this.authorName.length <= 10;
+             return this.bookName.length !== 0 && this.bookName.length <= 10
+                 && this.authorName.length !== 0 && this.authorName.length <= 10;
         }
     }
 </script>

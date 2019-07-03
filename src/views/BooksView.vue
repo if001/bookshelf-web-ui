@@ -149,10 +149,11 @@
         ];
         private selectFilter: string | null = null;
 
+        private page = 1;
+
         public mounted() {
           this.load(1, this.perPage, this.selectSortKey, this.selectFilter);
         }
-        private page = 1;
 
         private load(page: number | null, perPage: number | null, sortKey: string | null, filter: string | null) {
             api.books.list(page, perPage, sortKey, filter).then((response) => {
@@ -187,7 +188,7 @@
 
         private closeCreate() {
             this.createModalIsOpen = false;
-            this.selectSortKey = "created_at";
+            this.selectSortKey = 'created_at';
             this.load(this.page, this.perPage, this.selectSortKey, null);
         }
         private search() {
@@ -215,13 +216,12 @@
         }
 
         private pagenaite() {
-            console.log("check");
             this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);
         }
 
         get totalPageNumber() {
             // return Math.floor(this.booksShow.length / this.perPage) + 1
-            return Math.floor(this.totalCount / this.perPage) + 1
+            return Math.floor(this.totalCount / this.perPage) + 1;
         }
 
     }
