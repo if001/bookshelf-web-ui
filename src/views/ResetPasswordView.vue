@@ -2,11 +2,13 @@
     <v-app light>
         <v-container>
             <v-layout row wrap>
-
-                <v-flex lg4 md4 sm4 offset-md4>
+                <v-flex lg8 md8 sm8 xs8 offset-lg2 offset-md2 offset-sm2 offset-xs2>
                     <div class="login-title">
                         For got your Password?
                     </div>
+                </v-flex>
+
+                <v-flex lg8 md8 sm8 xs8 offset-lg2 offset-md2 offset-sm2 offset-xs2>
                     <div style="text-align: center;">Send email to reset your password.</div>
                     <v-form lazy-validation v-model="valid">
                         <v-text-field
@@ -18,18 +20,14 @@
                         ></v-text-field>
                     </v-form>
 
-                    <v-layout row justify-center>
-                        <v-flex lg12 md12 sm12>
-                            <v-btn @click="resetPassword" block color="#dc143c" dark>
-                                Reset Password
-                            </v-btn>
-                        </v-flex>
-                    </v-layout>
+                    <v-btn @click="resetPassword" block color="#dc143c" dark>
+                        Reset Password
+                    </v-btn>
 
                     <div class="warning-font">{{ message }}</div>
                 </v-flex>
 
-                <v-flex lg12 md12 sm12>
+                <v-flex lg12 md12 sm12 xs12>
                     <div class="create-account-link pa-3">
                         Already have an account?
                         <router-link to="/login">Log in here</router-link>
