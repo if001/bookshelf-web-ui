@@ -17,7 +17,7 @@
             </v-layout>
 
             <v-layout row nowrap justify-center>
-                <v-flex md8 class="ma-3">
+                <v-flex lg8 md8 sm8 xs8 class="ma-3">
                     <v-text-field
                             flat
                             label="Search"
@@ -25,8 +25,8 @@
                             @click:append="search"
                     ></v-text-field>
                 </v-flex>
-                <v-flex  md3 class="ma-3">
-                <v-select
+                <v-flex lg4 md4 sm4 xs4 class="ma-3">
+                    <v-select
                         v-model="selectSortKey"
                         :items="sortObject"
                         item-text="displayName"
@@ -35,31 +35,29 @@
                         label="Sort"
                         @change="changeSort()"
                 ></v-select>
-            </v-flex>
+                </v-flex>
             </v-layout>
 
             <v-layout row wrap justify-start>
-                <div v-if="booksShow.length == 0" style="margin: auto;padding: 20px;">
-                    loading...
+                <div v-if="loading" style="margin: auto;">
+                    <div style="display:inline-block; padding-right: 15px;">loading...</div>
                     <div class="loading loading-content">
                         <v-icon large>fa-book</v-icon>
                     </div>
                 </div>
+                <div v-if="booksShow.length == 0" style="margin: auto;padding: 20px;">
+                    本がまだありません.
+                </div>
                 <v-flex v-else class="pa-2" v-for="book in booksShow" :key="book.id" lg4 md6 sm12
                         xs12>
                     <v-hover>
-                        <!--<v-card-->
-                        <!--slot-scope="{ hover }"-->
-                        <!--:class="`elevation-${hover ? 12 : 2}`"-->
-                        <!--@click="book.isOpen = !book.isOpen"-->
-                        <!--&gt;-->
                         <v-card
                                 slot-scope="{ hover }"
                                 :class="`elevation-${hover ? 12 : 2}`"
                                 :to="{ name: 'bookDetail', params: { bookId: book.id }}"
                         >
                             <v-layout class="font-weight-light font title pt-2 pl-3 pr-2 pb-0" row>
-                                <v-flex align-self-center>{{book.title}}({{book.id}})</v-flex>
+                                <v-flex align-self-center>{{book.title}}</v-flex>
                                 <v-btn flat
                                        icon
                                        color="dark"
@@ -138,6 +136,7 @@
         private books: Book[] = [];
         private totalCount: number = 0;
         private perPage: number = 10;
+        private loading: boolean = true;
 
         private createModalIsOpen: boolean = false;
 
@@ -149,21 +148,21 @@
         private selectSortKey = 'updated_at';
         private filterObject = [
             {filterKey: null, displayName: 'ALL'},
-            {filterKey: 'not_read', displayName: 'Not Read'},
-            {filterKey: 'reading', displayName: 'Reading'},
-            {filterKey: 'read', displayName: 'Finish Reading'},
+            {filterKey: 'not_read', displayName: '未読'},
+            {filterKey: 'reading', displayName: '読中'},
+            {filterKey: 'read', displayName: '読了'},
         ];
         private selectFilter: string | null = null;
 
         private page = 1;
 
         public mounted() {
-          this.load(1, this.perPage, this.selectSortKey, this.selectFilter);
+          this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);
         }
 
         private load(page: number | null, perPage: number | null, sortKey: string | null, filter: string | null) {
             api.books.list(page, perPage, sortKey, filter).then((response) => {
-                console.log(response.data);
+                this.loading = true;
                 this.books = response.data.content.books as Book[];
                 this.totalCount = response.data.content.total_count as number;
             }).then(() => {
@@ -185,9 +184,11 @@
                         isOpen: false,
                     } as BookShow;
                 });
+                this.loading = false;
             }).catch((err) => {
                 console.log('/books api error');
-                console.log(err);
+                // console.log(err);
+                this.loading = false;
                 this.$router.push('/login');
             });
         }
