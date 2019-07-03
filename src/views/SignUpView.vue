@@ -5,7 +5,7 @@
                 <v-flex lg8 md8 sm8>
                     <v-card class="pa-2">
                         <div class="login-title">
-                            Sign In
+                            Sign Up
                         </div>
                         <v-form lazy-validation v-model="valid">
                             <v-text-field
@@ -27,53 +27,23 @@
 
                         <v-layout row justify-center>
                             <v-flex lg12 md12 sm12>
-                                <v-btn @click="login" block color="#1E90FF" dark>
-                                    ログイン
+                                <v-btn @click="create" block color="#ee82ee" dark>
+                                    アカウント作成
                                 </v-btn>
                             </v-flex>
                         </v-layout>
+
                         <div class="warning-font">{{ message }}</div>
-                        <v-layout row justify-center>
-                            <v-flex lg12 md12 sm12>
-                                <div class="create-account-link pa-3">
-                                    <router-link to="/signUp">Forgot password?</router-link>
-                                </div>
-                            </v-flex>
-                        </v-layout>
                     </v-card>
                 </v-flex>
             </v-layout>
-
-
-            <v-layout justify-center class="ma-2">
-                <v-flex lg8 md8 sm8>
-                    <v-layout justify-center>
-                        <v-btn
-                                fab
-                                color="gray"
-                                disabled>
-                            or
-                        </v-btn>
-                    </v-layout>
-                </v-flex>
-            </v-layout>
-
-            <v-layout justify-center class="ma-2">
-                <v-flex lg8 md8 sm8>
-                    <v-layout justify-center>
-                        <img class="google-login" src="@/assets/btn_google.png" @click="loginWithGoogle">
-                    </v-layout>
-                </v-flex>
-            </v-layout>
-
             <v-layout row justify-center>
                 <v-flex lg12 md12 sm12>
                     <div class="create-account-link pa-3">
-                        Don't have an account? <router-link to="/signUp">Create account</router-link>
+                        Already have an account? <router-link to="/login">Log in here</router-link>
                     </div>
                 </v-flex>
             </v-layout>
-
         </v-container>
     </v-app>
 </template>
@@ -82,7 +52,7 @@
     import firebase from 'firebase';
 
     @Component
-    export default class LoginViews extends Vue {
+    export default class SignUpView extends Vue {
         private email: string = '';
         private password: string = '';
         private valid = false;
@@ -97,17 +67,8 @@
 
         private message = '';
 
-        public login() {
-            this.loginOps(firebase.auth().signInWithEmailAndPassword(this.email, this.password));
-        }
-
-        public loginWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            this.loginOps(firebase.auth().signInWithPopup(provider));
-        }
-
-        private loginOps(p: Promise<firebase.auth.UserCredential>) {
-            p.then((res) => {
+        public create() {
+            firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then((res) => {
                 if (res == null) {
                     // console.log('not get response');
                     // alert('auth failed');
@@ -127,7 +88,7 @@
                     console.log('firebase get token error');
                 });
             }).catch((err) => {
-                this.message = 'メールアドレスかパスワードが間違っています。';
+                this.message = 'アカウントの作成に失敗しました。';
                 // alert('ログインエラー');
                 // console.log(err);
             });
@@ -150,11 +111,11 @@
         font-family: Roboto,sans-serif;
         padding: 15px;
         text-align: center;
-        /*background-color: dodgerblue;*/
     }
     .create-account-link {
         text-align: center;
         font-color:dimgray;
+        text-decoration: none;
     }
     .create-account-link a:link {
         color: dimgray;
