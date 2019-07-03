@@ -161,28 +161,31 @@
                 </h3>
 
                 <div v-if="openFlag.description">
-                    <v-card class="pa-3">
-                        <text-area-component
-                                v-on:textarea-event="inputHandle"
-                        ></text-area-component>
+                    <text-area-component
+                            v-on:textarea-event="inputHandle"
+                    ></text-area-component>
 
-                        <div style="display: flex">
-                            <div class="warning-font">{{msg}}</div>
-                            <v-spacer></v-spacer>
-                            <v-btn class="ma-0"
-                                   outline
-                                   small
-                                   color="info"
-                                   v-on:click="appendDiscription()">SEND
-                                <v-icon small color="blue" class="ml-2">send</v-icon>
-                            </v-btn>
-                        </div>
-                    </v-card>
+                    <div style="display: flex">
+                        <div class="warning-font">{{msg}}</div>
+                        <v-spacer></v-spacer>
+                        <v-btn class="ma-0"
+                               outline
+                               small
+                               color="info"
+                               v-on:click="appendDiscription()">SEND
+
+
+                            <v-icon v-if="!isSendingDescription" small color="blue" class="ml-2">send</v-icon>
+                            <div v-else class="loading loading-content">
+                                <v-icon small>cached</v-icon>
+                            </div>
+                        </v-btn>
+                    </div>
                 </div>
 
                 <div>
                     <div v-if="getDescriptions.length == 0" class="pa-3">
-                        まだコメントがありません
+                        コメントがまだありません
                     </div>
                     <div style="max-height: 70vh; overflow: auto;">
                         <div v-for="description in getDescriptions" class=" pa-3">
@@ -255,6 +258,7 @@
         // private rating = 0;
 
         private isOpen: boolean = false;
+        private isSendingDescription: boolean = false;
 
         private rules: any =  {
             counter12: (value: any) => value.length <= 12 || 'Max 12 characters',
@@ -268,7 +272,7 @@
             this.categories = [];
             this.descriptions = [];
             // this.copyValue();
-            this.load();
+            this.load(this.empty, this.empty);
         }
 
         private inputHandle(description: any) {
@@ -276,7 +280,8 @@
             this.inputDescription = description;
         }
 
-        private load() {
+        private load(beforeLoad: () => void, afterLoad: () => void) {
+            beforeLoad();
             api.book.get(this.bookId).then((response) => {
                 this.book = response.data.content as Book;
             }).then(() => {
@@ -325,6 +330,7 @@
                     isOpen: false,
                 } as BookDetail;
                 this.copyValue();
+                afterLoad();
             }).catch(() => {
                 console.log('error');
             });
@@ -478,44 +484,50 @@
                     book_id: this.bookDetail.id,
                     content: this.inputDescription,
                 };
-
                 api.description.create(this.bookDetail.id, description).then((res) => {
                     // console.log(res);
-                    this.load();
+                    this.load(this.startSendingDescription, this.closeDescriptionTextField);
                 }).catch(() => {
                     console.log('append discription error');
                 });
-
                 this.msg = '';
-                this.openFlag.description = false;
             }
         }
 
-        private appendCategory(event: any) {
-            if (event.keyCode !== 13) {
-                return;
-            }
-            if (this.bookDetail == null) {
-                return;
-            }
-            const len = this.inputCategory.length;
-            if (len === 0) {
-                this.msg = 'no input!';
-            } else if (len > 10) {
-                this.msg = 'too many input!';
-            } else {
-                this.bookDetail.categories.push(
-                    {
-                        id: 0,
-                        name: this.inputCategory,
-                        chip: true,
-                    }  as CategoryWithChip,
-                );
-                this.inputCategory = '';
-                this.msg = '';
-                this.openFlag.category = false;
-            }
+        private startSendingDescription(): void {
+            this.isSendingDescription = true;
         }
+
+        private closeDescriptionTextField(): void {
+            this.isSendingDescription = false;
+            this.openFlag.description = false;
+        }
+        // TODO カテゴリは一旦消す
+        // private appendCategory(event: any) {
+        //     if (event.keyCode !== 13) {
+        //         return;
+        //     }
+        //     if (this.bookDetail == null) {
+        //         return;
+        //     }
+        //     const len = this.inputCategory.length;
+        //     if (len === 0) {
+        //         this.msg = 'no input!';
+        //     } else if (len > 10) {
+        //         this.msg = 'too many input!';
+        //     } else {
+        //         this.bookDetail.categories.push(
+        //             {
+        //                 id: 0,
+        //                 name: this.inputCategory,
+        //                 chip: true,
+        //             }  as CategoryWithChip,
+        //         );
+        //         this.inputCategory = '';
+        //         this.msg = '';
+        //         this.openFlag.category = false;
+        //     }
+        // }
 
         get startAt() {
             if (this.bookDetail == null) {
@@ -538,21 +550,21 @@
                 const res = confirm('読み始めた本に設定しますか？');
                 if (res && this.bookDetail != null) {
                     api.book.startRead(this.bookDetail.id).then(() => {
-                        this.load();
+                        this.load(this.empty, this.empty);
                     });
                 }
             } else if (endAt == null) {
                 const res = confirm('読み終わった本に設定しますか？');
                 if (res && this.bookDetail != null) {
                     api.book.endRead(this.bookDetail.id).then(() => {
-                        this.load();
+                        this.load(this.empty, this.empty);
                     });
                 }
             } else {
                 const res = confirm('読み始めた本に設定しますか？');
                 if (res && this.bookDetail != null) {
                     api.book.startRead(this.bookDetail.id).then(() => {
-                        this.load();
+                        this.load(this.empty, this.empty);
                     });
                 }
             }
@@ -560,11 +572,11 @@
 
         private bookState(startAt: string | null, endAt: string | null) {
             if (endAt == null && startAt == null) {
-                return { icon : 'fa-book', label : 'Not Read' };
+                return { icon : 'fa-book', label : '未読' };
             } else if (endAt == null) {
-                return  { icon : 'bookmark', label : 'Reading' };
+                return  { icon : 'bookmark', label : '読中' };
             } else {
-                return  { icon : 'done', label : 'Finish Reading' };
+                return  { icon : 'done', label : '読了' };
             }
         }
 
@@ -578,7 +590,7 @@
             if (ans) {
                 api.description.delete(id).then((res) => {
                     // console.log(res);
-                    this.load();
+                    this.load(this.empty, this.empty);
                 }).catch(() => {
                     console.log('delete discription error');
                 });
@@ -598,8 +610,22 @@
             }
             return true;
         }
+        private empty(): void {}
     }
 </script>
 
 <style scoped>
+    .loading {
+        display: inline-block;
+        /*font-size: 3em;*/
+    }
+
+    .loading-content {
+        animation: r1 1s linear infinite;
+    }
+
+    @keyframes r1 {
+        0%   { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 </style>
