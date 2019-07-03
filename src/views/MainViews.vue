@@ -1,5 +1,5 @@
 <template>
-    <v-app light>
+    <v-app light color="#fafafa">
         <v-header></v-header>
         <div style="padding-top: 50px;">
             <!--<books-view></books-view>-->

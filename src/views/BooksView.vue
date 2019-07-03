@@ -3,12 +3,20 @@
     <div>
         <v-container>
             <v-layout row nowrap justify-center>
-                <!--<v-flex md6 class="ma-3">-->
-                    <!--<v-select-->
-                            <!--:items="sort"-->
-                            <!--label="sort"-->
-                    <!--&gt;</v-select>-->
-                <!--</v-flex>-->
+                <v-flex md12>
+                    <v-tabs fixed-tabs color="#fafafa">
+                        <v-tab
+                                v-for="f in filterObject"
+                                :key="f.displayName"
+                                @change="changeFilter(f.filterKey)"
+                        >
+                            {{ f.displayName }}
+                        </v-tab>
+                    </v-tabs>
+                </v-flex>
+            </v-layout>
+
+            <v-layout row nowrap justify-center>
                 <v-flex md8 class="ma-3">
                     <v-text-field
                             flat
@@ -25,7 +33,7 @@
                         item-value="sortKey"
                         append-outer-icon="sort"
                         label="Sort"
-                        @change="changeSelect()"
+                        @change="changeSort()"
                 ></v-select>
             </v-flex>
             </v-layout>
@@ -118,13 +126,22 @@
             {sortKey: 'updated_at', displayName: '更新日'},
             {sortKey: 'title', displayName: '五十音順'},
         ];
-        private selectSortKey = '';
+        private selectSortKey = 'updated_at';
+
+        private filterObject = [
+            {filterKey: null, displayName: 'ALL'},
+            {filterKey: 'not_read', displayName: '未読'},
+            {filterKey: 'reading', displayName: '読中'},
+            {filterKey: 'read', displayName: '読了'},
+        ];
+        private selectFilter: string | null = null;
+
         public mounted() {
-          this.load(1, 10, null);
+          this.load(1, 15, this.selectSortKey, this.selectFilter);
         }
 
-        private load(page: number | null, perPage: number | null, sortKey: string | null) {
-            api.books.list(page, perPage, sortKey).then((response) => {
+        private load(page: number | null, perPage: number | null, sortKey: string | null, filter: string | null) {
+            api.books.list(page, perPage, sortKey, filter).then((response) => {
                 this.books = response.data.content as Book[];
             }).then(() => {
                 this.booksShow = this.books.map((book) => {
@@ -154,7 +171,7 @@
 
         private closeCreate() {
             this.isOpen = false;
-            this.load(1, 10, null);
+            this.load(1, 10, null, null);
         }
         private search() {
             console.log('search');
@@ -169,9 +186,13 @@
             }
         }
 
-        private changeSelect() {
-            // console.log(this.selectSortKey);
-            this.load(1, 10, this.selectSortKey);
+        private changeSort() {
+            this.load(1, 10, this.selectSortKey, this.selectFilter);
+        }
+
+        private changeFilter(filter: string) {
+            this.selectFilter = filter;
+            this.load(1, 10, this.selectSortKey, this.selectFilter);
         }
     }
 

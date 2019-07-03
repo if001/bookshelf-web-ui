@@ -76,16 +76,18 @@ export default {
         },
     },
     books: {
-        list(page: number | null, perPage: number | null, sortKey: string | null) {
-            let p: { [key: string]: any; } = {};
+        list(page: number | null, perPage: number | null, sortKey: string | null, filter: string | null) {
+            const p: { [key: string]: any; } = {};
             if (page != null && perPage != null) {
-                p['page'] = page;
-                p['per_page'] = perPage;
+                p.page = page;
+                p.per_page = perPage;
             }
             if (sortKey != null) {
-                p['sort_key'] = sortKey
+                p.sort_key = sortKey;
             }
-
+            if (filter != null) {
+                p.status = filter;
+            }
             return axios.request<MultiContentResult<Book>>({
                 method: 'GET',
                 headers: {'Authorization': `Bearer ${getToken()}`},
