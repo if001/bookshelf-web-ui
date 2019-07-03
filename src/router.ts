@@ -7,6 +7,7 @@ import VuetifyTest from './views/VuetifyTest.vue';
 import MainViews from '@/views/MainViews.vue';
 import LoginViews from '@/views/LoginViews.vue';
 import SignUpViews from '@/views/SignUpView.vue';
+import ResetPasswordViews from '@/views/ResetPasswordView.vue';
 import store from '@/store';
 import BookDetailView from '@/views/BookDetailView.vue';
 import NotFoundViews from '@/views/NotFoundViews.vue';
@@ -26,6 +27,11 @@ const router = new Router({
             path: '/signUp',
             name: 'signUpViews',
             component: SignUpViews,
+        },
+        {
+            path: '/reset_password',
+            name: 'resetPasswordViews',
+            component: ResetPasswordViews,
         },
         {
             path: '/bookshelf',
