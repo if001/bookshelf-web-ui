@@ -63,7 +63,7 @@ router.beforeEach((to, from, next) => {
     const token = localStorage.getItem('token');
     if (requiresAuth && token == null) {
         console.log('token not hold');
-        localStorage.setItem('token', '');
+        localStorage.clear();
         next({path: '/login'});
     } else {
         console.log('success');
