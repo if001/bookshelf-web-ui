@@ -44,7 +44,7 @@
                 <v-flex lg12 md12 sm12 xs12>
                     <div class="create-account-link pa-2">
                         Don't have an account?
-                        <router-link to="/signUp">Create account</router-link>
+                        <router-link to="/signup">Create account</router-link>
                     </div>
                 </v-flex>
 
@@ -58,9 +58,9 @@
                 </v-flex>
 
                 <!--<v-flex lg4 md4 sm4 offset-md4>-->
-                    <!--<hr class="divide" style="display: inline-block;width: 40%;">-->
-                    <!--<div style="display: inline-block; margin: 10px;">OR</div>-->
-                    <!--<hr class="divide" style="display: inline-block;width: 40%;">-->
+                <!--<hr class="divide" style="display: inline-block;width: 40%;">-->
+                <!--<div style="display: inline-block; margin: 10px;">OR</div>-->
+                <!--<hr class="divide" style="display: inline-block;width: 40%;">-->
                 <!--</v-flex>-->
                 <v-flex lg8 md8 sm8 xs8 offset-lg2 offset-md2 offset-sm2 offset-xs2>
                     <div class="pa-3">
@@ -91,6 +91,10 @@
         ];
 
         private message = '';
+
+        public mounted() {
+            window.scrollTo(0,0);
+        }
 
         public login() {
             this.loginOps(firebase.auth().signInWithEmailAndPassword(this.email, this.password));

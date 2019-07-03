@@ -25,7 +25,7 @@ const router = new Router({
             component: LoginViews,
         },
         {
-            path: '/signUp',
+            path: '/signup',
             name: 'signUpViews',
             component: SignUpViews,
         },
@@ -70,7 +70,7 @@ const router = new Router({
         },
         {
             path: '*',
-            redirect: 'loginViews',
+            redirect: {name:'loginViews'},
         },
     ],
 });
