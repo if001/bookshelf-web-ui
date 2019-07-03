@@ -1,79 +1,69 @@
 <template>
     <v-app light>
-        <v-container>
-            <v-layout justify-center>
-                <v-flex lg8 md8 sm8>
-                    <v-card class="pa-2">
-                        <div class="login-title">
-                            Sign In
-                        </div>
-                        <v-form lazy-validation v-model="valid">
-                            <v-text-field
-                                    v-model="email"
-                                    label="Email"
-                                    :rules="emailRules"
-                                    prepend-icon="email"
-                                    required
-                            ></v-text-field>
-                            <v-text-field
-                                    v-model="password"
-                                    label="Password"
-                                    :type="'password'"
-                                    :rules="passRules"
-                                    prepend-icon="lock"
-                                    required
-                            ></v-text-field>
-                        </v-form>
-
-                        <v-layout row justify-center>
-                            <v-flex lg12 md12 sm12>
-                                <v-btn @click="login" block color="#1E90FF" dark>
-                                    ログイン
-                                </v-btn>
-                            </v-flex>
-                        </v-layout>
-                        <div class="warning-font">{{ message }}</div>
-                        <v-layout row justify-center>
-                            <v-flex lg12 md12 sm12>
-                                <div class="create-account-link pa-3">
-                                    <router-link to="/signUp">Forgot password?</router-link>
-                                </div>
-                            </v-flex>
-                        </v-layout>
-                    </v-card>
-                </v-flex>
-            </v-layout>
-
-
-            <v-layout justify-center class="ma-2">
-                <v-flex lg8 md8 sm8>
-                    <v-layout justify-center>
-                        <v-btn
-                                fab
-                                color="gray"
-                                disabled>
-                            or
-                        </v-btn>
-                    </v-layout>
-                </v-flex>
-            </v-layout>
-
-            <v-layout justify-center class="ma-2">
-                <v-flex lg8 md8 sm8>
-                    <v-layout justify-center>
-                        <img class="google-login" src="@/assets/btn_google.png" @click="loginWithGoogle">
-                    </v-layout>
-                </v-flex>
-            </v-layout>
-
-            <v-layout row justify-center>
-                <v-flex lg12 md12 sm12>
-                    <div class="create-account-link pa-3">
-                        Don't have an account? <router-link to="/signUp">Create account</router-link>
+        <v-container text-xs-center>
+            <v-layout row wrap>
+                <v-flex lg8 md8 sm8 offset-md2>
+                    <div class="login-title">
+                        Manage Your Read Book!
                     </div>
                 </v-flex>
-            </v-layout>
 
+                <v-flex lg4 md4 sm4 offset-md4>
+                    <v-form lazy-validation v-model="valid">
+                        <v-text-field
+                                v-model="email"
+                                label="Email"
+                                :rules="emailRules"
+                                prepend-icon="email"
+                                required
+                        ></v-text-field>
+                        <v-text-field
+                                v-model="password"
+                                label="Password"
+                                :type="'password'"
+                                :rules="passRules"
+                                prepend-icon="lock"
+                                required
+                        ></v-text-field>
+                    </v-form>
+
+
+                    <v-btn @click="login" block color="#1E90FF" dark>
+                        Login
+                    </v-btn>
+
+                    <div class="warning-font">{{ message }}</div>
+                </v-flex>
+
+                <v-flex lg12 md12 sm12>
+                    <div class="create-account-link pa-2">
+                        <router-link to="/reset_password">Forgot Password?</router-link>
+                    </div>
+                </v-flex>
+
+                <v-flex lg12 md12 sm12>
+                    <div class="create-account-link pa-2">
+                        Don't have an account?
+                        <router-link to="/signUp">Create account</router-link>
+                    </div>
+                </v-flex>
+
+                <v-flex lg8 md8 sm8 offset-md2>
+                    <v-btn
+                            fab
+                            color="gray"
+                            disabled>
+                        or
+                    </v-btn>
+                </v-flex>
+
+                <v-flex lg8 md8 sm8 offset-md2>
+                    <div class="pa-3">
+                        <img class="google-login" src="@/assets/btn_google.png" @click="loginWithGoogle">
+                    </div>
+                </v-flex>
+
+            </v-layout>
         </v-container>
     </v-app>
 </template>
@@ -90,7 +80,7 @@
             (v: any) => !!v || 'Name is required',
         ];
 
-        private emailRules =  [
+        private emailRules = [
             (v: any) => !!v || 'E-mail is required',
             (v: any) => /.+@.+/.test(v) || 'E-mail must be valid',
         ];
@@ -132,7 +122,6 @@
                 // console.log(err);
             });
         }
-
     }
 </script>
 
@@ -143,29 +132,40 @@
         padding: 10px;
         text-align: center;
     }
+
     .login-title {
         color: dimgray;
         font-size: 1.8em;
         font-weight: 600;
-        font-family: Roboto,sans-serif;
+        font-family: Roboto, sans-serif;
         padding: 15px;
         text-align: center;
         /*background-color: dodgerblue;*/
     }
+
     .create-account-link {
         text-align: center;
-        font-color:dimgray;
+        font-color: dimgray;
     }
+
     .create-account-link a:link {
         color: dimgray;
-        /* text-decoration: none; */
         font-weight: 700;
     }
-    .create-account-link a:visited { color: dimgray; }
-    .create-account-link a:hover { color: dimgray; }
-    .create-account-link a:active { color: dimgray; }
 
-    .google-login{
+    .create-account-link a:visited {
+        color: dimgray;
+    }
+
+    .create-account-link a:hover {
+        color: dimgray;
+    }
+
+    .create-account-link a:active {
+        color: dimgray;
+    }
+
+    .google-login {
         cursor: pointer;
         height: 50px;
     }
