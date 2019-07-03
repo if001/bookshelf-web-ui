@@ -150,7 +150,7 @@
                 </v-card>
             </v-flex>
 
-            <v-flex class="ma-3" xs12 md6 style="max-width: 100%;">
+            <v-flex class="ma-3" xs12 md6>
                 <h3>
                     コメント
                     <v-btn flat
@@ -184,10 +184,9 @@
                     <div v-if="getDescriptions.length == 0" class="pa-3">
                         まだコメントがありません
                     </div>
-                    <div style="max-height: 500px;overflow: auto;">
+                    <div style="max-height: 70vh; overflow: auto;">
                         <div v-for="description in getDescriptions" class=" pa-3">
-                            <div class="ma-2">{{description.content}}</div>
-                            <!--<div style="display: flex;flex-wrap: wrap;justify-content: flex-end;">-->
+                            <div class="ma-2" style="word-wrap: break-word;">{{description.content}}</div>
                             <v-layout>
                                 <div class="ma-2 mr-5" style="color:dimgray; font-size: 0.8em;">{{createdAtFormatted}}</div>
                                 <v-spacer></v-spacer>
@@ -198,6 +197,7 @@
                                        v-on:click="deleteDesription(description.id)">
                                     <v-icon small color="red darken-2">delete</v-icon>
                                 </v-btn>
+                                <!--TODO シェアボタン-->
                                 <!--<v-btn color="info" small>share</v-btn>-->
                                 <!--<v-btn color="success" small>share</v-btn>-->
                             </v-layout>
@@ -660,6 +660,7 @@
 </script>
 
 <style scoped>
+    /*
     .reverse{
         transform: scale(-1, 1);
     }
@@ -699,7 +700,7 @@
         color: #db4448;
         font-size: 1.0em;
     }
-
+ */
     /*
      * The following styles are auto-applied to elements with
      * transition="modal" when their visibility is toggled
@@ -708,6 +709,7 @@
      * You can easily play with the modal transition by editing
      * these styles.
      */
+    /*
     .font-small {
         font-size: 0.8em;
     }
@@ -724,5 +726,5 @@
     .modal-leave-active .modal-container {
         -webkit-transform: scale(1.1);
         transform: scale(1.1);
-    }
+    } */
 </style>
