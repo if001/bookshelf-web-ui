@@ -4,19 +4,21 @@
             <v-layout justify-center>
                 <v-flex lg8 md8 sm8>
                     <v-card class="pa-2">
-                        <v-card-title>
-                            Login
-                        </v-card-title>
-                        <v-form v-model="valid">
+                        <div class="title">
+                            ログイン
+                        </div>
+                        <v-form lazy-validation v-model="valid">
                             <v-text-field
                                     v-model="email"
                                     label="Email"
+                                    :rules="emailRules"
                                     required
                             ></v-text-field>
                             <v-text-field
                                     v-model="password"
                                     label="Password"
                                     :type="'password'"
+                                    :rules="passRules"
                                     required
                             ></v-text-field>
                         </v-form>
@@ -25,9 +27,10 @@
                                 ログイン
                             </v-btn>
                             <v-btn class="ml-4">
-                                <router-link to="/bookshelf">サインイン</router-link>
+                                <router-link to="/bookshelf">アカウント作成</router-link>
                             </v-btn>
                         </v-layout>
+                        <div class="warning-font">{{ message }}</div>
                     </v-card>
                 </v-flex>
             </v-layout>
@@ -65,40 +68,37 @@
     export default class BookViews extends Vue {
         private email: string = '';
         private password: string = '';
+        private valid = false;
+        private passRules = [
+            (v: any) => !!v || 'Name is required',
+        ];
+
+        private emailRules =  [
+            (v: any) => !!v || 'E-mail is required',
+            (v: any) => /.+@.+/.test(v) || 'E-mail must be valid'
+        ];
+
+        private message = '';
 
         public login() {
-            firebase.auth().signInWithEmailAndPassword(this.email, this.password).then((res) => {
-                if (res == null) {
-                    alert('auth failed');
-                    return;
-                }
-                if (res.user == null) {
-                    alert('auth failed');
-                    return;
-                }
-
-                res.user.getIdToken()
-                    .then((idToken) => {
-                        localStorage.setItem('token', idToken.toString());
-                        this.$router.push('/bookshelf');
-                    }).catch((err) => {
-                    // console.log(err);
-                    console.log('firebase get token error');
-                });
-                // console.log(err);
-                console.log('firebase auth error');
-            });
+            this.loginOps(firebase.auth().signInWithEmailAndPassword(this.email, this.password));
         }
 
         public loginWithGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            firebase.auth().signInWithPopup(provider).then((res) => {
+            this.loginOps(firebase.auth().signInWithPopup(provider));
+        }
+
+        private loginOps(p: Promise<firebase.auth.UserCredential>) {
+            p.then((res) => {
                 if (res == null) {
-                    alert('auth failed');
+                    // console.log('not get response');
+                    // alert('auth failed');
                     return;
                 }
                 if (res.user == null) {
-                    alert('auth failed');
+                    // console.log('user not found');
+                    // alert('auth failed');
                     return;
                 }
                 res.user.getIdToken()
@@ -109,6 +109,10 @@
                     // console.log(err);
                     console.log('firebase get token error');
                 });
+            }).catch((err) => {
+                this.message = 'メールアドレスかパスワードが間違っています。';
+                // alert('ログインエラー');
+                // console.log(err);
             });
         }
 
@@ -116,5 +120,14 @@
 </script>
 
 <style scoped>
-
+    .warning-font {
+        color: #db4448;
+        font-size: 1.0em;
+    }
+    .title {
+        color: dimgray;
+        font-size: 1.4em;
+        font-family: Roboto,sans-serif;
+        margin: 10px;
+    }
 </style>
