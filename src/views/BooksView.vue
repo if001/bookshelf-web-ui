@@ -17,6 +17,17 @@
                             @click:append="search"
                     ></v-text-field>
                 </v-flex>
+                <v-flex  md3 class="ma-3">
+                <v-select
+                        v-model="selectSortKey"
+                        :items="sortObject"
+                        item-text="displayName"
+                        item-value="sortKey"
+                        append-outer-icon="sort"
+                        label="Sort"
+                        @change="changeSelect()"
+                ></v-select>
+            </v-flex>
             </v-layout>
 
             <v-layout row wrap justify-start>
@@ -51,7 +62,7 @@
                             <!--<v-icon large right v-if="book.status==2">done</v-icon>-->
                             <!--<v-icon large right v-if="book.status==3">close</v-icon>-->
                             <v-layout class="pt-0 pl-4 pr-2 pb-2" row>
-                                <v-flex align-self-center>
+                                <v-flex align-self-center :class="{ noset_font: (book.author == null)}">
                                     {{ (book.author != null) ? book.author.name : "not set" }}
                                 </v-flex>
                             </v-layout>
@@ -102,14 +113,18 @@
         private booksShow: BookShow[] = [];
         private books: Book[] = [];
         private isOpen: boolean = false;
-        private sort = ['Foo', 'Bar', 'Fizz', 'Buzz'];
-
+        private sortObject = [
+            {sortKey: 'created_at', displayName: '作成日'},
+            {sortKey: 'updated_at', displayName: '更新日'},
+            {sortKey: 'title', displayName: '五十音順'},
+        ];
+        private selectSortKey = '';
         public mounted() {
-          this.load();
+          this.load(1, 10, null);
         }
 
-        private load() {
-            api.book.list().then((response) => {
+        private load(page: number | null, perPage: number | null, sortKey: string | null) {
+            api.books.list(page, perPage, sortKey).then((response) => {
                 this.books = response.data.content as Book[];
             }).then(() => {
                 this.booksShow = this.books.map((book) => {
@@ -139,7 +154,7 @@
 
         private closeCreate() {
             this.isOpen = false;
-            this.load();
+            this.load(1, 10, null);
         }
         private search() {
             console.log('search');
@@ -154,6 +169,10 @@
             }
         }
 
+        private changeSelect() {
+            // console.log(this.selectSortKey);
+            this.load(1, 10, this.selectSortKey);
+        }
     }
 
 </script>
@@ -161,5 +180,8 @@
 <style scoped>
     .reverse{
         transform: scale(-1, 1);
+    }
+    .noset_font {
+        color: grey;
     }
 </style>

@@ -1,11 +1,7 @@
 <template>
     <v-app light>
         <v-header></v-header>
-        <div
-                id="scrolling-techniques"
-                class="scroll-y"
-                style="max-height: 600px;"
-        >
+        <div style="padding-top: 50px;">
             <!--<books-view></books-view>-->
             <router-view/>
         </div>

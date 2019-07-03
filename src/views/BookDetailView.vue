@@ -195,7 +195,7 @@
                                        icon
                                        color="dark"
                                        small
-                                       v-on:click="">
+                                       v-on:click="deleteDesription(description.id)">
                                     <v-icon small color="red darken-2">delete</v-icon>
                                 </v-btn>
                                 <!--<v-btn color="info" small>share</v-btn>-->
@@ -336,7 +336,7 @@
         }
 
         private load() {
-            api.books.get(this.bookId).then((response) => {
+            api.book.get(this.bookId).then((response) => {
                 this.book = response.data.content as Book;
             }).then(() => {
                 if (this.book == null) {
@@ -631,7 +631,17 @@
                 this.isOpen = false;
             }
         }
-
+        private deleteDesription(id: number) {
+            const ans = confirm('削除しますか?');
+            if (ans) {
+                api.description.delete(id).then((res) => {
+                    // console.log(res);
+                    this.load();
+                }).catch(() => {
+                    console.log('delete discription error');
+                });
+            }
+        }
         private validateInput(): boolean {
             if (this.bookMount != null) {
                 if (this.bookMount.title.length > 15) {

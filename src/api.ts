@@ -47,19 +47,11 @@ export default {
     // },
 
     book: {
-        list() {
-            return axios.request<MultiContentResult<Book>>({
+        get(id: number) {
+            return axios.request<ContentResult<Book>>({
                 method: 'GET',
+                url: `/book/${id}`,
                 headers: {'Authorization': `Bearer ${getToken()}`},
-                url: '/books',
-            });
-        },
-        create(data: any) {
-            return axios({
-                method: 'POST',
-                headers: {'Authorization': `Bearer ${getToken()}`},
-                url: '/books',
-                data,
             });
         },
         startRead(id: number) {
@@ -84,26 +76,29 @@ export default {
         },
     },
     books: {
-        get(id: number) {
-            return axios.request<ContentResult<Book>>({
+        list(page: number | null, perPage: number | null, sortKey: string | null) {
+            let p: { [key: string]: any; } = {};
+            if (page != null && perPage != null) {
+                p['page'] = page;
+                p['per_page'] = perPage;
+            }
+            if (sortKey != null) {
+                p['sort_key'] = sortKey
+            }
+
+            return axios.request<MultiContentResult<Book>>({
                 method: 'GET',
-                url: `/book/${id}`,
                 headers: {'Authorization': `Bearer ${getToken()}`},
+                url: '/books',
+                params: p,
             });
         },
-        update(id: number, data: any) {
+        create(data: any) {
             return axios({
-                method: 'PUT',
-                url: `/book/${id}`,
+                method: 'POST',
                 headers: {'Authorization': `Bearer ${getToken()}`},
+                url: '/books',
                 data,
-            });
-        },
-        logicalDelete(id: number) {
-            return axios({
-                method: 'DELETE',
-                url: `/book/${id}`,
-                headers: {'Authorization': `Bearer ${getToken()}`},
             });
         },
     },
@@ -123,6 +118,13 @@ export default {
                 data,
             });
         },
+        delete(id: number) {
+            return axios.request<{}>({
+                method: 'DELETE',
+                url: `/description/${id}`,
+                headers: {'Authorization': `Bearer ${getToken()}`},
+            });
+        }
     },
 };
 
