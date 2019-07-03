@@ -39,7 +39,12 @@
             </v-layout>
 
             <v-layout row wrap justify-start>
-                <p v-if="booksShow.length == 0">loading...</p>
+                <div v-if="booksShow.length == 0" style="margin: auto;padding: 20px;">
+                    loading...
+                    <div class="loading loading-content">
+                        <v-icon large>fa-book</v-icon>
+                    </div>
+                </div>
                 <v-flex v-else class="pa-2" v-for="book in booksShow" :key="book.id" lg4 md6 sm12
                         xs12>
                     <v-hover>
@@ -87,6 +92,7 @@
                             :length=totalPageNumber
                             :total-visible="7"
                             @input="pagenaite()"
+                            color="#1e90ff"
                     ></v-pagination>
                 </v-flex>
             </v-layout>
@@ -234,5 +240,19 @@
     }
     .noset_font {
         color: grey;
+    }
+
+    .loading {
+        display: inline-block;
+        font-size: 3em;
+    }
+
+    .loading-content {
+        animation: r1 1s linear infinite;
+    }
+
+    @keyframes r1 {
+        0%   { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 </style>
