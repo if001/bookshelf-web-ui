@@ -31,7 +31,7 @@
                         :items="sortObject"
                         item-text="displayName"
                         item-value="sortKey"
-                        append-outer-icon="sort"
+                        append-icon="sort"
                         label="Sort"
                         @change="changeSort()"
                 ></v-select>
@@ -142,16 +142,16 @@
         private createModalIsOpen: boolean = false;
 
         private sortObject = [
-            {sortKey: 'created_at', displayName: '作成日'},
             {sortKey: 'updated_at', displayName: '更新日'},
+            {sortKey: 'created_at', displayName: '作成日'},
             {sortKey: 'title', displayName: '五十音順'},
         ];
         private selectSortKey = 'updated_at';
         private filterObject = [
             {filterKey: null, displayName: 'ALL'},
-            {filterKey: 'not_read', displayName: '未読'},
-            {filterKey: 'reading', displayName: '読中'},
-            {filterKey: 'read', displayName: '読了'},
+            {filterKey: 'not_read', displayName: 'Not Read'},
+            {filterKey: 'reading', displayName: 'Reading'},
+            {filterKey: 'read', displayName: 'Finish Reading'},
         ];
         private selectFilter: string | null = null;
 

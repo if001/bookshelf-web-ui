@@ -9,8 +9,8 @@
                                 <div v-if="!isOpen">
                                     <div class="headline">{{ bookName }}</div>
                                     <div>{{ authorName }}</div>
-                                    <div>publisher</div>
-                                    <div>(2013)</div>
+                                    <!-- TODO 出版社はひとまず消す <div>publisher</div>-->
+                                    <!-- TODO 出版年はひとまず消す <div>(2013)</div>-->
                                 </div>
                                 <div v-if="isOpen">
                                     <div class="pt-1" style="width: 100%">
@@ -560,11 +560,11 @@
 
         private bookState(startAt: string | null, endAt: string | null) {
             if (endAt == null && startAt == null) {
-                return { icon : 'fa-book', label : '未読' };
+                return { icon : 'fa-book', label : 'Not Read' };
             } else if (endAt == null) {
-                return  { icon : 'bookmark', label : '読中' };
+                return  { icon : 'bookmark', label : 'Reading' };
             } else {
-                return  { icon : 'done', label : '了読' };
+                return  { icon : 'done', label : 'Finish Reading' };
             }
         }
 

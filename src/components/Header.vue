@@ -1,39 +1,4 @@
 <template>
-    <!--<div-->
-            <!--class="hide-overflow"-->
-            <!--style="position: relative; height: 60px;"-->
-    <!--&gt;-->
-        <!--<v-toolbar-->
-                <!--absolute-->
-                <!--color="light-blue darken-1"-->
-                <!--dark-->
-                <!--scroll-off-screen-->
-                <!--scroll-target="#scrolling-techniques"-->
-        <!--&gt;-->
-            <!--<v-toolbar-title>-->
-                <!--<router-link :to="{name:'booksView'}" class="title">{{title}}</router-link>-->
-            <!--</v-toolbar-title>-->
-            <!--<v-spacer></v-spacer>-->
-            <!--<v-btn icon-->
-                   <!--flat-->
-                   <!--color="dark"-->
-                   <!--right-->
-                   <!--v-on:click="logout"-->
-                   <!--v-if="$vuetify.breakpoint.xs">-->
-                <!--<v-icon>exit_to_app</v-icon>-->
-            <!--</v-btn>-->
-            <!--<v-btn flat-->
-                   <!--color="dark"-->
-                   <!--small-->
-                   <!--right-->
-                   <!--v-on:click="logout"-->
-                   <!--v-else>ログアウト-->
-                <!--<v-icon small>exit_to_app</v-icon>-->
-            <!--</v-btn>-->
-
-
-        <!--</v-toolbar>-->
-    <!--</div>-->
     <div class="header">
         <div style="margin: auto;margin-left: 13.5px;font-weight: 400;">
             <router-link :to="{name:'booksView'}" class="title">{{title}}</router-link>
@@ -55,12 +20,10 @@
                small
                right
                v-on:click="logout"
-        >ログアウト
+        ><div style="margin-right: 5px;">Logout</div>
             <v-icon small style="color: white">exit_to_app</v-icon>
         </v-btn>
     </div>
-
-
 
 </template>
 
