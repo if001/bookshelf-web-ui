@@ -131,7 +131,7 @@
         private booksShow: BookShow[] = [];
         private books: Book[] = [];
         private totalCount: number = 0;
-        private perPage: number = 2;
+        private perPage: number = 10;
 
         private createModalIsOpen: boolean = false;
 
@@ -204,11 +204,13 @@
         }
 
         private changeSort() {
+            this.page = 1;
             this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);
         }
 
         private changeFilter(filter: string) {
             this.selectFilter = filter;
+            this.page = 1;
             this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);
         }
 
@@ -218,6 +220,7 @@
         }
 
         get totalPageNumber() {
+            // return Math.floor(this.booksShow.length / this.perPage) + 1
             return Math.floor(this.totalCount / this.perPage) + 1
         }
 
