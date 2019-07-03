@@ -171,7 +171,8 @@
 
         private closeCreate() {
             this.isOpen = false;
-            this.load(1, 10, null, null);
+            this.selectSortKey = "created_at";
+            this.load(1, 10, this.selectSortKey, null);
         }
         private search() {
             console.log('search');
