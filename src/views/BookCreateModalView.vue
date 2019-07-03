@@ -174,11 +174,12 @@
         }
         private createBook() {
             const book = {
-                book: this.bookName,
-                author: {name: this.authorName} as Author,
+                title: this.bookName,
+                // author_id : 0,
+                // author_name: this.authorName,
             };
 
-            api.book.create(book).then((res) => {
+            api.books.create(book).then((res) => {
                 this.$emit('closeCreate');
             }).catch(() => {
                 console.log('book create error');
