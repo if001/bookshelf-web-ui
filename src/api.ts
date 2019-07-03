@@ -88,7 +88,7 @@ export default {
             if (filter != null) {
                 p.status = filter;
             }
-            return axios.request<MultiContentResult<Book>>({
+            return axios.request<ContentResult<PaginateBooks>>({
                 method: 'GET',
                 headers: {'Authorization': `Bearer ${getToken()}`},
                 url: '/books',
@@ -158,6 +158,11 @@ export interface Book {
     categories: Category[];
     created_at: string;
     updated_at: string;
+}
+
+export interface PaginateBooks {
+    books: Book[];
+    total_count: number;
 }
 
 export interface Description {

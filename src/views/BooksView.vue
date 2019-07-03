@@ -54,7 +54,7 @@
                                 :to="{ name: 'bookDetail', params: { bookId: book.id }}"
                         >
                             <v-layout class="font-weight-light font title pt-2 pl-3 pr-2 pb-0" row>
-                                <v-flex align-self-center="true">{{book.title}}({{book.id}})</v-flex>
+                                <v-flex align-self-center>{{book.title}}({{book.id}})</v-flex>
                                 <v-btn flat
                                        icon
                                        color="dark"
@@ -78,12 +78,21 @@
                     </v-hover>
                     <!--<v-divider></v-divider>-->
                 </v-flex>
-
             </v-layout>
 
+            <v-layout row nowrap justify-center>
+                <v-flex md12 class="mt-2 mb-4 text-xs-center">
+                    <v-pagination
+                            v-model="page"
+                            :length=totalPageNumber
+                            :total-visible="7"
+                            @input="pagenaite()"
+                    ></v-pagination>
+                </v-flex>
+            </v-layout>
             <book-create-modal
-                    v-if="isOpen"
-                    @close="isOpen = false"
+                    v-if="createModalIsOpen"
+                    @close="createModalIsOpen = false"
                     @closeCreate="closeCreate()">
             </book-create-modal>
             <v-btn
@@ -93,7 +102,7 @@
                     color="pink"
                     dark
                     fixed
-                    @click="isOpen = !isOpen">
+                    @click="createModalIsOpen = !createModalIsOpen">
                 <v-icon>add</v-icon>
             </v-btn>
         </v-container>
@@ -105,6 +114,7 @@
     import BookCreateModal from './BookCreateModalView.vue';
     import Toolbar from '../components/Toolbar.vue';
     import api, {Book} from '@/api';
+
 
     interface BookShow extends Book {
         isOpen: boolean;
@@ -120,14 +130,17 @@
     export default class BooksView extends Vue {
         private booksShow: BookShow[] = [];
         private books: Book[] = [];
-        private isOpen: boolean = false;
+        private totalCount: number = 0;
+        private perPage: number = 2;
+
+        private createModalIsOpen: boolean = false;
+
         private sortObject = [
             {sortKey: 'created_at', displayName: '作成日'},
             {sortKey: 'updated_at', displayName: '更新日'},
             {sortKey: 'title', displayName: '五十音順'},
         ];
         private selectSortKey = 'updated_at';
-
         private filterObject = [
             {filterKey: null, displayName: 'ALL'},
             {filterKey: 'not_read', displayName: '未読'},
@@ -137,12 +150,15 @@
         private selectFilter: string | null = null;
 
         public mounted() {
-          this.load(1, 15, this.selectSortKey, this.selectFilter);
+          this.load(1, this.perPage, this.selectSortKey, this.selectFilter);
         }
+        private page = 1;
 
         private load(page: number | null, perPage: number | null, sortKey: string | null, filter: string | null) {
             api.books.list(page, perPage, sortKey, filter).then((response) => {
-                this.books = response.data.content as Book[];
+                console.log(response.data);
+                this.books = response.data.content.books as Book[];
+                this.totalCount = response.data.content.total_count as number;
             }).then(() => {
                 this.booksShow = this.books.map((book) => {
                     return {
@@ -170,9 +186,9 @@
         }
 
         private closeCreate() {
-            this.isOpen = false;
+            this.createModalIsOpen = false;
             this.selectSortKey = "created_at";
-            this.load(1, 10, this.selectSortKey, null);
+            this.load(this.page, this.perPage, this.selectSortKey, null);
         }
         private search() {
             console.log('search');
@@ -188,13 +204,23 @@
         }
 
         private changeSort() {
-            this.load(1, 10, this.selectSortKey, this.selectFilter);
+            this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);
         }
 
         private changeFilter(filter: string) {
             this.selectFilter = filter;
-            this.load(1, 10, this.selectSortKey, this.selectFilter);
+            this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);
         }
+
+        private pagenaite() {
+            console.log("check");
+            this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);
+        }
+
+        get totalPageNumber() {
+            return Math.floor(this.totalCount / this.perPage) + 1
+        }
+
     }
 
 </script>
