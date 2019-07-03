@@ -45,7 +45,7 @@
                         <v-icon large>fa-book</v-icon>
                     </div>
                 </div>
-                <div v-if="booksShow.length == 0" style="margin: auto;padding: 20px;">
+                <div v-if="!loading && booksShow.length === 0" style="margin: auto;padding: 20px;">
                     本がまだありません.
                 </div>
                 <v-flex v-else class="pa-2" v-for="book in booksShow" :key="book.id" lg4 md6 sm12
@@ -94,11 +94,11 @@
                     ></v-pagination>
                 </v-flex>
             </v-layout>
-            <book-create-modal
-                    v-if="createModalIsOpen"
-                    @close="createModalIsOpen = false"
-                    @closeCreate="closeCreate()">
-            </book-create-modal>
+            <!--<book-create-modal-->
+                    <!--v-if="createModalIsOpen"-->
+                    <!--@close="createModalIsOpen = false"-->
+                    <!--@closeCreate="closeCreate()">-->
+            <!--</book-create-modal>-->
             <v-btn
                     fab
                     bottom
@@ -106,7 +106,8 @@
                     color="pink"
                     dark
                     fixed
-                    @click="createModalIsOpen = !createModalIsOpen">
+                    @click="toRegister()">
+                    <!--@click="createModalIsOpen = !createModalIsOpen">-->
                 <v-icon>add</v-icon>
             </v-btn>
         </v-container>
@@ -157,6 +158,7 @@
         private page = 1;
 
         public mounted() {
+            window.scrollTo(0,0);
           this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);
         }
 
@@ -231,6 +233,9 @@
             return Math.floor(this.totalCount / this.perPage) + 1;
         }
 
+        private toRegister() {
+            this.$router.push('/register');
+        }
     }
 
 </script>
