@@ -34,7 +34,7 @@
 
         <!--</v-toolbar>-->
     <!--</div>-->
-    <div style=" display: flex;flex-direction: row;position: fixed; top:0; height:50px;width: 100%;background-color: #00bcd4;z-index:2000;">
+    <div class="header">
         <div style="margin: auto;margin-left: 13.5px;font-weight: 400;">
             <router-link :to="{name:'booksView'}" class="title">{{title}}</router-link>
         </div>
@@ -71,7 +71,8 @@
 
     @Component
     export default class Header extends Vue {
-        private title: string = 'SmartBookStorage';
+        // private title: string = 'SmartBookStorage';
+        private title: string = 'BookShelf';
 
         private logout() {
             store.dispatch('removeToken').then(() => {
@@ -98,4 +99,14 @@
     text-decoration: none;
     color:white;
 }
+    .header{
+        display: flex;
+        flex-direction: row;
+        position: fixed;
+        top:0;
+        height:50px;
+        width: 100%;
+        background-color: dodgerblue;
+        z-index:2000;
+    }
 </style>
