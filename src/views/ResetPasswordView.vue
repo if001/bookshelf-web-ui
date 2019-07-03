@@ -8,7 +8,7 @@
                     </div>
                 </v-flex>
 
-                <v-flex lg8 md8 sm8 xs8 offset-lg2 offset-md2 offset-sm2 offset-xs2>
+                <v-flex lg4 md4 sm4 xs10 offset-lg4 offset-md4 offset-sm4 offset-xs1>
                     <div style="text-align: center;">Send email to reset your password.</div>
                     <v-form lazy-validation v-model="valid">
                         <v-text-field

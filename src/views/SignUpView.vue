@@ -83,9 +83,9 @@
         ];
 
         private message = '';
-        
+
         public mounted() {
-            window.scrollTo(0,0);
+            window.scrollTo(0, 0);
         }
 
         public create() {

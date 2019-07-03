@@ -113,9 +113,9 @@
 </template>
 
 <script lang="ts">
-    import {Component, Prop, Vue} from "vue-property-decorator";
-    import TextAreaComponent from "@/components/TextAreaComponent.vue";
-    import {default as api, Author, Book, Category, Description} from "../api";
+    import {Component, Prop, Vue} from 'vue-property-decorator';
+    import TextAreaComponent from '@/components/TextAreaComponent.vue';
+    import {default as api, Author, Book, Category, Description} from '../api';
 
     interface CategoryWithChip extends Category {
         chip: boolean;
@@ -127,9 +127,9 @@
         },
     })
     export default class RegisterBookView extends Vue {
-        private bookName: string = "";
-        private authorName: string = "";
-        private inputCategory: string = "";
+        private bookName: string = '';
+        private authorName: string = '';
+        private inputCategory: string = '';
         private categories: CategoryWithChip[] = [];
         private valid: boolean = true;
 
@@ -139,7 +139,7 @@
 
 
         public mounted() {
-            window.scrollTo(0,0);
+            window.scrollTo(0, 0);
             this.categories = [];
         }
 
@@ -164,7 +164,7 @@
                         chip: true,
                     }  as CategoryWithChip,
                 );
-                this.inputCategory = "";
+                this.inputCategory = '';
             }
         }
 
@@ -179,7 +179,7 @@
                 // this.$emit("closeCreate");
                 this.$router.push('/bookshelf');
             }).catch(() => {
-                console.log("book create error");
+                console.log('book create error');
             });
         }
 

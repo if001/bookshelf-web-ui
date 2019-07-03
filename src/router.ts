@@ -2,8 +2,6 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import BooksViews from './views/BooksView.vue';
-import BooksViewsOld from './views/BooksViewOld.vue';
-import VuetifyTest from './views/VuetifyTest.vue';
 import MainViews from '@/views/MainViews.vue';
 import LoginViews from '@/views/LoginViews.vue';
 import SignUpViews from '@/views/SignUpView.vue';
@@ -50,17 +48,6 @@ const router = new Router({
                     name: 'bookDetail',
                     component: BookDetailView,
                 },
-
-                {
-                    path: '/old',
-                    name: 'booksViewOld',
-                    component: BooksViewsOld,
-                },
-                {
-                    path: '/vuetify',
-                    name: 'vuetify',
-                    component: VuetifyTest,
-                },
                 {
                     path: '/register',
                     name: 'register',
@@ -70,7 +57,7 @@ const router = new Router({
         },
         {
             path: '*',
-            redirect: {name:'loginViews'},
+            redirect: {name: 'loginViews'},
         },
     ],
 });

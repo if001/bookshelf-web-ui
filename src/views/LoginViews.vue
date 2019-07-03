@@ -4,7 +4,7 @@
             <v-layout row wrap>
                 <v-flex lg8 md8 sm8 xs8 offset-lg2 offset-md2 offset-sm2 offset-xs2>
                     <div class="login-title">
-                        Manage Your Read Book!
+                        Manage Your Book!
                     </div>
                 </v-flex>
 
@@ -93,7 +93,7 @@
         private message = '';
 
         public mounted() {
-            window.scrollTo(0,0);
+            window.scrollTo(0, 0);
         }
 
         public login() {

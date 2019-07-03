@@ -117,7 +117,6 @@
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
     import BookCreateModal from './BookCreateModalView.vue';
-    import Toolbar from '../components/Toolbar.vue';
     import api, {Book} from '@/api';
 
 
@@ -128,7 +127,6 @@
     @Component({
         components: {
             BookCreateModal,
-            Toolbar,
         },
     })
 
@@ -158,8 +156,8 @@
         private page = 1;
 
         public mounted() {
-            window.scrollTo(0,0);
-          this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);
+            window.scrollTo(0, 0);
+            this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);
         }
 
         private load(page: number | null, perPage: number | null, sortKey: string | null, filter: string | null) {

@@ -17,76 +17,77 @@
                                     v-model="valid"
                                     lazy-validation
                             >
-                            <h2 style="display: inline">
-                                タイトル
-                                <div style="display: inline; color:palevioletred;">*</div>
-                            </h2>
-                            <div class="pl-2 pb-2">
-                                <div style="width: 40%">
-                                    <v-text-field
-                                            :counter="10"
-                                            maxlength="10"
-                                            label="title"
-                                            v-model="bookName"
-                                            required
-                                            @blur="setFirstFocus"
-                                    ></v-text-field>
+                                <!--<h2 style="display: inline">-->
+                                <!--タイトル-->
+                                <!--<div style="display: inline; color:palevioletred;">*</div>-->
+                                <!--</h2>-->
+                                <div class="pl-2 pb-2">
+                                    <div style="width: 40%">
+                                        <v-text-field
+                                                :counter="10"
+                                                maxlength="10"
+                                                label="title"
+                                                v-model="bookName"
+                                                required
+                                                @blur="setFirstFocus"
+                                        ></v-text-field>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <h2 class="">
-                                作者
-                            </h2>
-                            <div class="pl-2 pb-2">
-                                <div style="width: 40%">
-                                    <v-text-field
-                                            :counter="10"
-                                            label="author"
-                                            maxlength="10"
-                                            v-model="authorName"
-                                    ></v-text-field>
+                                <!--<h2 class="">-->
+                                <!--作者-->
+                                <!--</h2>-->
+                                <div class="pl-2 pb-2">
+                                    <div style="width: 40%">
+                                        <v-text-field
+                                                :counter="10"
+                                                label="author"
+                                                maxlength="10"
+                                                v-model="authorName"
+                                        ></v-text-field>
+                                    </div>
                                 </div>
-                            </div>
 
                                 <!-- TODO カテゴリは一旦消しとく-->
-                            <!--<h2 blue lighten-1>-->
+                                <!--<h2 blue lighten-1>-->
                                 <!--カテゴリ-->
-                            <!--</h2>-->
-                            <!--<div class="pl-2 pb-2">-->
+                                <!--</h2>-->
+                                <!--<div class="pl-2 pb-2">-->
                                 <!--<div style="width:40%">-->
-                                    <!--<v-text-field-->
-                                            <!--:counter="10"-->
-                                            <!--maxlength="10"-->
-                                            <!--label="category"-->
-                                            <!--v-model="inputCategory"-->
-                                            <!--v-on:keydown.enter="appendCategory"-->
-                                    <!--&gt;</v-text-field>-->
+                                <!--<v-text-field-->
+                                <!--:counter="10"-->
+                                <!--maxlength="10"-->
+                                <!--label="category"-->
+                                <!--v-model="inputCategory"-->
+                                <!--v-on:keydown.enter="appendCategory"-->
+                                <!--&gt;</v-text-field>-->
                                 <!--</div>-->
-                            <!--</div>-->
+                                <!--</div>-->
 
-                            <!--<div>-->
+                                <!--<div>-->
                                 <!--<div style="display: flex; flex-wrap: wrap;">-->
-                                    <!--<div class="ma-0;width:auto;" v-for="category in categories">-->
-                                        <!--<v-chip v-model="category.chip"-->
-                                                <!--close-->
-                                                <!--color="blue lighten-1"-->
-                                                <!--outline-->
-                                                <!--text-color="black"-->
-                                        <!--&gt;{{ category.name }}-->
-                                        <!--</v-chip>-->
-                                    <!--</div>-->
+                                <!--<div class="ma-0;width:auto;" v-for="category in categories">-->
+                                <!--<v-chip v-model="category.chip"-->
+                                <!--close-->
+                                <!--color="blue lighten-1"-->
+                                <!--outline-->
+                                <!--text-color="black"-->
+                                <!--&gt;{{ category.name }}-->
+                                <!--</v-chip>-->
                                 <!--</div>-->
-                            <!--</div>-->
+                                <!--</div>-->
+                                <!--</div>-->
 
                             </v-form>
-
                         </div>
+
+
                     </div>
 
                     <div class="modal-footer white pt-0 pb-0">
-                    <v-divider></v-divider>
-                    <slot name="footer">
-                    </slot>
+                        <v-divider></v-divider>
+                        <slot name="footer">
+                        </slot>
                         <v-btn small
                                outline
                                color="black"
@@ -188,8 +189,8 @@
         }
 
         get validateInput() {
-             return this.bookName.length !== 0 && this.bookName.length <= 10
-                 && this.authorName.length !== 0 && this.authorName.length <= 10;
+            return this.bookName.length !== 0 && this.bookName.length <= 10
+                && this.authorName.length !== 0 && this.authorName.length <= 10;
         }
     }
 </script>
@@ -217,7 +218,7 @@
         margin: 0 auto;
         min-height: 100px;
         max-height: 580px;
-        height: 80%;
+        height: 80vh;
         background-color: #fff;
         border-radius: 2px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
@@ -239,7 +240,7 @@
     .modal-body {
         min-height: 100px;
         max-height: 580px;
-        height: 80%;
+        /* height: 80%; */
         margin: 0 20px;
         overflow: auto;
     }
@@ -252,7 +253,7 @@
 
     .modal-footer {
         /* padding: 10px 20px; */
-        height: 40px;
+        /* height: 40px; */
     }
 
     .modal-default-button {
