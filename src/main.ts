@@ -19,7 +19,7 @@ import Vuetify from 'vuetify';
 Vue.use(Vuetify);
 
 import firebase from 'firebase';
-import {fireBaseConfig} from '@/firebaes_config';
+import {fireBaseConfig} from '@/firebase_config';
 
 firebase.initializeApp(fireBaseConfig);
 
