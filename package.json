@@ -2,9 +2,6 @@
   "name": "bookshelf-web-ui",
   "version": "0.1.0",
   "private": true,
-  "engines": {
-    "node": "10.x"
-  },
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -31,11 +28,12 @@
     "vuex": "^3.0.1"
   },
   "devDependencies": {
-    "@vue/cli-plugin-pwa": "^3.6.0",
+    "@vue/cli-plugin-pwa": "^3.9.0",
     "@vue/cli-plugin-typescript": "^3.6.0",
     "@vue/cli-service": "^3.6.0",
     "typescript": "^3.4.3",
-    "vue-template-compiler": "^2.5.21"
+    "vue-template-compiler": "^2.5.21",
+    "workbox-webpack-plugin": "^4.3.1"
   },
   "postcss": {
     "plugins": {
@@ -46,5 +44,8 @@
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ]
+  ],
+  "engines": {
+    "node": "10.x"
+  }
 }
