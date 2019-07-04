@@ -1,9 +1,8 @@
 import Axios from 'axios';
-import store from '@/store';
 
 const axios = Axios.create({
-    baseURL: '//localhost:8081',
-    // baseURL: process.env.VUE_APP_API_URL_BASE,
+    //baseURL: '//localhost:8081',
+    baseURL: process.env.VUE_APP_API_URL_BASE,
 });
 
 function getToken(): string {

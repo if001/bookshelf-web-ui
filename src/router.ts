@@ -7,7 +7,6 @@ import LoginViews from '@/views/LoginViews.vue';
 import SignUpViews from '@/views/SignUpView.vue';
 import ResetPasswordViews from '@/views/ResetPasswordView.vue';
 import RegisterBookViews from '@/views/RegisterBookView.vue';
-import store from '@/store';
 import BookDetailView from '@/views/BookDetailView.vue';
 import NotFoundViews from '@/views/NotFoundViews.vue';
 
@@ -19,6 +18,11 @@ const router = new Router({
     routes: [
         {
             path: '/login',
+            name: 'loginViews',
+            component: LoginViews,
+        },
+        {
+            path: '/',
             name: 'loginViews',
             component: LoginViews,
         },
