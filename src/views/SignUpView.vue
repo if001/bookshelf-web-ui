@@ -66,7 +66,7 @@
 </template>
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
-    import firebase from 'firebase';
+    import firebase from 'firebase/app';
 
     @Component
     export default class SignUpView extends Vue {

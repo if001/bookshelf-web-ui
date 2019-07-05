@@ -23,7 +23,6 @@ const router = new Router({
         },
         {
             path: '/',
-            name: 'loginViews',
             component: LoginViews,
         },
         {
@@ -38,7 +37,6 @@ const router = new Router({
         },
         {
             path: '/bookshelf',
-            name: 'mainViews',
             component: MainViews,
             meta: {requiresAuth: true},
             children: [
