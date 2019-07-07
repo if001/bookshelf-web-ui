@@ -74,7 +74,8 @@
 </template>
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
-    import firebase from 'firebase/app';
+    import firebase from "firebase/app";
+    import "firebase/auth";
 
     @Component
     export default class LoginViews extends Vue {
@@ -95,6 +96,7 @@
         public mounted() {
             window.scrollTo(0, 0);
         }
+
 
         public login() {
             this.loginOps(firebase.auth().signInWithEmailAndPassword(this.email, this.password));
