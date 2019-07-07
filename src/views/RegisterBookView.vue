@@ -184,11 +184,16 @@
         }
 
         private closeRegister() {
-            const ans = confirm('このページを離れてよろしいですか。変更は保存されません。');
-            if (ans) {
+            if (this.bookName.length > 0 && this.authorName.length > 0) {
+                const ans = confirm('このページを離れてよろしいですか。変更は保存されません。');
+                if (ans) {
+                    this.$router.push('/bookshelf');
+                }
+            } else {
                 this.$router.push('/bookshelf');
             }
         }
+
         get validateInput() {
             return this.bookName.length !== 0 && this.bookName.length <= 10
                 && this.authorName.length !== 0 && this.authorName.length <= 10;
