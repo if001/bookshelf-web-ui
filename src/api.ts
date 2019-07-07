@@ -1,7 +1,6 @@
 import Axios from 'axios';
 
 const axios = Axios.create({
-    //baseURL: '//localhost:8081',
     baseURL: process.env.VUE_APP_API_URL_BASE,
 });
 

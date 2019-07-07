@@ -61,7 +61,8 @@
                             </v-card-title>
                         </v-flex>
                         <v-flex xs5>
-                            <img style="float:right;" src="@/assets/claudia.jpg" height="120px;">
+                            <!--TODO 画像が登録できるまでひとまず消す-->
+                            <!--<img style="float:right;" src="@/assets/claudia.jpg" height="120px;">-->
                         </v-flex>
                     </v-layout>
                     <v-divider light></v-divider>
