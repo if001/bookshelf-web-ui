@@ -72,6 +72,13 @@ export default {
                 },
             });
         },
+        delete(id: number) {
+            return axios.request<{}>({
+                method: 'DELETE',
+                url: `/book/${id}`,
+                headers: {'Authorization': `Bearer ${getToken()}`},
+            });
+        },
     },
     books: {
         list(page: number | null, perPage: number | null, sortKey: string | null, filter: string | null) {

@@ -36,6 +36,15 @@
                                                 label="Publisher"
                                         ></v-text-field>
                                     </div>
+                                    <div class="pt-1" style="width: 100%">
+                                        <v-btn class="ma-0"
+                                               outline
+                                               small
+                                               color="error"
+                                               @click="deleteBook()">
+                                            本の削除<v-icon small color="red darken-2">delete</v-icon>
+                                        </v-btn>
+                                    </div>
                                 </div>
                                 <v-btn v-if="!isOpen"
                                        icon
@@ -609,6 +618,18 @@
             return true;
         }
         private empty(): void {}
+
+        private deleteBook() {
+            const ans = confirm('関連するコメントも全て削除されます。本を削除しますか?');
+            if (ans) {
+                api.book.delete(this.bookDetail.id).then((res) => {
+                    // console.log(res);
+                    this.load(this.empty, this.empty);
+                }).catch(() => {
+                    console.log('delete book error');
+                });
+            }
+        }
     }
 </script>
 
