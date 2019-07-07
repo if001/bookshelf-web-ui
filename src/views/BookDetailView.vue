@@ -173,13 +173,10 @@
                                outline
                                small
                                color="info"
+                               :loading="isSendingDescription"
+                               :disabled="isSendingDescription"
                                v-on:click="appendDiscription()">SEND
-
-
-                            <v-icon v-if="!isSendingDescription" small color="blue" class="ml-2">send</v-icon>
-                            <div v-else class="loading loading-content">
-                                <v-icon small>cached</v-icon>
-                            </div>
+                            <v-icon small color="blue" class="ml-2">send</v-icon>
                         </v-btn>
                     </div>
                 </div>
@@ -628,5 +625,42 @@
     @keyframes r1 {
         0%   { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
+    }
+
+    .custom-loader {
+        animation: loader 1s infinite;
+        display: flex;
+    }
+    @-moz-keyframes loader {
+        from {
+            transform: rotate(0);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+    @-webkit-keyframes loader {
+        from {
+            transform: rotate(0);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+    @-o-keyframes loader {
+        from {
+            transform: rotate(0);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+    @keyframes loader {
+        from {
+            transform: rotate(0);
+        }
+        to {
+            transform: rotate(360deg);
+        }
     }
 </style>
