@@ -34,8 +34,7 @@
 
     @Component
     export default class Header extends Vue {
-        // private title: string = 'SmartBookStorage';
-        private title: string = 'BookShelf';
+        private title: string = 'BookStorage';
 
         private logout() {
             store.dispatch('removeToken').then(() => {
