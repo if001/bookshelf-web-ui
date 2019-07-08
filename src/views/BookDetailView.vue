@@ -181,30 +181,54 @@
                 </h3>
 
                 <div v-if="openFlag.description">
-                    <text-area-component
-                            v-on:textarea-event="inputHandle"
-                    ></text-area-component>
+                    <v-form
+                            ref="form"
+                            v-model="descriptionValid"
+                            lazy-validation
+                    >
+                        <!--<text-area-component-->
+                                <!--v-on:textarea-event="inputHandle"-->
+                        <!--&gt;</text-area-component>-->
 
-                    <div style="display: flex">
-                        <div class="warning-font">{{msg}}</div>
-                        <v-spacer></v-spacer>
-                        <v-btn class="ma-0"
-                               outline
-                               small
-                               color="info"
-                               :loading="isSendingDescription"
-                               :disabled="isSendingDescription"
-                               v-on:click="appendDiscription()">SEND
-                            <v-icon small color="blue" class="ml-2">send</v-icon>
-                        </v-btn>
-                    </div>
+                        <v-textarea
+                                outline
+                                rows="3"
+                                label="comment"
+                                auto-grow
+                                value=""
+                                single-line
+                                counter="140"
+                                maxlength="140"
+                                v-model="inputDescription"
+                                :rules="descriptionRules"
+                        ></v-textarea>
+
+                        <div style="display: flex">
+                            <v-spacer></v-spacer>
+                            <v-btn class="ma-0"
+                                   outline
+                                   small
+                                   color="info"
+                                   :loading="isSendingDescription"
+                                   :disabled="isSendingDescription"
+                                   v-on:click="sendDiscription()">SEND
+                                <v-icon small color="blue" class="ml-2">send</v-icon>
+                            </v-btn>
+                        </div>
+                    </v-form>
                 </div>
 
                 <div>
-                    <div v-if="getDescriptions.length == 0" class="pa-3">
-                        コメントがまだありません
+                    <div v-if="isLoadingBook" style="margin: auto;">
+                        <div style="display:inline-block; padding-right: 15px;">loading...</div>
+                        <div class="loading loading-content">
+                            <v-icon>fa-book</v-icon>
+                        </div>
                     </div>
-                    <div style="max-height: 70vh; overflow: auto;">
+                    <div v-if="!isLoadingBook && getDescriptions.length === 0" style="margin: auto;padding: 20px;">
+                        本のコメントを追加しましょう
+                    </div>
+                    <div v-else style="max-height: 70vh; overflow: auto;">
                         <div v-for="description in getDescriptions" class=" pa-3">
                             <div class="ma-2" style="word-wrap: break-word;">{{description.content}}</div>
                             <v-layout>
@@ -271,30 +295,31 @@
         private openFlag: OpenFlag = new OpenFlag();
         private inputDescription: string = '';
         private inputCategory: string = '';
-        private msg = '';
         // private rating = 0;
 
+        private isLoadingBook: boolean = false;
         private isOpen: boolean = false;
         private isSendingDescription: boolean = false;
+        private descriptionValid: boolean = false;
 
         private rules: any =  {
             counter12: (value: any) => value.length <= 12 || 'Max 12 characters',
             counter15: (value: any) => value.length <= 15 || 'Max 15 characters',
         };
 
-        public mounted() {
-            this.msg = '';
+        private descriptionRules = [
+            (v: any) => (v || '').length > 0 || 'Description is required',
+            (v: any) => (v || '').length <= 140 ||
+                `A maximum of 140 characters is allowed`,
+        ];
+
+        private mounted() {
             this.bookMount = null;
             this.author = null;
             this.categories = [];
             this.descriptions = [];
             // this.copyValue();
-            this.load(this.empty, this.empty);
-        }
-
-        private inputHandle(description: any) {
-            this.msg = '';
-            this.inputDescription = description;
+            this.load(this.startLoad, this.endLoad);
         }
 
         private load(beforeLoad: () => void, afterLoad: () => void) {
@@ -487,16 +512,11 @@
                     return 20;
             }
         }
-        private appendDiscription() {
+        private sendDiscription() {
             if (this.bookDetail == null) {
                 return;
             }
-            const len = this.inputDescription.length;
-            if (len === 0) {
-                this.msg = 'no input!';
-            } else if (len > 140) {
-                this.msg = 'too many input!';
-            } else {
+            if ( (this.$refs.form as Vue & { validate: () => boolean }).validate()) {
                 const description = {
                     book_id: this.bookDetail.id,
                     content: this.inputDescription,
@@ -504,11 +524,12 @@
                 api.description.create(this.bookDetail.id, description).then((res) => {
                     // console.log(res);
                     this.load(this.startSendingDescription, this.closeDescriptionTextField);
+                    this.inputDescription = '';
                 }).catch(() => {
-                    console.log('append discription error');
+                    console.log('send discription error');
                 });
-                this.msg = '';
             }
+        }
         }
 
         private startSendingDescription(): void {
