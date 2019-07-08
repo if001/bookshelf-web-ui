@@ -46,7 +46,7 @@
                                         </v-btn>
                                     </div>
                                 </div>
-                                <v-btn v-if="!isOpen"
+                                <v-btn v-if="!isOpen && !isLoadingBook"
                                        icon
                                        fab
                                        dark
@@ -57,7 +57,17 @@
                                     <v-icon small dark>edit</v-icon>
                                 </v-btn>
 
-                                <v-btn v-if="isOpen"
+                                <v-btn v-if="!isOpen && isLoadingBook"
+                                       icon
+                                       fab
+                                       color="blue"
+                                       small
+                                       disabled
+                                       style="position:absolute; top: 0; right: 0;">
+                                    <v-icon small dark>edit</v-icon>
+                                </v-btn>
+
+                                <v-btn v-if="isOpen && !isLoadingBook"
                                        icon
                                        fab
                                        dark
