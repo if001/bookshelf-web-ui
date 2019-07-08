@@ -66,8 +66,8 @@
 </template>
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
-    import firebase from "firebase/app";
-    import "firebase/auth";
+    import firebase from 'firebase/app';
+    import 'firebase/auth';
 
     @Component
     export default class SignUpView extends Vue {

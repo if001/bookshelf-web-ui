@@ -284,7 +284,7 @@
             TextAreaComponent,
         },
     })
-    export default class BookModal2 extends Vue {
+    export default class BookDetailView extends Vue {
         private book: Book | null = null;
         private bookMount: BookDetail | null = null;
         private bookDetail: BookDetail | null = null;
@@ -530,6 +530,13 @@
                 });
             }
         }
+
+        private startLoad(): void {
+            this.isLoadingBook = true;
+        }
+
+        private endLoad(): void {
+            this.isLoadingBook = false;
         }
 
         private startSendingDescription(): void {
@@ -652,7 +659,7 @@
 
         private deleteBook() {
             const ans = confirm('関連するコメントも全て削除されます。本を削除しますか?');
-            if (ans) {
+            if (ans && this.bookDetail != null) {
                 api.book.delete(this.bookDetail.id).then((res) => {
                     // console.log(res);
                     this.load(this.empty, this.empty);
