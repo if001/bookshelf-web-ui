@@ -1,6 +1,6 @@
 {
-  "name": "bookshelf-web-ui",
-  "short_name": "bookshelf-web-ui",
+  "name": "Book Strage",
+  "short_name": "Book Strage",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",
