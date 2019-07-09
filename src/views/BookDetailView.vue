@@ -657,7 +657,7 @@
             if (ans && this.bookDetail != null) {
                 api.book.delete(this.bookDetail.id).then((res) => {
                     // console.log(res);
-                    this.load(this.empty, this.empty);
+                    this.$router.push('/bookshelf');
                 }).catch(() => {
                     console.log('delete book error');
                 });
