@@ -173,6 +173,8 @@ export interface PaginateBooks {
 export interface Description {
     id: number;
     content: string;
+    created_at: string;
+    updated_at: string;
 }
 
 export interface Category {
