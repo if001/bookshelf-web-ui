@@ -232,7 +232,7 @@
                         <div v-for="description in getDescriptions" class=" pa-3">
                             <div class="ma-2" style="word-wrap: break-word;">{{description.content}}</div>
                             <v-layout>
-                                <div class="ma-2 mr-5" style="color:dimgray; font-size: 0.8em;">{{createdAtFormatted}}</div>
+                                <div class="ma-2 mr-5" style="color:dimgray; font-size: 0.8em;">{{createdAtFormatted(description)}}</div>
                                 <v-spacer></v-spacer>
                                 <v-btn flat
                                        icon
@@ -354,7 +354,6 @@
                 }).catch(() => {
                     console.log('book detail view: description get error');
                 });
-
                 this.bookMount = {
                     id: this.book.id,
                     title: this.book.title,
@@ -473,18 +472,14 @@
             }
         }
 
-        get createdAtFormatted() {
-            if (this.bookMount != null) {
-                return this.formatDateTime(this.bookMount.created_at);
-            } else {
-                return '----/--/-- --:--';
-            }
+        private createdAtFormatted(description: Description) {
+            return this.formatDateTime(description.created_at);
         }
 
         private format(d: string | null) {
             if (d != null) {
                 const date = moment(d, 'YYYY-MM-DD HH:mm:ss');
-                return date.year().toString() + '/' + (date.month() + 1).toString() + '/' + date.date();
+                return date.year().toString() + '/' + (date.month() + 1).toString() + '/' + date.date().toString();
             } else {
                 return '----/--/--';
             }
@@ -492,9 +487,9 @@
 
         private formatDateTime(d: string | null) {
             if (d != null) {
-                const date = moment(d, 'YYYY-MM-DD HH:mm:ss');
-                return date.year().toString() + '/' + (date.month() + 1).toString() + '/' + date.date()
-                    + ' ' + date.hour() + ':' + date.minute();
+                const date = moment(d, moment.HTML5_FMT.DATETIME_LOCAL_SECONDS);
+                return date.year().toString() + '/' + (date.month() + 1).toString() + '/' + date.date().toString()
+                    + ' ' + date.hour().toString() + ':' + date.minute().toString();
             } else {
                 return '----/--/--';
             }
@@ -523,6 +518,7 @@
                 };
                 api.description.create(this.bookDetail.id, description).then((res) => {
                     // console.log(res);
+                    this.openFlag.description = false;
                     this.load(this.startSendingDescription, this.closeDescriptionTextField);
                     this.inputDescription = '';
                 }).catch(() => {
@@ -545,7 +541,6 @@
 
         private closeDescriptionTextField(): void {
             this.isSendingDescription = false;
-            this.openFlag.description = false;
         }
         // TODO カテゴリは一旦消す
         // private appendCategory(event: any) {
