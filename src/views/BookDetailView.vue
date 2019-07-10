@@ -429,8 +429,8 @@
         }
 
         set bookName(v: string) {
-            if (this.bookDetail != null) {
-                this.bookDetail.title = v;
+            if (this.bookMount != null) {
+                this.bookMount.title = v;
             }
         }
 
@@ -451,8 +451,8 @@
                 id: 0,
                 name: v,
             } as Author;
-            if (this.bookDetail != null) {
-                this.bookDetail.author = tmpAuthor;
+            if (this.bookMount != null) {
+                this.bookMount.author = tmpAuthor;
             }
         }
 
@@ -472,14 +472,50 @@
             }
         }
 
+        private isBookChanged(): boolean {
+            if (this.bookMount != null && this.bookDetail != null) {
+                return (this.bookMount.title !== this.bookDetail.title);
+            } else {
+                return false;
+            }
+        }
+
+        private updateBook() {
+            if (this.validateInput()  && this.bookMount != null) {
+                this.isOpen = false;
+                console.log(this.isBookChanged());
+                if (this.isBookChanged()) {
+                    const book = {
+                        id: this.bookMount.id,
+                        title: this.bookMount.title,
+                        // author_id : 0,
+                        // author_name: this.authorName,
+                    };
+
+                    api.books.update(book).then((res) => {
+                        // this.$emit("closeCreate");
+                        // this.$router.push('/bookshelf/'+this.bookMount.id.toString());
+                        this.bookMount = null;
+                        this.author = null;
+                        this.categories = [];
+                        this.descriptions = [];
+                        // this.copyValue();
+                        this.load(this.startLoad, this.endLoad);
+                    }).catch(() => {
+                        console.log('book create error');
+                    });
+                }
+            }
+        }
+
         private createdAtFormatted(description: Description) {
             return this.formatDateTime(description.created_at);
         }
 
         private format(d: string | null) {
             if (d != null) {
-                const date = moment(d, 'YYYY-MM-DD HH:mm:ss');
-                return date.year().toString() + '/' + (date.month() + 1).toString() + '/' + date.date().toString();
+                const date = moment(d);
+                return date.format('YYYY') + '/' + date.format('MM') + '/' + date.format('DD');
             } else {
                 return '----/--/--';
             }
@@ -487,11 +523,11 @@
 
         private formatDateTime(d: string | null) {
             if (d != null) {
-                const date = moment(d, moment.HTML5_FMT.DATETIME_LOCAL_SECONDS);
-                return date.year().toString() + '/' + (date.month() + 1).toString() + '/' + date.date().toString()
-                    + ' ' + date.hour().toString() + ':' + date.minute().toString();
+                const date = moment(d);
+                return date.format('YYYY') + '/' + date.format('MM') + '/' + date.format('DD')
+                    + ' ' + date.format('HH') + ':' + date.format('mm');
             } else {
-                return '----/--/--';
+                return '----/--/-- --:--';
             }
         }
 
@@ -620,11 +656,7 @@
             }
         }
 
-        private updateBook() {
-            if (this.validateInput()) {
-                this.isOpen = false;
-            }
-        }
+
         private deleteDesription(id: number) {
             const ans = confirm('削除しますか?');
             if (ans) {

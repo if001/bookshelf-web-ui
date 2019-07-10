@@ -144,7 +144,7 @@
             {sortKey: 'created_at', displayName: '作成日'},
             {sortKey: 'title', displayName: '五十音順'},
         ];
-        private selectSortKey = 'updated_at';
+        private selectSortKey = '';
         private filterObject = [
             {filterKey: null, displayName: 'ALL'},
             {filterKey: 'not_read', displayName: '未読'},

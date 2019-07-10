@@ -108,6 +108,14 @@ export default {
                 data,
             });
         },
+        update(data: any) {
+            return axios({
+                method: 'PUT',
+                headers: {'Authorization': `Bearer ${getToken()}`},
+                url: '/books',
+                data,
+            });
+        },
     },
     description: {
         get(id: number) {
