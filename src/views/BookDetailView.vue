@@ -493,8 +493,6 @@
                     };
 
                     api.books.update(book).then((res) => {
-                        // this.$emit("closeCreate");
-                        // this.$router.push('/bookshelf/'+this.bookMount.id.toString());
                         this.bookMount = null;
                         this.author = null;
                         this.categories = [];

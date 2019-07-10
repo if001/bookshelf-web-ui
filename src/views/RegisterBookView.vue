@@ -39,7 +39,6 @@
                                     maxlength="15"
                                     label="author"
                             ></v-combobox>
-                            {{getAuthors}}
                         </div>
                         <!-- TODO カテゴリは一旦消しとく-->
                         <!--<h2 blue lighten-1>-->
