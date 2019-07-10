@@ -14,7 +14,7 @@
     <div style=" display: flex;flex-direction: row;position: fixed; bottom:0; height:25px;width: 100%;background-color: gray;">
         <v-spacer></v-spacer>
         <div style="margin: auto;color: lightgrey;">
-            &copy;2018 — <strong>Vuetify</strong>
+            &copy;2019 — <strong>edgwbs.net</strong>
         </div>
         <v-spacer></v-spacer>
     </div>
