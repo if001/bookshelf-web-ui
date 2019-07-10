@@ -141,6 +141,23 @@ export default {
             });
         },
     },
+    author: {
+        getCounted() {
+            return axios.request<MultiContentResult<Author>>({
+                method: 'GET',
+                url: `/counted_authors`,
+                headers: {'Authorization': `Bearer ${getToken()}`},
+            });
+        },
+        create(data: any) {
+            return axios.request<ContentResult<Author>>({
+                method: 'POST',
+                url: `/author`,
+                headers: {'Authorization': `Bearer ${getToken()}`},
+                data,
+            });
+        }
+    }
 };
 
 

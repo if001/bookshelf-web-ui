@@ -33,14 +33,14 @@
                         <!--作者-->
                         <!--</h2>-->
                         <div class="pl-2 pb-2">
-                            <v-text-field
-                                    :counter="10"
-                                    label="author"
-                                    maxlength="10"
+                            <v-combobox
                                     v-model="authorName"
-                            ></v-text-field>
+                                    :items="getAuthors"
+                                    maxlength="15"
+                                    label="author"
+                            ></v-combobox>
+                            {{getAuthors}}
                         </div>
-
                         <!-- TODO カテゴリは一旦消しとく-->
                         <!--<h2 blue lighten-1>-->
                         <!--カテゴリ-->
@@ -136,11 +136,38 @@
 
         private isfirstFocusTitle: boolean = false;
         private isfirstFocusCategory: boolean = false;
-
+        private authors: Author[] = [];
 
         public mounted() {
             window.scrollTo(0, 0);
             this.categories = [];
+            this.authors = [];
+            this.loadAuthors();
+        }
+
+        private loadAuthors() {
+            api.author.getCounted()
+                .then((res) => {
+                    this.authors = res.data.content as Author[];
+                })
+                .finally(() => {})
+                .catch(() => {
+                    console.log('load author error');
+                });
+        }
+
+        get getAuthors() {
+            return this.authors.map((x) => x.name);
+        }
+
+        private getAuthorIDByName(name: string): number {
+            let id = 0;
+            this.authors.forEach((x: Author) => {
+                if (name === x.name) {
+                    id = x.id;
+                }
+            });
+            return id;
         }
 
         private setFirstFocus() {
@@ -169,18 +196,40 @@
         }
 
         private createBook() {
-            const book = {
-                title: this.bookName,
-                // author_id : 0,
-                // author_name: this.authorName,
-            };
-
-            api.books.create(book).then((res) => {
-                // this.$emit("closeCreate");
-                this.$router.push('/bookshelf');
-            }).catch(() => {
-                console.log('book create error');
-            });
+            const authorId = this.getAuthorIDByName(this.authorName);
+            if (authorId === 0) {
+                const author = {
+                    author_name: this.authorName,
+                };
+                api.author.create(author).then((res) => {
+                    const newAuthor = res.data.content as Author;
+                    const book = {
+                        title: this.bookName,
+                        author_id : newAuthor.id,
+                    };
+                    console.log(newAuthor);
+                    api.books.create(book).then((bookres) => {
+                        // this.$emit("closeCreate");
+                        this.$router.push('/bookshelf');
+                    }).catch(() => {
+                        console.log('book create error');
+                    });
+                }).catch(() => {
+                    console.log('author create error');
+                });
+            } else {
+                const book = {
+                    title: this.bookName,
+                    author_id : authorId,
+                };
+                console.log(book);
+                api.books.create(book).then((res) => {
+                    // this.$emit("closeCreate");
+                    this.$router.push('/bookshelf');
+                }).catch(() => {
+                    console.log('book create error');
+                });
+            }
         }
 
         private closeRegister() {
