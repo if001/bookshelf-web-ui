@@ -116,20 +116,13 @@
 
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
-    import BookCreateModal from './BookCreateModalView.vue';
     import api, {Book} from '@/api';
-
 
     interface BookShow extends Book {
         isOpen: boolean;
     }
 
-    @Component({
-        components: {
-            BookCreateModal,
-        },
-    })
-
+    @Component
     export default class BooksView extends Vue {
         private booksShow: BookShow[] = [];
         private books: Book[] = [];
