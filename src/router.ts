@@ -9,6 +9,7 @@ import ResetPasswordViews from '@/views/ResetPasswordView.vue';
 import RegisterBookViews from '@/views/RegisterBookView.vue';
 import BookDetailView from '@/views/BookDetailView.vue';
 import NotFoundViews from '@/views/NotFoundViews.vue';
+import PrivacyPolicy from '@/views/PrivalcyPolicyView.vue';
 
 Vue.use(Router);
 
@@ -34,6 +35,11 @@ const router = new Router({
             path: '/reset_password',
             name: 'resetPasswordViews',
             component: ResetPasswordViews,
+        },
+        {
+            path: '/policy',
+            name: 'privacyPolicy',
+            component: PrivacyPolicy,
         },
         {
             path: '/bookshelf',

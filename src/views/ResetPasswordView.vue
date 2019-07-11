@@ -35,14 +35,20 @@
                 </v-flex>
             </v-layout>
         </v-container>
+        <v-footer></v-footer>
     </v-app>
 </template>
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
     import firebase from 'firebase/app';
     import 'firebase/auth';
+    import Footer from '@/components/Footer.vue';
 
-    @Component
+    @Component({
+        components: {
+            'v-footer': Footer,
+        },
+    })
     export default class SignUpView extends Vue {
         private email: string = '';
         private valid = false;

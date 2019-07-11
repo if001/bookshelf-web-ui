@@ -108,6 +108,7 @@
                 </v-flex>
             </v-layout>
         </v-container>
+        <v-footer></v-footer>
     </v-app>
 </template>
 
@@ -115,6 +116,7 @@
     import {Component, Prop, Vue} from 'vue-property-decorator';
     import TextAreaComponent from '@/components/TextAreaComponent.vue';
     import {default as api, Author, Book, Category, Description} from '../api';
+    import Footer from '@/components/Footer.vue';
 
     interface CategoryWithChip extends Category {
         chip: boolean;
@@ -123,6 +125,7 @@
     @Component({
         components: {
             TextAreaComponent,
+            'v-footer': Footer,
         },
     })
     export default class RegisterBookView extends Vue {

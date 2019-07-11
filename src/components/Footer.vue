@@ -11,12 +11,10 @@
     <!--</v-footer>-->
 
 
-    <div style=" display: flex;flex-direction: row;position: fixed; bottom:0; height:25px;width: 100%;background-color: gray;">
-        <v-spacer></v-spacer>
-        <div style="margin: auto;color: lightgrey;">
-            &copy;2019 — <strong>edgwbs.net</strong>
+    <div class="footer-main">
+        <div style="color: lightgrey;margin: auto">
+            <router-link class="policy" to="/policy">privacy policy</router-link> | &copy;2019 — <strong>edgwbs.net</strong>
         </div>
-        <v-spacer></v-spacer>
     </div>
 
 </template>
@@ -26,11 +24,26 @@
 
     @Component
     export default class Footer extends Vue {
-
     }
 
 </script>
 
 <style scoped>
+    .footer-main{
+        display: flex;
+        flex-direction: row;
+        position: fixed;
+        bottom:0;
+        height:25px;
+        width: 100%;
+        background-color: gray;
+        justify-content:space-around;
+    }
+
+    .policy {
+        text-decoration:none;
+        color: lightgrey;
+        margin-left: 20px;
+    }
 
 </style>
