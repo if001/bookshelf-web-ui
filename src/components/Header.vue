@@ -57,10 +57,10 @@
 </script>
 
 <style scoped>
-.title {
-    text-decoration: none;
-    color:white;
-}
+    .title {
+        text-decoration: none;
+        color:white;
+    }
     .header{
         display: flex;
         flex-direction: row;

@@ -156,8 +156,8 @@ export default {
                 headers: {'Authorization': `Bearer ${getToken()}`},
                 data,
             });
-        }
-    }
+        },
+    },
 };
 
 
