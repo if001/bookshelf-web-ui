@@ -30,14 +30,13 @@
                                                 label="author"
                                         ></v-combobox>
                                     </div>
-
-                                    <div class="pt-1" style="width: 100%">
-                                        <v-text-field
-                                                :counter="15"
-                                                height="18"
-                                                label="Publisher"
-                                        ></v-text-field>
-                                    </div>
+<!--                                    <div class="pt-1" style="width: 100%">-->
+<!--                                        <v-text-field-->
+<!--                                                :counter="15"-->
+<!--                                                height="18"-->
+<!--                                                label="Publisher"-->
+<!--                                        ></v-text-field>-->
+<!--                                    </div>-->
                                     <div class="pt-1" style="width: 100%">
                                         <v-btn class="ma-0"
                                                outline
@@ -171,88 +170,9 @@
                     </v-layout>
                 </v-card>
             </v-flex>
-
-            <v-flex class="ma-3" xs12 md6>
-                <h3>
-                    コメント
-                    <v-btn flat
-                           icon
-                           v-on:click="openFlag.description  = !openFlag.description">
-                        <v-icon color="blue-grey darken-3">add_comment</v-icon>
-                    </v-btn>
-                </h3>
-
-                <div v-if="openFlag.description">
-                    <v-form
-                            ref="form"
-                            v-model="descriptionValid"
-                            lazy-validation
-                    >
-                        <!--<text-area-component-->
-                                <!--v-on:textarea-event="inputHandle"-->
-                        <!--&gt;</text-area-component>-->
-
-                        <v-textarea
-                                outline
-                                rows="3"
-                                label="comment"
-                                auto-grow
-                                value=""
-                                single-line
-                                counter="140"
-                                maxlength="140"
-                                v-model="inputDescription"
-                                :rules="descriptionRules"
-                        ></v-textarea>
-
-                        <div style="display: flex">
-                            <v-spacer></v-spacer>
-                            <v-btn class="ma-0"
-                                   outline
-                                   small
-                                   color="info"
-                                   :loading="isSendingDescription"
-                                   :disabled="isSendingDescription"
-                                   v-on:click="sendDiscription()">SEND
-                                <v-icon small color="blue" class="ml-2">send</v-icon>
-                            </v-btn>
-                        </div>
-                    </v-form>
-                </div>
-
-                <div>
-                    <div v-if="isLoadingBook" style="margin: auto;">
-                        <div style="display:inline-block; padding-right: 15px;">loading...</div>
-                        <div class="loading loading-content">
-                            <v-icon>fa-book</v-icon>
-                        </div>
-                    </div>
-                    <div v-if="!isLoadingBook && getDescriptions.length === 0" style="margin: auto;padding: 20px;">
-                        本のコメントを追加しましょう
-                    </div>
-                    <div v-else style="max-height: 70vh; overflow: auto;">
-                        <div v-for="description in getDescriptions" class=" pa-3">
-                            <div class="ma-2" style="word-wrap: break-word;">{{description.content}}</div>
-                            <v-layout>
-                                <div class="ma-2 mr-5" style="color:dimgray; font-size: 0.8em;">{{createdAtFormatted(description)}}</div>
-                                <v-spacer></v-spacer>
-                                <v-btn flat
-                                       icon
-                                       color="dark"
-                                       small
-                                       v-on:click="deleteDesription(description.id)">
-                                    <v-icon small color="red darken-2">delete</v-icon>
-                                </v-btn>
-                                <!--TODO シェアボタン-->
-                                <!--<v-btn color="info" small>share</v-btn>-->
-                                <!--<v-btn color="success" small>share</v-btn>-->
-                            </v-layout>
-                            <v-divider></v-divider>
-                        </div>
-                    </div>
-                </div>
-
-            </v-flex>
+            <BookDescription
+                    :bookID="bookID"
+            ></BookDescription>
         </v-layout>
 
     </v-container>
@@ -260,7 +180,7 @@
 
 <script lang="ts">
     import {Component, Prop, Vue} from 'vue-property-decorator';
-    import TextAreaComponent from '@/components/TextAreaComponent.vue';
+    import BookDescription from '@/components/BookDescriptionComponent.vue';
     import api, {Author, Book, Category, Description} from '../api';
     import moment from 'moment';
 
@@ -272,18 +192,9 @@
         chip: boolean;
     }
 
-    class OpenFlag {
-        public name: boolean = false;
-        public author: boolean = false;
-        public publisher: boolean = false;
-        public category: boolean = false;
-        public description: boolean = false;
-        public rating: boolean = false;
-    }
-
     @Component({
         components: {
-            TextAreaComponent,
+            BookDescription,
         },
     })
     export default class BookDetailView extends Vue {
@@ -291,44 +202,31 @@
         private bookMount: BookDetail | null = null;
         private bookDetail: BookDetail | null = null;
         private author: Author | null = null;
-        private categories: Category[] = [];
-        private descriptions: Description[] = [];
+        private categories: Category[] = []
         private authors: Author[] = [];
 
-        private openFlag: OpenFlag = new OpenFlag();
-        private inputDescription: string = '';
-        private inputCategory: string = '';
         // private rating = 0;
+        private isOpen: boolean = false;
 
         private isLoadingBook: boolean = false;
-        private isOpen: boolean = false;
-        private isSendingDescription: boolean = false;
-        private descriptionValid: boolean = false;
 
         private rules: any =  {
             counter12: (value: any) => value.length <= 12 || 'Max 12 characters',
             counter15: (value: any) => value.length <= 15 || 'Max 15 characters',
         };
 
-        private descriptionRules = [
-            (v: any) => (v || '').length > 0 || 'Description is required',
-            (v: any) => (v || '').length <= 140 ||
-                `A maximum of 140 characters is allowed`,
-        ];
 
         private mounted() {
             this.bookMount = null;
             this.author = null;
             this.categories = [];
-            this.descriptions = [];
-            // this.copyValue();
             this.loadAuthors();
-            this.load(this.startLoad, this.endLoad);
+            this.load();
         }
 
-        private load(beforeLoad: () => void, afterLoad: () => void) {
-            beforeLoad();
-            api.book.get(this.bookId).then((response) => {
+        private load() {
+            this.isLoadingBook = true;
+            api.book.get(this.bookID).then((response) => {
                 this.book = response.data.content as Book;
             }).then(() => {
                 if (this.book == null) {
@@ -353,11 +251,6 @@
                 //     }
                 // }
 
-                api.description.get(this.book.id).then((response) => {
-                    this.descriptions = response.data.content as Description[];
-                }).catch(() => {
-                    console.log('book detail view: description get error');
-                });
                 this.bookMount = {
                     id: this.book.id,
                     title: this.book.title,
@@ -375,11 +268,13 @@
                     isOpen: false,
                 } as BookDetail;
                 this.copyValue();
-                afterLoad();
             }).catch(() => {
                 console.log('error');
+            }).finally(() => {
+                this.isLoadingBook = false;
             });
         }
+
 
         private loadAuthors() {
             api.author.getCounted()
@@ -392,7 +287,7 @@
                 });
         }
 
-        get bookId(): number {
+        get bookID(): number {
             return parseInt(this.$route.params.bookId, 10);
         }
 
@@ -405,6 +300,7 @@
                         name: this.bookMount.author.name,
                     } as Author;
                 }
+                // TODO カテゴリは一旦消す
                 // if (this.bookDetailShow.categories != null) {
                 //     for (const category of this.bookDetailShow.categories) {
                 //         const c: Category = category;
@@ -485,7 +381,7 @@
 
         get startAtFormatted() {
             if (this.bookDetail != null) {
-                return this.format(this.bookDetail.start_at);
+                return formatDate(this.bookDetail.start_at);
             } else {
                 return '';
             }
@@ -493,7 +389,7 @@
 
         get endAtFormatted() {
             if (this.bookDetail != null) {
-                return this.format(this.bookDetail.end_at);
+                return formatDate(this.bookDetail.end_at);
             } else {
                 return '----/--/--';
             }
@@ -517,7 +413,6 @@
         private updateBook() {
             if (this.validateInput()  && this.bookMount != null) {
                 this.isOpen = false;
-
                 if (this.isBookChanged() || this.isAuthorChanged()) {
                     const authorId = this.getAuthorIDByName(this.authorNameForUpdate);
                     if (authorId === 0) {
@@ -534,9 +429,7 @@
                                 this.bookMount = null;
                                 this.author = null;
                                 this.categories = [];
-                                this.descriptions = [];
-                                // this.copyValue();
-                                this.load(this.startLoad, this.endLoad);
+                                this.load();
                             }).catch(() => {
                                 console.log('book update error');
                             });
@@ -553,9 +446,8 @@
                             this.bookMount = null;
                             this.author = null;
                             this.categories = [];
-                            this.descriptions = [];
                             // this.copyValue();
-                            this.load(this.startLoad, this.endLoad);
+                            this.load();
                         }).catch(() => {
                             console.log('book create error');
                         });
@@ -578,76 +470,16 @@
             return id;
         }
 
-        private createdAtFormatted(description: Description) {
-            return this.formatDateTime(description.created_at);
-        }
+        // get ratingSize() {
+        //     switch (this.$vuetify.breakpoint.name) {
+        //         case 'xs':
+        //             return 20;
+        //         default:
+        //             return 20;
+        //     }
+        // }
 
-        private format(d: string | null) {
-            if (d != null) {
-                const date = moment(d);
-                return date.format('YYYY') + '/' + date.format('MM') + '/' + date.format('DD');
-            } else {
-                return '----/--/--';
-            }
-        }
 
-        private formatDateTime(d: string | null) {
-            if (d != null) {
-                const date = moment(d);
-                return date.format('YYYY') + '/' + date.format('MM') + '/' + date.format('DD')
-                    + ' ' + date.format('HH') + ':' + date.format('mm');
-            } else {
-                return '----/--/-- --:--';
-            }
-        }
-
-        get getDescriptions() {
-            return this.descriptions.reverse();
-        }
-
-        get ratingSize() {
-            switch (this.$vuetify.breakpoint.name) {
-                case 'xs':
-                    return 20;
-                default:
-                    return 20;
-            }
-        }
-        private sendDiscription() {
-            if (this.bookDetail == null) {
-                return;
-            }
-            if ( (this.$refs.form as Vue & { validate: () => boolean }).validate()) {
-                const description = {
-                    book_id: this.bookDetail.id,
-                    content: this.inputDescription,
-                };
-                api.description.create(this.bookDetail.id, description).then((res) => {
-                    // console.log(res);
-                    this.openFlag.description = false;
-                    this.load(this.startSendingDescription, this.closeDescriptionTextField);
-                    this.inputDescription = '';
-                }).catch(() => {
-                    console.log('send discription error');
-                });
-            }
-        }
-
-        private startLoad(): void {
-            this.isLoadingBook = true;
-        }
-
-        private endLoad(): void {
-            this.isLoadingBook = false;
-        }
-
-        private startSendingDescription(): void {
-            this.isSendingDescription = true;
-        }
-
-        private closeDescriptionTextField(): void {
-            this.isSendingDescription = false;
-        }
         // TODO カテゴリは一旦消す
         // private appendCategory(event: any) {
         //     if (event.keyCode !== 13) {
@@ -696,21 +528,21 @@
                 const res = confirm('読み始めた本に設定しますか？');
                 if (res && this.bookDetail != null) {
                     api.book.startRead(this.bookDetail.id).then(() => {
-                        this.load(this.empty, this.empty);
+                        this.load();
                     });
                 }
             } else if (endAt == null) {
                 const res = confirm('読み終わった本に設定しますか？');
                 if (res && this.bookDetail != null) {
                     api.book.endRead(this.bookDetail.id).then(() => {
-                        this.load(this.empty, this.empty);
+                        this.load();
                     });
                 }
             } else {
                 const res = confirm('読み始めた本に設定しますか？');
                 if (res && this.bookDetail != null) {
                     api.book.startRead(this.bookDetail.id).then(() => {
-                        this.load(this.empty, this.empty);
+                        this.load();
                     });
                 }
             }
@@ -726,24 +558,11 @@
             }
         }
 
-
-        private deleteDesription(id: number) {
-            const ans = confirm('削除しますか?');
-            if (ans) {
-                api.description.delete(id).then((res) => {
-                    // console.log(res);
-                    this.load(this.empty, this.empty);
-                }).catch(() => {
-                    console.log('delete discription error');
-                });
-            }
-        }
         private validateInput(): boolean {
             if (this.bookDetail != null) {
                 if (this.bookDetail.title.length > 15) {
                     return false;
                 }
-
                 if (this.bookDetail.author != null) {
                     if (this.bookDetail.author.name.length > 12) {
                         return false;
@@ -752,7 +571,6 @@
             }
             return true;
         }
-        private empty(): void {}
 
         private deleteBook() {
             const ans = confirm('関連するコメントも全て削除されます。本を削除しますか?');
@@ -764,6 +582,14 @@
                     console.log('delete book error');
                 });
             }
+        }
+    }
+    function formatDate(d: string | null) {
+        if (d != null) {
+            const date = moment(d);
+            return date.format('YYYY') + '/' + date.format('MM') + '/' + date.format('DD');
+        } else {
+            return '----/--/--';
         }
     }
 </script>

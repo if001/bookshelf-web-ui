@@ -202,6 +202,11 @@ export interface Description {
     updated_at: string;
 }
 
+export interface DescriptionForm {
+    book_id: number;
+    content: string;
+}
+
 export interface Category {
     id: number;
     name: string;

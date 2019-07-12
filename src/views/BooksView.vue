@@ -46,7 +46,7 @@
                     </div>
                 </div>
                 <div v-if="!loading && booksShow.length === 0" style="margin: auto;padding: 20px;">
-                    本がまだありません.
+                    読みたい本を登録しましょう。
                 </div>
                 <v-flex v-else class="pa-2" v-for="book in booksShow" :key="book.id" lg4 md6 sm12
                         xs12>
