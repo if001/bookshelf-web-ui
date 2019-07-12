@@ -8,7 +8,7 @@
                             <v-card-title primary-title class="">
                                 <div v-if="!isOpen">
                                     <div class="headline">{{ bookName }}</div>
-                                    <div>{{ authorName }}</div>
+                                    <div>{{ authorNameForShow }}</div>
                                     <!-- TODO 出版社はひとまず消す <div>publisher</div>-->
                                     <!-- TODO 出版年はひとまず消す <div>(2013)</div>-->
                                 </div>
@@ -22,13 +22,15 @@
                                         ></v-text-field>
                                     </div>
                                     <div class="pt-1" style="width: 100%">
-                                        <v-text-field
+                                        <v-combobox
+                                                v-model="authorNameForShow"
+                                                :items="getAuthors"
+                                                maxlength="15"
                                                 :counter="15"
-                                                height="18"
-                                                v-model="authorName"
-                                                label="Author Name"
-                                        ></v-text-field>
+                                                label="author"
+                                        ></v-combobox>
                                     </div>
+
                                     <div class="pt-1" style="width: 100%">
                                         <v-text-field
                                                 :counter="15"
@@ -291,6 +293,7 @@
         private author: Author | null = null;
         private categories: Category[] = [];
         private descriptions: Description[] = [];
+        private authors: Author[] = [];
 
         private openFlag: OpenFlag = new OpenFlag();
         private inputDescription: string = '';
@@ -319,6 +322,7 @@
             this.categories = [];
             this.descriptions = [];
             // this.copyValue();
+            this.loadAuthors();
             this.load(this.startLoad, this.endLoad);
         }
 
@@ -375,6 +379,17 @@
             }).catch(() => {
                 console.log('error');
             });
+        }
+
+        private loadAuthors() {
+            api.author.getCounted()
+                .then((res) => {
+                    this.authors = res.data.content as Author[];
+                })
+                .finally(() => {})
+                .catch(() => {
+                    console.log('load author error');
+                });
         }
 
         get bookId(): number {
@@ -434,7 +449,7 @@
             }
         }
 
-        get authorName() {
+        get authorNameForShow() {
             if (this.bookDetail != null) {
                 if (this.bookDetail.author != null) {
                     return this.bookDetail.author.name;
@@ -446,7 +461,19 @@
             }
         }
 
-        set authorName(v: string) {
+        get authorNameForUpdate() {
+            if (this.bookMount != null) {
+                if (this.bookMount.author != null) {
+                    return this.bookMount.author.name;
+                } else {
+                    return 'Author not set';
+                }
+            } else {
+                return 'Author not set';
+            }
+        }
+
+        set authorNameForShow(v: string) {
             const tmpAuthor = {
                 id: 0,
                 name: v,
@@ -479,31 +506,76 @@
                 return false;
             }
         }
+        private isAuthorChanged(): boolean {
+            if (this.bookMount != null && this.bookDetail != null && this.bookMount.author != null) {
+                return (this.bookMount.author.name === this.authorNameForUpdate);
+            } else {
+                return false;
+            }
+        }
 
         private updateBook() {
             if (this.validateInput()  && this.bookMount != null) {
                 this.isOpen = false;
-                console.log(this.isBookChanged());
-                if (this.isBookChanged()) {
-                    const book = {
-                        id: this.bookMount.id,
-                        title: this.bookMount.title,
-                        // author_id : 0,
-                        // author_name: this.authorName,
-                    };
 
-                    api.books.update(book).then((res) => {
-                        this.bookMount = null;
-                        this.author = null;
-                        this.categories = [];
-                        this.descriptions = [];
-                        // this.copyValue();
-                        this.load(this.startLoad, this.endLoad);
-                    }).catch(() => {
-                        console.log('book create error');
-                    });
+                if (this.isBookChanged() || this.isAuthorChanged()) {
+                    const authorId = this.getAuthorIDByName(this.authorNameForUpdate);
+                    if (authorId === 0) {
+                        const author = {
+                            author_name: this.authorNameForUpdate,
+                        };
+                        api.author.create(author).then((res) => {
+                            const newAuthor = res.data.content as Author;
+                            const book = {
+                                title: this.bookName,
+                                author_id : newAuthor.id,
+                            };
+                            api.books.update(book).then((res) => {
+                                this.bookMount = null;
+                                this.author = null;
+                                this.categories = [];
+                                this.descriptions = [];
+                                // this.copyValue();
+                                this.load(this.startLoad, this.endLoad);
+                            }).catch(() => {
+                                console.log('book update error');
+                            });
+                        }).catch(() => {
+                            console.log('author create error');
+                        });
+                    } else {
+                        const book = {
+                            id: this.bookMount.id,
+                            title: this.bookMount.title,
+                            author_id : authorId,
+                        };
+                        api.books.update(book).then((res) => {
+                            this.bookMount = null;
+                            this.author = null;
+                            this.categories = [];
+                            this.descriptions = [];
+                            // this.copyValue();
+                            this.load(this.startLoad, this.endLoad);
+                        }).catch(() => {
+                            console.log('book create error');
+                        });
+                    }
                 }
             }
+        }
+
+        get getAuthors() {
+            return this.authors.map((x) => x.name);
+        }
+
+        private getAuthorIDByName(name: string): number {
+            let id = 0;
+            this.authors.forEach((x: Author) => {
+                if (name === x.name) {
+                    id = x.id;
+                }
+            });
+            return id;
         }
 
         private createdAtFormatted(description: Description) {
