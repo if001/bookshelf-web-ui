@@ -20,8 +20,8 @@
                         <!--</h2>-->
                         <div class="pl-2 pb-2">
                             <v-text-field
-                                    :counter="10"
-                                    maxlength="10"
+                                    :counter="15"
+                                    maxlength="15"
                                     label="title"
                                     v-model="bookName"
                                     required
@@ -37,6 +37,7 @@
                                     v-model="authorName"
                                     :items="getAuthors"
                                     maxlength="15"
+                                    :counter="15"
                                     label="author"
                             ></v-combobox>
                         </div>
@@ -209,7 +210,6 @@
                         title: this.bookName,
                         author_id : newAuthor.id,
                     };
-                    console.log(newAuthor);
                     api.books.create(book).then((bookres) => {
                         // this.$emit("closeCreate");
                         this.$router.push('/bookshelf');
