@@ -98,6 +98,7 @@
                                    icon
                                    color="dark"
                                    class="ma-0"
+                                   :loading="isLoadingBookState"
                                    @click="changeState(startAt, endAt)">
                                 <v-icon large
                                         color="blue-grey darken-1"> {{ bookState(startAt, endAt).icon }}
@@ -213,6 +214,7 @@
         // private rating = 0;
         private isOpen: boolean = false;
         private isLoadingBook: boolean = false;
+        private isLoadingBookState: boolean = false;
         private validEditBox: boolean = false;
 
         private rules: any =  {
@@ -230,6 +232,7 @@
 
         private load() {
             this.isLoadingBook = true;
+            this.isLoadingBookState = true;
             api.book.get(this.bookID).then((response) => {
                 this.book = response.data.content as Book;
             }).then(() => {
@@ -278,6 +281,7 @@
                 console.log('error');
             }).finally(() => {
                 this.isLoadingBook = false;
+                this.isLoadingBookState = false;
             });
         }
 

@@ -8,8 +8,8 @@
                         <div class="ma-1" style="width: 100%; float:left;">{{result.Item.author}}</div>
                         <div class="ma-1" style="width: 100%; float:left;">{{result.Item.publisherName}} / ￥ {{result.Item.itemPrice}}</div>
                     </v-flex>
-                    <v-flex xs2 style="max-height: 80px;">
-                        <img style="float:right;" :src="result.Item.mediumImageUrl" height="80px;">
+                    <v-flex xs2 style="max-height: 128px;">
+                        <img style="float:right;" :src="result.Item.mediumImageUrl" height="128px;">
                     </v-flex>
                 </v-layout>
             </v-card>
