@@ -4,19 +4,23 @@
             <v-flex xs12 md5 class="ma-2">
                 <v-card color="white" class="black--text">
                     <v-layout row>
-                        <v-flex xs7>
+                        <v-flex xs10>
                             <v-card-title primary-title class="">
                                 <div v-if="!isOpen">
-                                    <div class="headline">{{ bookName }}</div>
+                                    <div style="font-size: 1.5em;">{{ bookName }}</div>
                                     <div>{{ authorNameForShow }}</div>
                                     <!-- TODO 出版社はひとまず消す <div>publisher</div>-->
                                     <!-- TODO 出版年はひとまず消す <div>(2013)</div>-->
                                 </div>
                                 <div v-if="isOpen">
+                                    <v-form ref="form"
+                                            v-model="validEditBox"
+                                            lazy-validation>
                                     <div class="pt-1" style="width: 100%">
                                         <v-text-field
-                                                :counter="12"
                                                 v-model="bookName"
+                                                maxlength="15"
+                                                :counter="18"
                                                 height="18"
                                                 label="Book Title"
                                         ></v-text-field>
@@ -26,10 +30,12 @@
                                                 v-model="authorNameForShow"
                                                 :items="getAuthors"
                                                 maxlength="15"
-                                                :counter="15"
+                                                :counter="18"
+                                                height="18"
                                                 label="author"
                                         ></v-combobox>
                                     </div>
+                                    </v-form>
 <!--                                    <div class="pt-1" style="width: 100%">-->
 <!--                                        <v-text-field-->
 <!--                                                :counter="15"-->
@@ -57,7 +63,6 @@
                                        style="position:absolute; top: 0; right: 0;">
                                     <v-icon small dark>edit</v-icon>
                                 </v-btn>
-
                                 <v-btn v-if="!isOpen && isLoadingBook"
                                        icon
                                        fab
@@ -72,23 +77,23 @@
                                        icon
                                        fab
                                        dark
-                                       :color="validateInput ? 'blue' : 'black' "
+                                       color="blue"
                                        small
-                                       @click="updateBook"
+                                       @click="updateBookWithDetail"
                                        style="position:absolute; top: 0; right: 0;">
                                     <v-icon small dark>done</v-icon>
                                 </v-btn>
                             </v-card-title>
                         </v-flex>
-                        <v-flex xs5>
-                            <!--TODO 画像が登録できるまでひとまず消す-->
-                            <!--<img style="float:right;" src="@/assets/claudia.jpg" height="120px;">-->
+                        <v-flex xs2>
+                            <div v-if="bookImage != null" class="mr-2">
+                                <img style="float:right;" :src="bookImage" height="120px" alt="bookImage">
+                            </div>
                         </v-flex>
                     </v-layout>
                     <v-divider light></v-divider>
                     <v-layout column>
                         <v-layout nowrap class="pl-3 pt-2 pb-2 pr-3" align-content-end>
-
                             <v-btn flat
                                    icon
                                    color="dark"
@@ -202,24 +207,23 @@
         private bookMount: BookDetail | null = null;
         private bookDetail: BookDetail | null = null;
         private author: Author | null = null;
-        private categories: Category[] = []
+        // private categories: Category[] = [];
         private authors: Author[] = [];
 
         // private rating = 0;
         private isOpen: boolean = false;
-
         private isLoadingBook: boolean = false;
+        private validEditBox: boolean = false;
 
         private rules: any =  {
             counter12: (value: any) => value.length <= 12 || 'Max 12 characters',
             counter15: (value: any) => value.length <= 15 || 'Max 15 characters',
         };
 
-
         private mounted() {
             this.bookMount = null;
             this.author = null;
-            this.categories = [];
+            // this.categories = [];
             this.loadAuthors();
             this.load();
         }
@@ -262,7 +266,9 @@
                     end_at: this.book.end_at,
                     nextBookId: this.book.nextBookId,
                     prevBookId: this.book.prevBookId,
-                    categories: this.categories,
+                    // categories: this.categories,
+                    medium_image_url: this.book.medium_image_url,
+                    small_image_url: this.book.small_image_url,
                     created_at: this.book.created_at,
                     updated_at: this.book.updated_at,
                     isOpen: false,
@@ -312,22 +318,8 @@
                 //         this.categories.push(newC);
                 //     }
                 // }
-                this.bookDetail = {
-                    id: this.bookMount.id,
-                    title: this.bookMount.title,
-                    author: authorCopy,
-                    publishedAt: this.bookMount.publishedAt,
-                    publisher: this.bookMount.publisher,
-                    accountId: this.bookMount.accountId,
-                    start_at: this.bookMount.start_at,
-                    end_at: this.bookMount.end_at,
-                    nextBookId: this.bookMount.nextBookId,
-                    prevBookId: this.bookMount.prevBookId,
-                    categories: this.categories,
-                    created_at: this.bookMount.created_at,
-                    updated_at: this.bookMount.updated_at,
-                    isOpen: this.bookMount.isOpen,
-                };
+
+                this.bookDetail = {...this.bookMount};
             }
         }
 
@@ -356,6 +348,15 @@
                 return 'Author not set';
             }
         }
+        set authorNameForShow(v: string) {
+            const tmpAuthor = {
+                id: 0,
+                name: v,
+            } as Author;
+            if (this.bookMount != null) {
+                this.bookMount.author = tmpAuthor;
+            }
+        }
 
         get authorNameForUpdate() {
             if (this.bookMount != null) {
@@ -366,16 +367,6 @@
                 }
             } else {
                 return 'Author not set';
-            }
-        }
-
-        set authorNameForShow(v: string) {
-            const tmpAuthor = {
-                id: 0,
-                name: v,
-            } as Author;
-            if (this.bookMount != null) {
-                this.bookMount.author = tmpAuthor;
             }
         }
 
@@ -395,6 +386,14 @@
             }
         }
 
+        get bookImage(): string | null {
+            if (this.bookDetail != null) {
+                return this.bookDetail.medium_image_url;
+            } else {
+                return null;
+            }
+        }
+
         private isBookChanged(): boolean {
             if (this.bookMount != null && this.bookDetail != null) {
                 return (this.bookMount.title !== this.bookDetail.title);
@@ -404,13 +403,13 @@
         }
         private isAuthorChanged(): boolean {
             if (this.bookMount != null && this.bookDetail != null && this.bookMount.author != null) {
-                return (this.bookMount.author.name === this.authorNameForUpdate);
+                return (this.bookMount.author.name !== this.authorNameForUpdate);
             } else {
                 return false;
             }
         }
 
-        private updateBook() {
+        private updateBookWithDetail() {
             if (this.validateInput()  && this.bookMount != null) {
                 this.isOpen = false;
                 if (this.isBookChanged() || this.isAuthorChanged()) {
@@ -421,38 +420,34 @@
                         };
                         api.author.create(author).then((res) => {
                             const newAuthor = res.data.content as Author;
-                            const book = {
-                                title: this.bookName,
-                                author_id : newAuthor.id,
-                            };
-                            api.books.update(book).then((res) => {
-                                this.bookMount = null;
-                                this.author = null;
-                                this.categories = [];
-                                this.load();
-                            }).catch(() => {
-                                console.log('book update error');
-                            });
+                            this.updateBook(newAuthor.id);
                         }).catch(() => {
                             console.log('author create error');
                         });
                     } else {
-                        const book = {
-                            id: this.bookMount.id,
-                            title: this.bookMount.title,
-                            author_id : authorId,
-                        };
-                        api.books.update(book).then((res) => {
-                            this.bookMount = null;
-                            this.author = null;
-                            this.categories = [];
-                            // this.copyValue();
-                            this.load();
-                        }).catch(() => {
-                            console.log('book create error');
-                        });
+                        this.updateBook(authorId);
                     }
                 }
+            }
+        }
+
+        private updateBook(authorID: number) {
+            if (this.bookMount != null) { // 前段でbookMountはnullでないことは確認済み
+                const book = {
+                    id: this.bookMount.id,
+                    title: this.bookMount.title,
+                    author_id: authorID,
+                    medium_image_url: this.bookMount.medium_image_url,
+                    small_image_url: this.bookMount.small_image_url,
+                };
+                api.books.update(book).then((res) => {
+                    this.bookMount = null;
+                    this.author = null;
+                    // this.categories = [];
+                    this.load();
+                }).catch(() => {
+                    console.log('book create error');
+                });
             }
         }
 
@@ -559,17 +554,7 @@
         }
 
         private validateInput(): boolean {
-            if (this.bookDetail != null) {
-                if (this.bookDetail.title.length > 15) {
-                    return false;
-                }
-                if (this.bookDetail.author != null) {
-                    if (this.bookDetail.author.name.length > 12) {
-                        return false;
-                    }
-                }
-            }
-            return true;
+            return (this.$refs.form as Vue & { validate: () => boolean }).validate();
         }
 
         private deleteBook() {

@@ -11,39 +11,9 @@ function getToken(): string {
     } else {
         return '';
     }
-
 }
 
 export default {
-    // accounts: {
-    //     login(email: string, password: string) {
-    //         return axios({
-    //             method: 'POST',
-    //             url: '/accounts/login',
-    //             data: {
-    //                 email,
-    //                 password,
-    //             },
-    //         });
-    //     },
-    //
-    //     logout() {
-    //         return axios({
-    //             method: 'POST',
-    //             headers: {'Authorization': `Bearer ${getToken()}`},
-    //             url: '/accounts/logout',
-    //             data: {},
-    //         });
-    //     },
-    //     own() {
-    //         return axios({
-    //             method: 'GET',
-    //             headers: {'Authorization': `Bearer ${getToken()}`},
-    //             url: '/accounts/own',
-    //         });
-    //     },
-    // },
-
     book: {
         get(id: number) {
             return axios.request<ContentResult<Book>>({
@@ -158,8 +128,18 @@ export default {
             });
         },
     },
+    rakuten: {
+        searchByTitle(title: string) {
+            return Axios.get(`${rakutenBaseURL}?applicationId=${appID}&title=${title}`);
+        },
+        searchByAuthor(author: string) {
+            return Axios.get(`${rakutenBaseURL}?applicationId=${appID}&author=${author}`);
+        },
+    },
 };
 
+const rakutenBaseURL = 'https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404';
+const appID = '1035362638897131844';
 
 export interface ContentResult<T> {
     status: number;
@@ -186,6 +166,8 @@ export interface Book {
     nextBookId: number | null;
     prevBookId: number | null;
     categories: Category[];
+    small_image_url: string | null;
+    medium_image_url: string | null;
     created_at: string;
     updated_at: string;
 }
@@ -215,4 +197,22 @@ export interface Category {
 export interface Author {
     id: number;
     name: string;
+    count: number;
+}
+
+export interface SearchResult {
+    Items: Items;
+}
+
+export interface Items {
+    Item: Item;
+}
+
+export interface Item {
+    title: string;
+    author: string;
+    smallImageUrl: string;
+    mediumImageUrl: string;
+    publisherName: string;
+    itemPrice: string;
 }

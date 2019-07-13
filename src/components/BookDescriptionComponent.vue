@@ -80,8 +80,8 @@
 
 
 <script lang="ts">
-    import {Component, Vue, Prop, Emit} from "vue-property-decorator";
-    import api, {Description, DescriptionForm} from "@/api";
+    import {Component, Vue, Prop, Emit} from 'vue-property-decorator';
+    import api, {Description, DescriptionForm} from '@/api';
     import moment from 'moment';
 
 

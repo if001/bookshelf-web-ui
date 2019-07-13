@@ -150,11 +150,7 @@
 
         public mounted() {
             this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);
-            this.toTop();
-        }
-
-        private toTop() {
-            window.scrollTo(0, 0);
+            toTop();
         }
 
         private load(page: number | null, perPage: number | null, sortKey: string | null, filter: string | null) {
@@ -218,12 +214,12 @@
             this.selectFilter = filter;
             this.page = 1;
             this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);
-            this.toTop();
+            toTop();
         }
 
         private pagenaite() {
             this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);
-            this.toTop();
+            toTop();
         }
 
         get totalPageNumber() {
@@ -234,6 +230,9 @@
         private toRegister() {
             this.$router.push('/register');
         }
+    }
+    function toTop() {
+        window.scrollTo(0, 0);
     }
 
 </script>
