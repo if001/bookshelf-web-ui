@@ -75,6 +75,7 @@
                             <v-layout class="pt-0 pl-4 pr-2 pb-2" row>
                                 <v-flex align-self-center :class="{ noset_font: (book.author == null)}">
                                     {{ (book.author != null) ? book.author.name : "not set" }}
+                                    ({{ (book.publisher != null) ? book.publisher.name : "not set" }})
                                 </v-flex>
                             </v-layout>
                         </v-card>
@@ -166,8 +167,8 @@
                         title: book.title,
                         author: book.author,
                         publishedAt: book.publishedAt,
-                        publisher: book.publisher,
                         accountId: book.accountId,
+                        publisher: book.publisher,
                         start_at: book.start_at,
                         end_at: book.end_at,
                         nextBookId: book.nextBookId,

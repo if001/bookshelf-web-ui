@@ -8,7 +8,8 @@
                             <v-card-title primary-title class="">
                                 <div v-if="!isOpen">
                                     <div style="font-size: 1.5em;">{{ bookName }}</div>
-                                    <div>{{ authorNameForShow }}</div>
+                                    <div>{{ authorNameForShow }} </div>
+                                    <div>{{ publisherNameForShow }} </div>
                                     <!-- TODO 出版社はひとまず消す <div>publisher</div>-->
                                     <!-- TODO 出版年はひとまず消す <div>(2013)</div>-->
                                 </div>
@@ -86,7 +87,7 @@
                             </v-card-title>
                         </v-flex>
                         <v-flex xs2>
-                            <div v-if="bookImage != null" class="mr-2">
+                            <div v-if="bookImage != null && bookImage !== ''" class="mr-2">
                                 <img style="float:right;" :src="bookImage" height="120px" alt="bookImage">
                             </div>
                         </v-flex>
@@ -187,7 +188,7 @@
 <script lang="ts">
     import {Component, Prop, Vue} from 'vue-property-decorator';
     import BookDescription from '@/components/BookDescriptionComponent.vue';
-    import api, {Author, Book, Category, Description} from '../api';
+    import api, {Author, Book, Category, Description, Publisher} from "../api";
     import moment from 'moment';
 
     interface BookDetail extends Book {
@@ -263,8 +264,8 @@
                     title: this.book.title,
                     author: this.author,
                     publishedAt: this.book.publishedAt,
-                    publisher: this.book.publisher,
                     accountId: this.book.accountId,
+                    publisher: this.book.publisher,
                     start_at: this.book.start_at,
                     end_at: this.book.end_at,
                     nextBookId: this.book.nextBookId,
@@ -374,6 +375,40 @@
             }
         }
 
+        get publisherNameForShow() {
+            if (this.bookDetail != null) {
+                if (this.bookDetail.publisher != null) {
+                    return this.bookDetail.publisher.name;
+                } else {
+                    return 'Publisher not set';
+                }
+            } else {
+                return 'Publisher not set';
+            }
+        }
+
+        set publisherNameForShow(v: string) {
+            const tmpPublisher = {
+                id: 0,
+                name: v,
+            } as Publisher;
+            if (this.bookMount != null) {
+                this.bookMount.publisher = tmpPublisher;
+            }
+        }
+
+        get publisherNameForUpdate() {
+            if (this.bookMount != null) {
+                if (this.bookMount.publisher != null) {
+                    return this.bookMount.publisher.name;
+                } else {
+                    return 'Publisher not set';
+                }
+            } else {
+                return 'Publisher not set';
+            }
+        }
+
         get startAtFormatted() {
             if (this.bookDetail != null) {
                 return formatDate(this.bookDetail.start_at);
@@ -391,8 +426,9 @@
         }
 
         get bookImage(): string | null {
+            console.log(this.bookDetail);
             if (this.bookDetail != null) {
-                return this.bookDetail.medium_image_url;
+                    return this.bookDetail.medium_image_url;
             } else {
                 return null;
             }
@@ -456,7 +492,13 @@
         }
 
         get getAuthors() {
-            return this.authors.map((x) => x.name);
+            const authorNames: string[] = [];
+            this.authors.forEach((x) => {
+                if (x.count > 3) {
+                    authorNames.push(x.name);
+                }
+            });
+            return authorNames;
         }
 
         private getAuthorIDByName(name: string): number {

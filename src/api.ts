@@ -128,6 +128,23 @@ export default {
             });
         },
     },
+    publisher: {
+        getCounted() {
+            return axios.request<MultiContentResult<Publisher>>({
+                method: 'GET',
+                url: `/counted_publisher`,
+                headers: {'Authorization': `Bearer ${getToken()}`},
+            });
+        },
+        create(data: any) {
+            return axios.request<ContentResult<Publisher>>({
+                method: 'POST',
+                url: `/publisher`,
+                headers: {'Authorization': `Bearer ${getToken()}`},
+                data,
+            });
+        },
+    },
     rakuten: {
         searchByTitle(title: string) {
             return Axios.get(`${rakutenBaseURL}?applicationId=${appID}&title=${title}`);
@@ -159,8 +176,8 @@ export interface Book {
     title: string;
     author: Author | null;
     publishedAt: string | null;
-    publisher: string | null;
     accountId: number | null;
+    publisher: Publisher | null;
     start_at: string | null;
     end_at: string | null;
     nextBookId: number | null;
@@ -195,6 +212,12 @@ export interface Category {
 }
 
 export interface Author {
+    id: number;
+    name: string;
+    count: number;
+}
+
+export interface Publisher {
     id: number;
     name: string;
     count: number;

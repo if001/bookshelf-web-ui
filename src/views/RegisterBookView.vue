@@ -61,6 +61,17 @@
                         </div>
 
                         <div class="pl-2 pb-2">
+                            <v-combobox
+                                    v-model="publisherName"
+                                    :items="getPublishers"
+                                    maxlength="18"
+                                    :counter="18"
+                                    height="40px;"
+                                    label="publisher"
+                            ></v-combobox>
+                        </div>
+
+                        <div class="pl-2 pb-2">
                             <img style="float:right;" :src="mediumBookImage" height="120px;">
                         </div>
                         <!-- TODO カテゴリは一旦消しとく-->
@@ -123,7 +134,7 @@
     import {Component, Prop, Vue} from 'vue-property-decorator';
     import SearchFormComponent from '@/components/SearchFormComponent.vue';
     import SearchResultComponent from '@/components/SearchResultComponent.vue';
-    import api, {Author, Category, Item, SearchResult} from '../api';
+    import api, {Author, Category, Item, Publisher, SearchResult} from "../api";
     import Footer from '@/components/Footer.vue';
 
     interface CategoryWithChip extends Category {
@@ -142,6 +153,7 @@
         private authorName: string = '';
         private smallBookImage: string = '';
         private mediumBookImage: string = '';
+        private publisherName: string = '';
 
         private inputCategory: string = '';
         // private categories: CategoryWithChip[] = [];
@@ -150,6 +162,7 @@
         private isFirstFocusTitle: boolean = false;
         private isFirstFocusCategory: boolean = false;
         private authors: Author[] = [];
+        private publishers: Publisher[] = [];
         private searchResult: SearchResult | null = null;
 
         private tabObject = [
@@ -165,7 +178,9 @@
             window.scrollTo(0, 0);
             // this.categories = [];
             this.authors = [];
+            this.publishers = [];
             this.loadAuthors();
+            this.loadPublishers();
         }
 
         private loadAuthors() {
@@ -179,6 +194,17 @@
                 });
         }
 
+        private loadPublishers() {
+            api.publisher.getCounted()
+                .then((res) => {
+                    this.publishers = res.data.content as Publisher[];
+                })
+                .finally(() => {})
+                .catch(() => {
+                    console.log('load publisher error');
+                });
+        }
+
         get getAuthors() {
             const authorNames: string[] = [];
             this.authors.forEach((x) => {
@@ -189,9 +215,29 @@
             return authorNames;
         }
 
+        get getPublishers() {
+            const publisherNames: string[] = [];
+            this.publishers.forEach((x) => {
+                if (x.count > 3) {
+                    publisherNames.push(x.name);
+                }
+            });
+            return publisherNames;
+        }
+
         private getAuthorIDByName(name: string): number {
             let id = 0;
             this.authors.forEach((x: Author) => {
+                if (name === x.name) {
+                    id = x.id;
+                }
+            });
+            return id;
+        }
+
+        private getPublisherIDByName(name: string): number {
+            let id = 0;
+            this.publishers.forEach((x: Publisher) => {
                 if (name === x.name) {
                     id = x.id;
                 }
@@ -226,27 +272,59 @@
 
         private createBookWithDetail() {
             const authorId = this.getAuthorIDByName(this.authorName);
+            const publisherId = this.getPublisherIDByName(this.publisherName);
             if (this.validateInput()) {
-                if (authorId === 0) {
-                    const author = {
-                        author_name: this.authorName,
-                    };
-                    api.author.create(author).then((res) => {
-                        const newAuthor = res.data.content as Author;
-                        this.createBook(newAuthor.id);
+                const tmpAuthorName = this.authorName;
+                const createAuthor = new Promise(function (resolve) {
+                    if (authorId === 0) {
+                        const author = {
+                            author_name: tmpAuthorName,
+                        };
+                        api.author.create(author).then((res) => {
+                            const newAuthor = res.data.content as Author;
+                            resolve(newAuthor.id);
+                        });
+                    } else {
+                        resolve(authorId);
+                    }
+                });
+
+                const tmpPublisherName = this.publisherName;
+                console.log("p1:",this.publisherName);
+                const createPublisher = new Promise(function (resolve) {
+                    if (publisherId === 0) {
+                        const publisher = {
+                            publisher_name: tmpPublisherName,
+                        };
+                        console.log("p2:",publisher);
+                        api.publisher.create(publisher).then((res) => {
+                            const newPublisher = res.data.content as Publisher;
+                            resolve(newPublisher.id);
+                        }).catch(() => {
+                            console.log('publisher create error');
+                        });
+                    } else {
+                        resolve(publisherId);
+                    }
+                });
+
+                createAuthor.then((authorId) => {
+                    createPublisher.then((publisherId) => {
+                        this.createBook(authorId as number, publisherId as number);
                     }).catch(() => {
-                        console.log('author create error');
+                        console.log('publisher create error');
                     });
-                } else {
-                    this.createBook(authorId);
-                }
+                }).catch(() => {
+                    console.log('author create error');
+                });
             }
         }
 
-        private createBook(authorID: number) {
+        private createBook(authorID: number, publisherID: number) {
             const book = {
                 title: this.bookName,
                 author_id: authorID,
+                publisher_Id: publisherID,
                 medium_image_url: this.mediumBookImage,
                 small_image_url: this.smallBookImage,
             };
@@ -290,6 +368,7 @@
             this.authorName = select.author;
             this.smallBookImage = select.smallImageUrl;
             this.mediumBookImage = select.mediumImageUrl;
+            this.publisherName = select.publisherName;
             this.isSearchWeb = false;
         }
 
