@@ -48,7 +48,7 @@
                 </v-card>
             </v-flex>
         </v-layout>
-        <v-layout row nowrap justify-center>
+        <v-layout row nowrap justify-center v-if="getSearchResult.length !== 0">
             <v-flex md12 class="mt-2 mb-4 text-xs-center">
                 <v-pagination
                         v-model="page"
