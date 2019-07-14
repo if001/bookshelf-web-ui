@@ -31,7 +31,7 @@
                         @select="searchSelect"></SearchComponent>
             </v-layout>
             <v-layout row wrap v-else>
-                <v-flex lg8 md8 sm8 xs8 offset-lg2 offset-md2 offset-sm2 offset-xs2>
+                <v-flex lg8 md8 sm8 xs8 offset-lg2 offset-md2 offset-sm2 offset-xs2 class="pa-2">
                     <v-form
                             ref="form"
                             v-model="validInputForm"
@@ -39,8 +39,8 @@
                     >
                         <div class="pl-2 pb-2">
                             <v-text-field
-                                    :counter="25"
-                                    maxlength="25"
+                                    :counter="40"
+                                    maxlength="40"
                                     label="title"
                                     v-model="bookName"
                                     required
@@ -52,8 +52,8 @@
                             <v-combobox
                                     v-model="authorName"
                                     :items="getAuthors"
-                                    maxlength="25"
-                                    :counter="25"
+                                    maxlength="40"
+                                    :counter="40"
                                     height="40px;"
                                     label="author"
                             ></v-combobox>
@@ -63,8 +63,8 @@
                             <v-combobox
                                     v-model="publisherName"
                                     :items="getPublishers"
-                                    maxlength="25"
-                                    :counter="25"
+                                    maxlength="40"
+                                    :counter="40"
                                     height="40px;"
                                     label="publisher"
                             ></v-combobox>
@@ -133,7 +133,7 @@
 <script lang="ts">
     import {Component, Prop, Vue} from 'vue-property-decorator';
     import SearchComponent from '@/components/SearchComponent.vue';
-    import api, {Author, Category, Item, Publisher, SearchResult} from '../api';
+    import api, {Author, Category, Content, Publisher} from '../api';
     import Footer from '@/components/Footer.vue';
 
     interface CategoryWithChip extends Category {
@@ -227,9 +227,9 @@
             return publisherNames;
         }
 
-        private getAuthorIDByName(name: string): number {
-            let id = 0;
-            this.authors.forEach((x: Author) => {
+        private getAuthorIDByName(authors: Author[], name: string): number {
+            let id = -1;
+            authors.forEach((x: Author) => {
                 if (name === x.name) {
                     id = x.id;
                 }
@@ -237,9 +237,9 @@
             return id;
         }
 
-        private getPublisherIDByName(name: string): number {
-            let id = 0;
-            this.publishers.forEach((x: Publisher) => {
+        private getPublisherIDByName(publishers: Publisher[], name: string): number {
+            let id = -1;
+            publishers.forEach((x: Publisher) => {
                 if (name === x.name) {
                     id = x.id;
                 }
@@ -272,67 +272,78 @@
         //     }
         // }
 
-        private createBookWithDetail() {
-            const authorId = this.getAuthorIDByName(this.authorName);
-            const publisherId = this.getPublisherIDByName(this.publisherName);
-            if (this.validateInput()) {
-                this.isSaving = true;
-                const tmpAuthorName = this.authorName;
-                const createAuthor = new Promise((resolve) => {
-                    if (authorId === 0) {
+        private getAuthorIdP(authorName: string): Promise<number> {
+            return api.author.getCounted().then((res) => {
+                return new Promise<Author[]>((resolve) => {
+                    resolve(res.data.content as Author[]);
+                });
+            }).then((authors) => {
+                return new Promise<number>((resolve) => {
+                    resolve(this.getAuthorIDByName(authors, authorName));
+                });
+            }).then((authorId: number) => {
+                return new Promise<number>((resolve) => {
+                    if (authorId === -1) {
                         const author = {
-                            author_name: tmpAuthorName,
+                            author_name: authorName,
                         };
                         api.author.create(author).then((res) => {
                             const newAuthor = res.data.content as Author;
                             resolve(newAuthor.id);
-                        }).catch(() => {
-                            resolve(-1);
-                            console.log('author create error');
                         });
                     } else {
                         resolve(authorId);
                     }
                 });
+            });
+        }
 
-                const tmpPublisherName = this.publisherName;
-                const createPublisher = new Promise((resolve) => {
-                    if (publisherId === 0) {
+        private getPublisherIdP(publisherName: string): Promise<number> {
+            return api.publisher.getCounted().then((res) => {
+                return new Promise<Publisher[]>((resolve) => {
+                    resolve(res.data.content as Publisher[]);
+                });
+            }).then((publishers: Publisher[]) => {
+                return new Promise<number>((resolve) => {
+                    resolve(this.getPublisherIDByName(publishers, publisherName));
+                });
+            }).then((publisherId: number) => {
+                return new Promise<number>((resolve) => {
+                    if (publisherId === -1) {
                         const publisher = {
-                            publisher_name: tmpPublisherName,
+                            publisher_name: publisherName,
                         };
                         api.publisher.create(publisher).then((res) => {
                             const newPublisher = res.data.content as Publisher;
                             resolve(newPublisher.id);
-                        }).catch(() => {
-                            resolve(-1);
-                            console.log('publisher create error');
                         });
                     } else {
                         resolve(publisherId);
                     }
                 });
+            });
 
-                createAuthor.then((authorIdP) => {
-                    createPublisher.then((publisherIdP) => {
-                        if (authorId !== -1 && publisherIdP !== -1) {
-                            this.createBook(authorIdP as number, publisherIdP as number);
-                        } else {
-                            console.log('create author or publisher error')
-                        }
-                    }).catch(() => {
-                        console.log('publisher create error');
-                    }).finally(() => {
-                        this.loadPublishers();
-                    });
+        }
+
+        private createBookWithDetail() {
+            if (this.validateInput() && this.tmpValidateInput()) {
+                const authorIdP: Promise<number> = this.getAuthorIdP(this.authorName);
+                const publisherIdP: Promise<number> = this.getPublisherIdP(this.publisherName);
+
+                Promise.all([authorIdP, publisherIdP]).then((value) => {
+                    const authorId = value[0];
+                    const publisherId = value[1];
+                    if (authorId !== -1 && publisherId !== -1) {
+                        this.createBook(authorId, publisherId);
+                    } else {
+                        console.log('create author or publisher error');
+                    }
                 }).catch(() => {
-                    console.log('author create error');
-                }).finally(() => {
-                    this.loadAuthors();
-                    this.isSaving = false;
+                    console.log('create author/publisher error');
                 });
             }
         }
+
 
         private createBook(authorID: number, publisherID: number) {
             const book = {
@@ -342,7 +353,7 @@
                 medium_image_url: this.mediumBookImage,
                 small_image_url: this.smallBookImage,
             };
-            api.books.create(book).then((bookres) => {
+            api.books.create(book).then((res) => {
                 // this.$emit("closeCreate");
                 this.$router.push('/bookshelf');
             }).catch(() => {
@@ -365,6 +376,10 @@
             return (this.$refs.form as Vue & { validate: () => boolean }).validate();
         }
 
+        private tmpValidateInput(): boolean {
+            return (this.authorName.length !==0 && this.bookName.length !== 0 && this.publisherName.length !== 0);
+        }
+
         private changeTab(tab: number) {
             if (tab === searchType.web) {
                 this.isSearchWeb = true;
@@ -373,7 +388,7 @@
             }
         }
 
-        private searchSelect(select: Item) {
+        private searchSelect(select: Content) {
             this.selectTab = searchType.input;
             this.bookName = select.title;
             this.authorName = select.author;

@@ -146,10 +146,10 @@ export default {
         },
     },
     rakuten: {
-        searchByTitle(title: string, page:number, perPage: number) {
+        searchByTitle(title: string, page: number, perPage: number) {
             return Axios.get(`${rakutenBaseURL}?applicationId=${appID}&page=${page}&hits=${perPage}&title=${title}`);
         },
-        searchByAuthor(author: string, page:number, perPage: number) {
+        searchByAuthor(author: string, page: number, perPage: number) {
             return Axios.get(`${rakutenBaseURL}?applicationId=${appID}&page=${page}&hits=${perPage}&author=${author}`);
         },
     },
@@ -224,16 +224,16 @@ export interface Publisher {
 }
 
 export interface SearchResult {
-    Items: Items;
+    Items: Contents[];
     page: number;
     pageCount: number;
 }
 
-export interface Items {
-    Item: Item;
+export interface Contents {
+    Item: Content;
 }
 
-export interface Item {
+export interface Content {
     title: string;
     author: string;
     smallImageUrl: string;

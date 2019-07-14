@@ -19,8 +19,8 @@
                                     <div class="pt-1" style="width: 100%">
                                         <v-text-field
                                                 v-model="bookName"
-                                                maxlength="25"
-                                                :counter="25"
+                                                maxlength="40"
+                                                :counter="40"
                                                 height="18"
                                                 label="Book Title"
                                         ></v-text-field>
@@ -29,8 +29,8 @@
                                         <v-combobox
                                                 v-model="authorNameForShow"
                                                 :items="getAuthors"
-                                                maxlength="25"
-                                                :counter="25"
+                                                maxlength="40"
+                                                :counter="40"
                                                 height="18"
                                                 label="author"
                                         ></v-combobox>
@@ -186,7 +186,7 @@
 <script lang="ts">
     import {Component, Prop, Vue} from 'vue-property-decorator';
     import BookDescription from '@/components/BookDescriptionComponent.vue';
-    import api, {Author, Book, Category, Description, Publisher} from "../api";
+    import api, {Author, Book, Category, Description, Publisher} from '../api';
     import moment from 'moment';
 
     interface BookDetail extends Book {
