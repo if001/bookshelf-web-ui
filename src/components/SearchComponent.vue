@@ -122,7 +122,6 @@
 
         get getSearchResult() {
             if (this.searchResult != null) {
-                console.log(this.searchResult);
                 return this.searchResult.Items;
             } else {
                 return [];
