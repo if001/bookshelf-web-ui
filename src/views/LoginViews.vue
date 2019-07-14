@@ -9,7 +9,9 @@
                 </v-flex>
 
                 <v-flex lg4 md4 sm4 xs10 offset-lg4 offset-md4 offset-sm4 offset-xs1>
-                    <v-form lazy-validation v-model="valid">
+                    <v-form ref="form"
+                            lazy-validation
+                            v-model="valid">
                         <v-text-field
                                 v-model="email"
                                 label="Email"
@@ -20,15 +22,17 @@
                         <v-text-field
                                 v-model="password"
                                 label="Password"
-                                :type="'password'"
+                                :type="showPassword ? 'text' : 'password'"
                                 :rules="passRules"
+                                :append-icon="showPassword ? 'visibility' : 'visibility_off'"
+                                @click:append="showPassword = !showPassword"
                                 prepend-icon="lock"
                                 required
                         ></v-text-field>
                     </v-form>
 
 
-                    <v-btn @click="login" block color="#1E90FF" dark>
+                    <v-btn @click="login" :loading="isLoading" block color="#1E90FF" dark>
                         Login
                     </v-btn>
 
@@ -88,6 +92,10 @@
         private email: string = '';
         private password: string = '';
         private valid = false;
+        private showPassword: boolean = false;
+        private message = '';
+        private isLoading: boolean = false;
+
         private passRules = [
             (v: any) => !!v || 'Name is required',
         ];
@@ -97,15 +105,15 @@
             (v: any) => /.+@.+/.test(v) || 'E-mail must be valid',
         ];
 
-        private message = '';
-
         public mounted() {
             window.scrollTo(0, 0);
         }
 
 
         public login() {
-            this.loginOps(firebase.auth().signInWithEmailAndPassword(this.email, this.password));
+            if (this.validateInput()) {
+                this.loginOps(firebase.auth().signInWithEmailAndPassword(this.email, this.password));
+            }
         }
 
         public loginWithGoogle() {
@@ -114,6 +122,7 @@
         }
 
         private loginOps(p: Promise<firebase.auth.UserCredential>) {
+            this.isLoading = true;
             p.then((res) => {
                 if (res == null) {
                     // console.log('not get response');
@@ -137,8 +146,15 @@
                 this.message = 'メールアドレスかパスワードが間違っています。';
                 // alert('ログインエラー');
                 // console.log(err);
+            }).finally(() => {
+                this.isLoading = false;
             });
         }
+
+        private validateInput(): boolean {
+            return (this.$refs.form as Vue & { validate: () => boolean }).validate();
+        }
+
     }
 </script>
 
