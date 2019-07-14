@@ -118,6 +118,7 @@
                            color="success"
                            outline
                            left
+                           :loading="isSaving"
                            @click="createBookWithDetail()">SAVE
                         <v-icon small color="green" class="ml-2">done</v-icon>
                     </v-btn>
@@ -155,14 +156,16 @@
         private mediumBookImage: string = '';
         private publisherName: string = '';
 
-        private inputCategory: string = '';
+        // private inputCategory: string = '';
         // private categories: CategoryWithChip[] = [];
         private validInputForm: boolean = true;
 
-        private isFirstFocusTitle: boolean = false;
-        private isFirstFocusCategory: boolean = false;
         private authors: Author[] = [];
         private publishers: Publisher[] = [];
+
+        private isFirstFocusTitle: boolean = false;
+        private isFirstFocusCategory: boolean = false;
+        private isSaving: boolean = false;
 
         private tabObject = [
             {tag: searchType.web, displayName: 'Web検索から登録'},
@@ -273,6 +276,7 @@
             const authorId = this.getAuthorIDByName(this.authorName);
             const publisherId = this.getPublisherIDByName(this.publisherName);
             if (this.validateInput()) {
+                this.isSaving = true;
                 const tmpAuthorName = this.authorName;
                 const createAuthor = new Promise((resolve) => {
                     if (authorId === 0) {
@@ -282,6 +286,9 @@
                         api.author.create(author).then((res) => {
                             const newAuthor = res.data.content as Author;
                             resolve(newAuthor.id);
+                        }).catch(() => {
+                            resolve(-1);
+                            console.log('author create error');
                         });
                     } else {
                         resolve(authorId);
@@ -298,6 +305,7 @@
                             const newPublisher = res.data.content as Publisher;
                             resolve(newPublisher.id);
                         }).catch(() => {
+                            resolve(-1);
                             console.log('publisher create error');
                         });
                     } else {
@@ -307,7 +315,11 @@
 
                 createAuthor.then((authorIdP) => {
                     createPublisher.then((publisherIdP) => {
-                        this.createBook(authorIdP as number, publisherIdP as number);
+                        if (authorId !== -1 && publisherIdP !== -1) {
+                            this.createBook(authorIdP as number, publisherIdP as number);
+                        } else {
+                            console.log('create author or publisher error')
+                        }
                     }).catch(() => {
                         console.log('publisher create error');
                     }).finally(() => {
@@ -317,6 +329,7 @@
                     console.log('author create error');
                 }).finally(() => {
                     this.loadAuthors();
+                    this.isSaving = false;
                 });
             }
         }
