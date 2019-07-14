@@ -11,7 +11,10 @@
             </v-layout>
                 <v-layout row nowrap justify-center>
                     <v-flex md12>
-                        <v-tabs fixed-tabs color="#fafafa">
+                        <v-tabs
+                                v-model="selectTab"
+                                fixed-tabs
+                                color="#fafafa">
                             <v-tab
                                     v-for="f in tabObject"
                                     :key="f.displayName"
@@ -26,7 +29,6 @@
             <v-layout row wrap v-if="isSearchWeb">
                 <SearchComponent
                         @select="searchSelect"></SearchComponent>
-
             </v-layout>
             <v-layout row wrap v-else>
                 <v-flex lg8 md8 sm8 xs8 offset-lg2 offset-md2 offset-sm2 offset-xs2>
@@ -136,7 +138,10 @@
     interface CategoryWithChip extends Category {
         chip: boolean;
     }
-
+    enum searchType {
+        web = 0,
+        input = 1,
+    }
     @Component({
         components: {
             SearchComponent,
@@ -160,9 +165,10 @@
         private publishers: Publisher[] = [];
 
         private tabObject = [
-            {tag: 'web', displayName: 'Web検索から登録'},
-            {tag: 'input', displayName: '入力して登録'},
+            {tag: searchType.web, displayName: 'Web検索から登録'},
+            {tag: searchType.input, displayName: '入力して登録'},
         ];
+        private selectTab: number = searchType.web;
         private isSearchWeb: boolean = true;
         private inputTitleForSarch: string = '';
         private inputAuthorForSarch: string = '';
@@ -346,15 +352,16 @@
             return (this.$refs.form as Vue & { validate: () => boolean }).validate();
         }
 
-        private changeTab(tab: string) {
-            if (tab === 'web') {
+        private changeTab(tab: number) {
+            if (tab === searchType.web) {
                 this.isSearchWeb = true;
-            }  else if (tab === 'input') {
+            }  else if (tab === searchType.input) {
                 this.isSearchWeb = false;
             }
         }
 
         private searchSelect(select: Item) {
+            this.selectTab = searchType.input;
             this.bookName = select.title;
             this.authorName = select.author;
             this.smallBookImage = select.smallImageUrl;
