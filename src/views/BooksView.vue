@@ -137,7 +137,9 @@
         private sortObject = [
             {sortKey: 'updated_at', displayName: '更新日'},
             {sortKey: 'created_at', displayName: '作成日'},
-            {sortKey: 'title', displayName: '五十音順'},
+            {sortKey: 'title', displayName: 'タイトル'},
+            {sortKey: 'author_id', displayName: '作者'},
+            {sortKey: 'publisher_id', displayName: '出版社'},
         ];
         private selectSortKey = '';
         private filterObject = [
