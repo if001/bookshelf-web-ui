@@ -4,13 +4,12 @@
             <v-flex xs12 md5 class="ma-2">
                 <v-card color="white" class="black--text">
                     <v-layout row>
-                        <v-flex xs10>
+                        <v-flex xs9>
                             <v-card-title primary-title class="">
                                 <div v-if="!isOpen">
                                     <div style="font-size: 1.5em;">{{ bookName }}</div>
                                     <div>{{ authorNameForShow }} </div>
                                     <div>{{ publisherNameForShow }} </div>
-                                    <!-- TODO 出版社はひとまず消す <div>publisher</div>-->
                                     <!-- TODO 出版年はひとまず消す <div>(2013)</div>-->
                                 </div>
                                 <div v-if="isOpen">
@@ -61,7 +60,7 @@
                                        color="blue"
                                        small
                                        @click="isOpen=!isOpen"
-                                       style="position:absolute; top: 0; right: 0;">
+                                       style="position:absolute; top: 80px; right: 85px;">
                                     <v-icon small dark>edit</v-icon>
                                 </v-btn>
                                 <v-btn v-if="!isOpen && isLoadingBook"
@@ -70,10 +69,9 @@
                                        color="blue"
                                        small
                                        disabled
-                                       style="position:absolute; top: 0; right: 0;">
+                                       style="position:absolute; top: 80px; right: 85px;">
                                     <v-icon small dark>edit</v-icon>
                                 </v-btn>
-
                                 <v-btn v-if="isOpen && !isLoadingBook"
                                        icon
                                        fab
@@ -81,14 +79,14 @@
                                        color="blue"
                                        small
                                        @click="updateBookWithDetail"
-                                       style="position:absolute; top: 0; right: 0;">
+                                       style="position:absolute; top: 80px; right: 85px;">
                                     <v-icon small dark>done</v-icon>
                                 </v-btn>
                             </v-card-title>
                         </v-flex>
-                        <v-flex xs2>
-                            <div v-if="bookImage != null && bookImage !== ''" class="mr-2">
-                                <img style="float:right;" :src="bookImage" height="120px" alt="bookImage">
+                        <v-flex xs3>
+                            <div v-if="bookImage != null && bookImage !== ''">
+                                <img style="float:right;" :src="bookImage" height="128px" alt="bookImage">
                             </div>
                         </v-flex>
                     </v-layout>
@@ -426,7 +424,6 @@
         }
 
         get bookImage(): string | null {
-            console.log(this.bookDetail);
             if (this.bookDetail != null) {
                     return this.bookDetail.medium_image_url;
             } else {
