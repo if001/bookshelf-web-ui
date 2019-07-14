@@ -24,12 +24,9 @@
 
 
             <v-layout row wrap v-if="isSearchWeb">
-                <SearchFormComponent
-                        @complete="searchComplete"></SearchFormComponent>
-                <SearchResultComponent
-                        v-if="searchComplete"
-                        :searchResult=searchResult
-                        @complete="searchResultSelect"></SearchResultComponent>
+                <SearchComponent
+                        @select="searchSelect"></SearchComponent>
+
             </v-layout>
             <v-layout row wrap v-else>
                 <v-flex lg8 md8 sm8 xs8 offset-lg2 offset-md2 offset-sm2 offset-xs2>
@@ -40,8 +37,8 @@
                     >
                         <div class="pl-2 pb-2">
                             <v-text-field
-                                    :counter="18"
-                                    maxlength="18"
+                                    :counter="25"
+                                    maxlength="25"
                                     label="title"
                                     v-model="bookName"
                                     required
@@ -53,8 +50,8 @@
                             <v-combobox
                                     v-model="authorName"
                                     :items="getAuthors"
-                                    maxlength="18"
-                                    :counter="18"
+                                    maxlength="25"
+                                    :counter="25"
                                     height="40px;"
                                     label="author"
                             ></v-combobox>
@@ -64,16 +61,13 @@
                             <v-combobox
                                     v-model="publisherName"
                                     :items="getPublishers"
-                                    maxlength="18"
-                                    :counter="18"
+                                    maxlength="25"
+                                    :counter="25"
                                     height="40px;"
                                     label="publisher"
                             ></v-combobox>
                         </div>
 
-                        <div class="pl-2 pb-2">
-                            <img style="float:right;" :src="mediumBookImage" height="120px;">
-                        </div>
                         <!-- TODO カテゴリは一旦消しとく-->
                         <!--<h2 blue lighten-1>-->
                         <!--カテゴリ-->
@@ -105,6 +99,9 @@
                         <!--</div>-->
 
                     </v-form>
+                    <div class="pl-2 pb-2">
+                        <img style="float:right;" :src="mediumBookImage" :height="(mediumBookImage != null && mediumBookImage !=='')? '120px;':'0'">
+                    </div>
                 </v-flex>
                 <v-flex lg6 md6 sm6 xs6>
                     <v-btn small
@@ -132,9 +129,8 @@
 
 <script lang="ts">
     import {Component, Prop, Vue} from 'vue-property-decorator';
-    import SearchFormComponent from '@/components/SearchFormComponent.vue';
-    import SearchResultComponent from '@/components/SearchResultComponent.vue';
-    import api, {Author, Category, Item, Publisher, SearchResult} from "../api";
+    import SearchComponent from '@/components/SearchComponent.vue';
+    import api, {Author, Category, Item, Publisher, SearchResult} from '../api';
     import Footer from '@/components/Footer.vue';
 
     interface CategoryWithChip extends Category {
@@ -143,8 +139,7 @@
 
     @Component({
         components: {
-            SearchFormComponent,
-            SearchResultComponent,
+            SearchComponent,
             'v-footer': Footer,
         },
     })
@@ -163,7 +158,6 @@
         private isFirstFocusCategory: boolean = false;
         private authors: Author[] = [];
         private publishers: Publisher[] = [];
-        private searchResult: SearchResult | null = null;
 
         private tabObject = [
             {tag: 'web', displayName: 'Web検索から登録'},
@@ -172,7 +166,6 @@
         private isSearchWeb: boolean = true;
         private inputTitleForSarch: string = '';
         private inputAuthorForSarch: string = '';
-        private isSearchComplete: boolean = false;
 
         public mounted() {
             window.scrollTo(0, 0);
@@ -275,7 +268,7 @@
             const publisherId = this.getPublisherIDByName(this.publisherName);
             if (this.validateInput()) {
                 const tmpAuthorName = this.authorName;
-                const createAuthor = new Promise(function (resolve) {
+                const createAuthor = new Promise((resolve) => {
                     if (authorId === 0) {
                         const author = {
                             author_name: tmpAuthorName,
@@ -290,13 +283,11 @@
                 });
 
                 const tmpPublisherName = this.publisherName;
-                console.log("p1:",this.publisherName);
-                const createPublisher = new Promise(function (resolve) {
+                const createPublisher = new Promise((resolve) => {
                     if (publisherId === 0) {
                         const publisher = {
                             publisher_name: tmpPublisherName,
                         };
-                        console.log("p2:",publisher);
                         api.publisher.create(publisher).then((res) => {
                             const newPublisher = res.data.content as Publisher;
                             resolve(newPublisher.id);
@@ -308,14 +299,18 @@
                     }
                 });
 
-                createAuthor.then((authorId) => {
-                    createPublisher.then((publisherId) => {
-                        this.createBook(authorId as number, publisherId as number);
+                createAuthor.then((authorIdP) => {
+                    createPublisher.then((publisherIdP) => {
+                        this.createBook(authorIdP as number, publisherIdP as number);
                     }).catch(() => {
                         console.log('publisher create error');
+                    }).finally(() => {
+                        this.loadPublishers();
                     });
                 }).catch(() => {
                     console.log('author create error');
+                }).finally(() => {
+                    this.loadAuthors();
                 });
             }
         }
@@ -359,11 +354,7 @@
             }
         }
 
-        private searchComplete(result: SearchResult) {
-            this.searchResult = result;
-        }
-
-        private searchResultSelect(select: Item) {
+        private searchSelect(select: Item) {
             this.bookName = select.title;
             this.authorName = select.author;
             this.smallBookImage = select.smallImageUrl;

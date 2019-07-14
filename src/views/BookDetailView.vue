@@ -20,8 +20,8 @@
                                     <div class="pt-1" style="width: 100%">
                                         <v-text-field
                                                 v-model="bookName"
-                                                maxlength="15"
-                                                :counter="18"
+                                                maxlength="25"
+                                                :counter="25"
                                                 height="18"
                                                 label="Book Title"
                                         ></v-text-field>
@@ -30,8 +30,8 @@
                                         <v-combobox
                                                 v-model="authorNameForShow"
                                                 :items="getAuthors"
-                                                maxlength="15"
-                                                :counter="18"
+                                                maxlength="25"
+                                                :counter="25"
                                                 height="18"
                                                 label="author"
                                         ></v-combobox>

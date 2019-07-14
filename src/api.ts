@@ -146,11 +146,11 @@ export default {
         },
     },
     rakuten: {
-        searchByTitle(title: string) {
-            return Axios.get(`${rakutenBaseURL}?applicationId=${appID}&title=${title}`);
+        searchByTitle(title: string, page:number, perPage: number) {
+            return Axios.get(`${rakutenBaseURL}?applicationId=${appID}&page=${page}&hits=${perPage}&title=${title}`);
         },
-        searchByAuthor(author: string) {
-            return Axios.get(`${rakutenBaseURL}?applicationId=${appID}&author=${author}`);
+        searchByAuthor(author: string, page:number, perPage: number) {
+            return Axios.get(`${rakutenBaseURL}?applicationId=${appID}&page=${page}&hits=${perPage}&author=${author}`);
         },
     },
 };
@@ -225,6 +225,8 @@ export interface Publisher {
 
 export interface SearchResult {
     Items: Items;
+    page: number;
+    pageCount: number;
 }
 
 export interface Items {

@@ -128,6 +128,7 @@
         private booksShow: BookShow[] = [];
         private books: Book[] = [];
         private totalCount: number = 0;
+        private page = 1;
         private perPage: number = 16;
         private loading: boolean = true;
 
@@ -147,7 +148,7 @@
         ];
         private selectFilter: string | null = null;
 
-        private page = 1;
+
 
         public mounted() {
             this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);
