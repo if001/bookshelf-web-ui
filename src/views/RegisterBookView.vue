@@ -283,7 +283,10 @@
                 });
             }).then((authorId: number) => {
                 return new Promise<number>((resolve) => {
-                    if (authorId === -1) {
+                    if (this.authorName.length === 0) {
+                     resolve(-2);
+                    }
+                    else if (authorId === -1) {
                         const author = {
                             author_name: authorName,
                         };
@@ -309,7 +312,10 @@
                 });
             }).then((publisherId: number) => {
                 return new Promise<number>((resolve) => {
-                    if (publisherId === -1) {
+                    if (this.publisherName.length === 0) {
+                        resolve(-2);
+                    }
+                    else if (publisherId === -1) {
                         const publisher = {
                             publisher_name: publisherName,
                         };
@@ -325,14 +331,16 @@
 
         }
 
+
         private createBookWithDetail() {
+            console.log(this.validateInput(), this.tmpValidateInput());
             if (this.validateInput() && this.tmpValidateInput()) {
+
                 const authorIdP: Promise<number> = this.getAuthorIdP(this.authorName);
                 const publisherIdP: Promise<number> = this.getPublisherIdP(this.publisherName);
-
                 Promise.all([authorIdP, publisherIdP]).then((value) => {
-                    const authorId = value[0];
-                    const publisherId = value[1];
+                    const authorId: number | null = (value[0] === -2) ? null : value[0];
+                    const publisherId: number | null = (value[1] === -2) ? null : value[1];
                     if (authorId !== -1 && publisherId !== -1) {
                         this.createBook(authorId, publisherId);
                     } else {
@@ -345,7 +353,7 @@
         }
 
 
-        private createBook(authorID: number, publisherID: number) {
+        private createBook(authorID: number | null, publisherID: number | null) {
             const book = {
                 title: this.bookName,
                 author_id: authorID,
@@ -377,7 +385,7 @@
         }
 
         private tmpValidateInput(): boolean {
-            return (this.authorName.length !==0 && this.bookName.length !== 0 && this.publisherName.length !== 0);
+            return (this.bookName.length !==0);
         }
 
         private changeTab(tab: number) {

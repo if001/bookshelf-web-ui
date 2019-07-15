@@ -84,7 +84,7 @@
                                 </v-btn>
                             </v-card-title>
                         </v-flex>
-                        <v-flex xs3>
+                        <v-flex xs3 style="height: 128px;">
                             <div v-if="bookImage != null && bookImage !== ''">
                                 <img style="float:right;" :src="bookImage" height="128px" alt="bookImage">
                             </div>
