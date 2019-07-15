@@ -86,7 +86,9 @@
                         </v-flex>
                         <v-flex xs3 style="height: 128px;">
                             <div v-if="bookImage != null && bookImage !== ''">
-                                <img style="float:right;" :src="bookImage" height="128px" alt="bookImage">
+                                <a :href="bookDetail.affiliate_url" target="_blank">
+                                    <img style="float:right;" :src="bookImage" height="128px" alt="bookImage">
+                                </a>
                             </div>
                         </v-flex>
                     </v-layout>
@@ -271,6 +273,8 @@
                     // categories: this.categories,
                     medium_image_url: this.book.medium_image_url,
                     small_image_url: this.book.small_image_url,
+                    item_url: this.book.item_url,
+                    affiliate_url: this.book.affiliate_url,
                     created_at: this.book.created_at,
                     updated_at: this.book.updated_at,
                     isOpen: false,
@@ -474,8 +478,6 @@
                     id: this.bookMount.id,
                     title: this.bookMount.title,
                     author_id: authorID,
-                    medium_image_url: this.bookMount.medium_image_url,
-                    small_image_url: this.bookMount.small_image_url,
                 };
                 api.books.update(book).then((res) => {
                     this.bookMount = null;

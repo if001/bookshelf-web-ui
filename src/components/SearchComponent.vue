@@ -108,6 +108,8 @@
         mediumImageUrl: string;
         publisherName: string;
         itemPrice: string;
+        itemUrl: string;
+        affiliateUrl: string;
         isChecked: boolean;
     }
     const maxRegisterNum: number = 5;
@@ -137,6 +139,9 @@
         @Emit()
         private select(book: Content){}
 
+
+
+
         private searchTitle() {
             if (this.validateTitleInput() && this.inputTitleForSearch.length !== 0) {
                 toTop();
@@ -145,15 +150,8 @@
                     this.searchResult = res.data as SearchResult;
                     this.totalCount = this.searchResult.pageCount;
                     this.searchResultWithCheck = this.searchResult.Items.map((x) => {
-                        return {
-                            title: x.Item.title,
-                            author: x.Item.author,
-                            smallImageUrl: x.Item.smallImageUrl,
-                            mediumImageUrl: x.Item.mediumImageUrl,
-                            publisherName: x.Item.publisherName,
-                            itemPrice: x.Item.itemPrice,
-                            isChecked: false,
-                        } as SearchResultWithCheck;
+                        // console.log(this.itemToResultWithCheck(x));
+                        return itemToResultWithCheck(x.Item);
                     });
                 }).catch(() => {
                     // console.log('search api error');
@@ -169,15 +167,7 @@
                     this.searchResult = res.data as SearchResult;
                     this.totalCount = this.searchResult.pageCount;
                     this.searchResultWithCheck = this.searchResult.Items.map((x) => {
-                        return {
-                            title: x.Item.title,
-                            author: x.Item.author,
-                            smallImageUrl: x.Item.smallImageUrl,
-                            mediumImageUrl: x.Item.mediumImageUrl,
-                            publisherName: x.Item.publisherName,
-                            itemPrice: x.Item.itemPrice,
-                            isChecked: false,
-                        } as SearchResultWithCheck;
+                        return itemToResultWithCheck(x.Item);
                     });
                 }).catch(() => {
                     // console.log('search api error');
@@ -310,6 +300,8 @@
                     publisher_Id: this.getPublisherIDByName(x.publisherName),
                     medium_image_url: x.mediumImageUrl,
                     small_image_url: x.smallImageUrl,
+                    item_url: x.itemUrl,
+                    affiliate_url: x.affiliateUrl,
                 };
                 api.books.create(book).then(() => {
                     resolve(true);
@@ -340,6 +332,20 @@
 
     function toTop() {
         window.scrollTo(0, 0);
+    }
+
+    function itemToResultWithCheck(item: Content): SearchResultWithCheck {
+        return {
+            title: item.title,
+            author: item.author,
+            smallImageUrl: item.smallImageUrl,
+            mediumImageUrl: item.mediumImageUrl,
+            publisherName: item.publisherName,
+            itemPrice: item.itemPrice,
+            itemUrl: item.itemUrl,
+            affiliateUrl: item.affiliateUrl,
+            isChecked: false,
+        } as SearchResultWithCheck;
     }
 </script>
 

@@ -147,16 +147,17 @@ export default {
     },
     rakuten: {
         searchByTitle(title: string, page: number, perPage: number) {
-            return Axios.get(`${rakutenBaseURL}?applicationId=${appID}&page=${page}&hits=${perPage}&title=${title}`);
+            return Axios.get(`${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&page=${page}&hits=${perPage}&title=${title}`);
         },
         searchByAuthor(author: string, page: number, perPage: number) {
-            return Axios.get(`${rakutenBaseURL}?applicationId=${appID}&page=${page}&hits=${perPage}&author=${author}`);
+            return Axios.get(`${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&page=${page}&hits=${perPage}&author=${author}`);
         },
     },
 };
 
 const rakutenBaseURL = 'https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404';
 const appID = '1035362638897131844';
+const affiliateId = '188fe732.33eb93bf.188fe733.aaced19b';
 
 export interface ContentResult<T> {
     status: number;
@@ -185,6 +186,8 @@ export interface Book {
     categories: Category[];
     small_image_url: string | null;
     medium_image_url: string | null;
+    item_url: string | null;
+    affiliate_url: string | null;
     created_at: string;
     updated_at: string;
 }
@@ -240,4 +243,6 @@ export interface Content {
     mediumImageUrl: string;
     publisherName: string;
     itemPrice: string;
+    itemUrl: string;
+    affiliateUrl: string;
 }
