@@ -174,6 +174,7 @@ export interface MultiContentResult<T> {
 
 export interface Book {
     id: number;
+    isbn: string | null;
     title: string;
     author: Author | null;
     publishedAt: string | null;
@@ -237,6 +238,7 @@ export interface Contents {
 }
 
 export interface Content {
+    isbn: string;
     title: string;
     author: string;
     smallImageUrl: string;
