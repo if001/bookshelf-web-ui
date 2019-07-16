@@ -285,8 +285,7 @@
                 return new Promise<number>((resolve) => {
                     if (this.authorName.length === 0) {
                      resolve(-2);
-                    }
-                    else if (authorId === -1) {
+                    } else if (authorId === -1) {
                         const author = {
                             author_name: authorName,
                         };
@@ -314,8 +313,7 @@
                 return new Promise<number>((resolve) => {
                     if (this.publisherName.length === 0) {
                         resolve(-2);
-                    }
-                    else if (publisherId === -1) {
+                    } else if (publisherId === -1) {
                         const publisher = {
                             publisher_name: publisherName,
                         };
@@ -385,7 +383,7 @@
         }
 
         private tmpValidateInput(): boolean {
-            return (this.bookName.length !==0);
+            return (this.bookName.length !== 0);
         }
 
         private changeTab(tab: number) {

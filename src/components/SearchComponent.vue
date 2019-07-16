@@ -1,6 +1,7 @@
 <template>
     <v-container>
-        <v-flex lg8 md8 sm12 xs12 offset-lg2 offset-md2 class="pa-2">
+        <v-layout row wrap align-center>
+            <v-flex lg8 md8 sm12 xs12 offset-lg2 offset-md2 class="pa-2">
             <v-form
                     ref="titleForm"
                     v-model="validTitleSearchBox"
@@ -31,9 +32,10 @@
                 ></v-text-field>
             </v-form>
         </v-flex>
+        </v-layout>
 
-<!--        <v-layout row wrap align-center v-if="getSearchResult.length !== 0">-->
-        <v-layout row wrap align-center>
+
+        <v-layout row wrap align-center v-if="getSearchResult.length !== 0">
             <v-flex lg12 md12 sm12 xs12>
                 <v-btn v-if="getSearchResult.length !== 0 && selectMultiBooks.length !==0"
                        small
@@ -54,8 +56,9 @@
                 </v-btn>
             </v-flex>
         </v-layout>
-        <v-flex>
-            <v-layout row wrap justify-start>
+
+
+        <v-layout row wrap justify-start>
                 <v-flex class="pa-2" v-for="result in getSearchResult" lg4 md6 sm12 xs12>
                     <v-card color="white" class="black--text" @click="selectBook(result)" style="cursor:pointer">
                         <v-layout row>
@@ -80,18 +83,17 @@
                     </v-card>
                 </v-flex>
             </v-layout>
-            <v-layout row nowrap justify-center v-if="getSearchResult.length !== 0">
+        <v-layout row nowrap justify-center v-if="getSearchResult.length !== 0">
                 <v-flex md12 class="mt-2 mb-4 text-xs-center">
                     <v-pagination
                             v-model="page"
                             :length=totalCount
-                            :total-visible="7"
                             @input="pagenaite()"
                             color="#1e90ff"
                     ></v-pagination>
                 </v-flex>
             </v-layout>
-        </v-flex>
+
     </v-container>
 </template>
 
@@ -281,7 +283,7 @@
                         const p = {
                             publisher_name: x,
                         };
-                        api.author.create(p).then((res) => {
+                        api.publisher.create(p).then((res) => {
                             const newPublisher = res.data.content as Publisher;
                             publisherIds.push(newPublisher.id);
                         });
