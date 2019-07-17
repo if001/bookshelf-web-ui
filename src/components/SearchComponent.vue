@@ -100,7 +100,7 @@
 
 <script lang="ts">
     import {Component, Emit, Prop, Vue} from 'vue-property-decorator';
-    import api, {SearchResult, Book, Content, Author, Publisher} from '../api';
+    import api, {SearchResult, Book, Content, Author, Publisher, ContentResult} from "../api";
     import {AxiosPromise} from 'axios';
 
     export interface SearchResultWithCheck {
@@ -248,14 +248,14 @@
                             authorIds.push(authorId);
                         }
                     });
-                    notCreateAuthors.forEach((x: string) => {
-                        const a = {
-                            author_name: x,
-                        };
-                        api.author.create(a).then((res2) => {
-                            const newAuthor = res2.data.content as Author;
+                    const createP: AxiosPromise<ContentResult<Author>>[] = notCreateAuthors.map((x: string) => {
+                        return api.author.create({author_name: x})
+                    });
+                    Promise.all(createP).then((res) => {
+                        res.forEach((x) => {
+                            const newAuthor = x.data.content as Author;
                             authorIds.push(newAuthor.id);
-                        });
+                        })
                     });
                 }).finally(() => {
                     resolve(authorIds);
@@ -279,12 +279,12 @@
                             publisherIds.push(publisherId);
                         }
                     });
-                    notCreatePublishers.forEach((x: string) => {
-                        const p = {
-                            publisher_name: x,
-                        };
-                        api.publisher.create(p).then((res) => {
-                            const newPublisher = res.data.content as Publisher;
+                    const createP: AxiosPromise<ContentResult<Publisher>>[] = notCreatePublishers.map((x: string) => {
+                        return api.publisher.create({ publisher_name: x});
+                    });
+                    Promise.all(createP).then((res) => {
+                        res.forEach((x) => {
+                            const newPublisher = x.data.content as Publisher;
                             publisherIds.push(newPublisher.id);
                         });
                     });
@@ -315,14 +315,18 @@
         private createBookMultiple() {
             this.isSaving = true;
             Promise.all([this.createAuthorP(), this.createPublisherP()]).then(() => {
-                const p: Promise<boolean>[] = this.selectMultiBooks.map((x) => {
-                    return this.createBook(x)
-                });
-                Promise.all(p).catch(() => {
-                    console.log('books create error')
-                }).finally(() => {
-                    this.isSaving = false;
-                    this.$router.push('/bookshelf');
+                Promise.all([api.author.getCounted(), api.publisher.getCounted()]).then((value) => {
+                    this.authors = value[0].data.content as Author[];
+                    this.publishers = value[1].data.content as Publisher[];
+                    const p: Promise<boolean>[] = this.selectMultiBooks.map((x) => {
+                        return this.createBook(x)
+                    });
+                    Promise.all(p).catch(() => {
+                        console.log('books create error')
+                    }).finally(() => {
+                        this.isSaving = false;
+                        this.$router.push('/bookshelf');
+                    });
                 });
             }).catch(() => {
                 console.log('author/publisher create error')
