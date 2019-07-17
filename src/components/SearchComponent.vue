@@ -33,67 +33,62 @@
             </v-form>
         </v-flex>
         </v-layout>
-
-
-        <v-layout row wrap align-center v-if="getSearchResult.length !== 0">
-            <v-flex lg12 md12 sm12 xs12>
-                <v-btn v-if="getSearchResult.length !== 0 && selectMultiBooks.length !==0"
-                       small
-                       color="success"
-                       outline
-                       :loading="isSaving"
-                       @click="createBookMultiple">CREATE
-                    <v-icon small color="green" class="ml-2">done</v-icon>
-                </v-btn>
-                <v-btn v-else
-                       small
-                       color="success"
-                       outline
-                       :loading="isSaving"
-                       disabled
-                       @click="createBookMultiple">CREATE
-                    <v-icon small color="green" class="ml-2">done</v-icon>
-                </v-btn>
+        
+        <v-layout row wrap justify-start>
+            <div v-if="isSearchLoading" style="margin: auto;">
+                <div style="display:inline-block; padding-right: 15px;">loading...</div>
+                <div class="loading loading-content">
+                    <v-icon large>fa-book</v-icon>
+                </div>
+            </div>
+            <v-flex v-else class="pa-2" v-for="result in getSearchResult" lg4 md6 sm12 xs12>
+                <v-card color="white" class="black--text" @click="selectBook(result)" style="cursor:pointer">
+                    <v-layout row>
+                        <v-flex xs8>
+                            <div class="ma-1" style="width: 100%; float:left; font-size: 1.2em">{{result.title}}</div>
+                            <div class="ma-1" style="width: 100%; float:left;">{{result.author}}</div>
+                            <div class="ma-1" style="width: 100%; float:left;">{{result.publisherName}} / ￥ {{result.itemPrice}}</div>
+                            <v-btn v-if="result.isChecked"
+                                   icon
+                                   fab
+                                   dark
+                                   color="blue"
+                                   small
+                                   style="position:absolute; top: 0; right: 0;">
+                                <v-icon small dark>done</v-icon>
+                            </v-btn>
+                        </v-flex>
+                        <v-flex xs4 style="max-height: 128px;">
+                            <img style="float:right;" :src="result.mediumImageUrl" height="128px;">
+                        </v-flex>
+                    </v-layout>
+                </v-card>
             </v-flex>
         </v-layout>
-
-
-        <v-layout row wrap justify-start>
-                <v-flex class="pa-2" v-for="result in getSearchResult" lg4 md6 sm12 xs12>
-                    <v-card color="white" class="black--text" @click="selectBook(result)" style="cursor:pointer">
-                        <v-layout row>
-                            <v-flex xs8>
-                                <div class="ma-1" style="width: 100%; float:left; font-size: 1.2em">{{result.title}}</div>
-                                <div class="ma-1" style="width: 100%; float:left;">{{result.author}}</div>
-                                <div class="ma-1" style="width: 100%; float:left;">{{result.publisherName}} / ￥ {{result.itemPrice}}</div>
-                                <v-btn v-if="result.isChecked"
-                                       icon
-                                       fab
-                                       dark
-                                       color="blue"
-                                       small
-                                       style="position:absolute; top: 0; right: 0;">
-                                    <v-icon small dark>done</v-icon>
-                                </v-btn>
-                            </v-flex>
-                            <v-flex xs4 style="max-height: 128px;">
-                            <img style="float:right;" :src="result.mediumImageUrl" height="128px;">
-                            </v-flex>
-                        </v-layout>
-                    </v-card>
-                </v-flex>
-            </v-layout>
         <v-layout row nowrap justify-center v-if="getSearchResult.length !== 0">
-                <v-flex md12 class="mt-2 mb-4 text-xs-center">
-                    <v-pagination
-                            v-model="page"
-                            :length=totalCount
-                            @input="pagenaite()"
-                            color="#1e90ff"
-                    ></v-pagination>
-                </v-flex>
-            </v-layout>
-
+            <v-flex md12 class="mt-2 mb-4 text-xs-center">
+                <v-pagination
+                        v-model="page"
+                        :length=totalCount
+                        @input="pagenaite()"
+                        color="#1e90ff"
+                ></v-pagination>
+            </v-flex>
+        </v-layout>
+        <v-layout>
+            <v-btn v-if="getSearchResult.length !== 0 && selectMultiBooks.length !==0"
+                   fab
+                   bottom
+                   right
+                   color="blue"
+                   dark
+                   fixed
+                   :loading="isSaving"
+                   @click="createBookMultiple">
+                <!--@click="createModalIsOpen = !createModalIsOpen">-->
+                <v-icon>add</v-icon>
+            </v-btn>
+        </v-layout>
     </v-container>
 </template>
 
@@ -122,6 +117,7 @@
         private validAuthorSearchBox: boolean = true;
         private searchResult: SearchResult | null = null;
         private searchResultWithCheck: SearchResultWithCheck[] = [];
+        private isSearchLoading: boolean = false;
         private inputTitleForSearch: string = '';
         private inputAuthorForSearch: string = '';
         private searchType = 'title';
@@ -142,11 +138,10 @@
         private select(book: Content){}
 
 
-
-
         private searchTitle() {
             if (this.validateTitleInput() && this.inputTitleForSearch.length !== 0) {
                 toTop();
+                this.isSearchLoading = true;
                 this.searchType = 'title';
                 api.rakuten.searchByTitle(this.inputTitleForSearch, this.page, this.perPage).then((res) => {
                     this.searchResult = res.data as SearchResult;
@@ -155,6 +150,7 @@
                         // console.log(this.itemToResultWithCheck(x));
                         return itemToResultWithCheck(x.Item);
                     });
+                    this.isSearchLoading = false;
                 }).catch(() => {
                     // console.log('search api error');
                 });
@@ -164,6 +160,7 @@
         private searchAuthor() {
             if (this.validateAuthorInput() && this.inputAuthorForSearch.length !== 0) {
                 toTop();
+                this.isSearchLoading = true;
                 this.searchType = 'author';
                 api.rakuten.searchByAuthor(this.inputAuthorForSearch, this.page, this.perPage).then((res) => {
                     this.searchResult = res.data as SearchResult;
@@ -171,6 +168,7 @@
                     this.searchResultWithCheck = this.searchResult.Items.map((x) => {
                         return itemToResultWithCheck(x.Item);
                     });
+                    this.isSearchLoading = false;
                 }).catch(() => {
                     // console.log('search api error');
                 });
@@ -342,6 +340,7 @@
 
     function itemToResultWithCheck(item: Content): SearchResultWithCheck {
         return {
+            isbn: item.isbn,
             title: item.title,
             author: item.author,
             smallImageUrl: item.smallImageUrl,
@@ -356,5 +355,17 @@
 </script>
 
 <style scoped>
+    .loading {
+        display: inline-block;
+        font-size: 3em;
+    }
 
+    .loading-content {
+        animation: r1 1s linear infinite;
+    }
+
+    @keyframes r1 {
+        0%   { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 </style>
