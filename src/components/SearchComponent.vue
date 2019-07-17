@@ -33,7 +33,7 @@
             </v-form>
         </v-flex>
         </v-layout>
-        
+
         <v-layout row wrap justify-start>
             <div v-if="isSearchLoading" style="margin: auto;">
                 <div style="display:inline-block; padding-right: 15px;">loading...</div>
@@ -99,6 +99,7 @@
     import {AxiosPromise} from 'axios';
 
     export interface SearchResultWithCheck {
+        isbn: string;
         title: string;
         author: string;
         smallImageUrl: string;
@@ -295,6 +296,7 @@
         private createBook(x: SearchResultWithCheck): Promise<boolean> {
             return new Promise<boolean>((resolve) => {
                 const book = {
+                    isbn: x.isbn,
                     title: x.title,
                     author_id: this.getAuthorIDByName(x.author),
                     publisher_Id: this.getPublisherIDByName(x.publisherName),
