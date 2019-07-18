@@ -85,7 +85,7 @@
             </v-layout>
 
             <v-layout row nowrap justify-center>
-                <v-flex md12 class="mt-2 mb-4 text-xs-center">
+                <v-flex md12 class="mt-2 mb-5 text-xs-center">
                     <v-pagination
                             v-model="page"
                             :length=totalPageNumber
