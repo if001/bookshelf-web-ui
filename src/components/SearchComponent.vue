@@ -314,25 +314,40 @@
 
         private createBookMultiple() {
             this.isSaving = true;
-            Promise.all([this.createAuthorP(), this.createPublisherP()]).then(() => {
-                Promise.all([api.author.getCounted(), api.publisher.getCounted()]).then((value) => {
-                    this.authors = value[0].data.content as Author[];
-                    this.publishers = value[1].data.content as Publisher[];
-                    const p: Promise<boolean>[] = this.selectMultiBooks.map((x) => {
-                        return this.createBook(x)
-                    });
-                    Promise.all(p).catch(() => {
-                        console.log('books create error')
-                    }).finally(() => {
-                        this.isSaving = false;
-                        this.$router.push('/bookshelf');
-                    });
+            Promise.all([this.createAuthorP(), this.createPublisherP()])
+                .then(() => {
+                    Promise.all([api.author.getCounted(), api.publisher.getCounted()])
+                        .then((value) => {
+                            this.authors = value[0].data.content as Author[];
+                            this.publishers = value[1].data.content as Publisher[];
+                            const p: Promise<boolean>[] = this.selectMultiBooks.map((x) => {
+                                return this.createBook(x)
+                            });
+                            Promise.all(p)
+                                .then(() => {
+                                    // this.isSaving = false;
+                                    // this.$router.push('/bookshelf');
+                                    console.log("then");
+                                })
+                                .catch(() => {
+                                    console.log('books create error');
+                                })
+                                .finally(() => {
+                                    this.isSaving = false;
+                                    this.$router.push('/bookshelf');
+                                });
+                        })
+                        .catch(() => {
+                            console.log('author/publisher get error')
+                        });
+                })
+                .catch(() => {
+                    console.log('author/publisher create error')
+                })
+                .finally(() => {
+                    console.log('final outer')
+                    // this.isSaving = false;
                 });
-            }).catch(() => {
-                console.log('author/publisher create error')
-            }).finally(() => {
-                this.isSaving = false;
-            });
         }
     }
 
