@@ -95,11 +95,6 @@
                     ></v-pagination>
                 </v-flex>
             </v-layout>
-            <!--<book-create-modal-->
-                    <!--v-if="createModalIsOpen"-->
-                    <!--@close="createModalIsOpen = false"-->
-                    <!--@closeCreate="closeCreate()">-->
-            <!--</book-create-modal>-->
             <v-btn
                     fab
                     bottom
@@ -108,7 +103,6 @@
                     dark
                     fixed
                     @click="toRegister()">
-                    <!--@click="createModalIsOpen = !createModalIsOpen">-->
                 <v-icon>add</v-icon>
             </v-btn>
         </v-container>
