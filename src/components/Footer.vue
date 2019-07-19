@@ -10,8 +10,8 @@
         <!--</v-layout>-->
     <!--</v-footer>-->
 
-
-    <div class="footer-main">
+<!--    v-bind:class="{ active: isActive }"-->
+    <div v-bind:class="{ footer_main: !$vuetify.breakpoint.xs, footer_main_sx: $vuetify.breakpoint.xs }">
         <div style="color: lightgrey;margin: auto">
             <router-link class="policy" to="/policy">privacy policy</router-link>
             <span class="vertical-line">|</span>
@@ -33,11 +33,20 @@
 </script>
 
 <style scoped>
-    .footer-main{
+    .footer_main{
         display: flex;
         flex-direction: row;
         position: fixed;
         bottom:0;
+        height:25px;
+        width: 100%;
+        background-color: gray;
+        justify-content:space-around;
+    }
+
+    .footer_main_sx {
+        display: flex;
+        flex-direction: row;
         height:25px;
         width: 100%;
         background-color: gray;
