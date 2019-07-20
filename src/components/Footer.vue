@@ -49,6 +49,7 @@
         flex-direction: row;
         height:25px;
         width: 100%;
+        bottom:0;
         background-color: gray;
         justify-content:space-around;
     }

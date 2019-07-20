@@ -1,7 +1,7 @@
 <template>
     <!--<v-container  style="height: 1000px;">-->
     <div>
-        <v-container>
+        <v-container v-bind:class="{ xs_height: $vuetify.breakpoint.xs}">
             <v-layout row nowrap justify-center>
                 <v-flex md12>
                     <v-tabs fixed-tabs color="#fafafa">
@@ -241,6 +241,9 @@
     }
     .noset_font {
         color: grey;
+    }
+    .xs_height {
+        min-height: 87vh;
     }
 
     .loading {
