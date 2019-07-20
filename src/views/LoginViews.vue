@@ -8,6 +8,19 @@
                     </div>
                 </v-flex>
 
+                <v-flex lg6 md6 sm6 xs12 offset-lg3 offset-md3 offset-sm3>
+                    <v-alert
+                            v-if="alert"
+                            v-model="alert"
+                            dismissible
+                            color="error"
+                            icon="warning"
+                            outline
+                            @click="alert = false">
+                        {{message}}
+                    </v-alert>
+                </v-flex>
+
                 <v-flex lg4 md4 sm4 xs10 offset-lg4 offset-md4 offset-sm4 offset-xs1>
                     <v-form ref="form"
                             lazy-validation
@@ -35,8 +48,7 @@
                     <v-btn @click="login" :loading="isLoading" block color="#1E90FF" dark>
                         Login
                     </v-btn>
-
-                    <div class="warning-font">{{ message }}</div>
+                    <!--                    <div class="warning-font">{{ message }}</div>-->
                 </v-flex>
 
                 <v-flex lg12 md12 sm12 xs12>
@@ -95,6 +107,7 @@
         private showPassword: boolean = false;
         private message = '';
         private isLoading: boolean = false;
+        private alert: boolean = false;
 
         private passRules = [
             (v: any) => !!v || 'Name is required',
@@ -123,13 +136,10 @@
 
         private loginOps(p: Promise<firebase.auth.UserCredential>) {
             this.isLoading = true;
-            p.then((res) => {
-                if (res == null) {
-                    // console.log('not get response');
-                    // alert('auth failed');
-                    return;
-                }
+            p.then((res: firebase.auth.UserCredential) => {
                 if (res.user == null) {
+                    this.message = 'メールアドレスかパスワードが間違っています。';
+                    this.alert = true;
                     // console.log('user not found');
                     // alert('auth failed');
                     return;
@@ -144,6 +154,7 @@
                 });
             }).catch((err) => {
                 this.message = 'メールアドレスかパスワードが間違っています。';
+                this.alert = true;
                 // alert('ログインエラー');
                 // console.log(err);
             }).finally(() => {
