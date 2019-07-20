@@ -53,15 +53,16 @@
             <div v-if="!isLoading && getDescriptions.length === 0" style="margin: auto;padding: 20px;">
                 本のコメントを追加しましょう
             </div>
-            <div v-else style="max-height: 70vh; overflow: auto;">
+
+            <div v-else v-bind:class="{ scroll_description: !$vuetify.breakpoint.xs}">
                 <div v-for="description in getDescriptions" class=" pa-3">
                     <div class="ma-2" style="word-wrap: break-word;">{{description.content}}</div>
                     <v-layout>
                         <div class="ma-2 mr-5" style="color:dimgray; font-size: 0.8em;">{{createdAtFormatted(description.created_at)}}</div>
                         <v-spacer></v-spacer>
-                        <v-btn flat
+                        <v-btn color="dark"
+                               flat
                                icon
-                               color="dark"
                                small
                                v-on:click="delete(description.id)">
                             <v-icon small color="red darken-2">delete</v-icon>
@@ -186,6 +187,11 @@
 
     .loading-content {
         animation: r1 1s linear infinite;
+    }
+
+    .scroll_description {
+        max-height: 70vh;
+        overflow: auto;
     }
 
     @keyframes r1 {
