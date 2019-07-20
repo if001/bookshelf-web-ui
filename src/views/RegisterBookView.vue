@@ -124,9 +124,7 @@
                     </v-btn>
                 </v-flex>
             </v-layout>
-
         </v-container>
-        <v-footer></v-footer>
     </v-app>
 </template>
 
