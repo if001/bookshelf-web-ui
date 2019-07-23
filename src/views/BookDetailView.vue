@@ -228,76 +228,80 @@
             this.author = null;
             // this.categories = [];
             this.loadAuthors();
-            this.load();
+            this.loadBookDetail();
         }
 
-        private load() {
-            this.isLoadingBook = true;
-            this.isLoadingBookState = true;
-            api.book.get(this.bookID).then((response) => {
-                this.book = response.data.content as Book;
-            }).then(() => {
-                if (this.book == null) {
-                    return;
-                }
-                if (this.book.author != null) {
-                    this.author = {
-                        id: this.book.author.id,
-                        name: this.book.author.name,
-                    } as Author;
-                }
-                // TODO カテゴリは一旦off
-                // if (this.book.categories != null) {
-                //     for (const category of this.book.categories) {
-                //         const c: Category = category;
-                //         const newC = {
-                //             id: c.id,
-                //             name: c.name,
-                //             chip: true,
-                //         } as CategoryWithChip;
-                //         this.categories.push(newC);
-                //     }
-                // }
+        private loadBookDetail(): Promise<boolean> {
+            return new Promise((resolve) => {
+                this.isLoadingBook = true;
+                api.book.get(this.bookID).then((response) => {
+                    this.book = response.data.content as Book;
+                }).then(() => {
+                    if (this.book == null) {
+                        resolve(false);
+                    }
+                    else if (this.book.author != null) {
+                        this.author = {
+                            id: this.book.author.id,
+                            name: this.book.author.name,
+                        } as Author;
+                    } else {
+                        // TODO カテゴリは一旦off
+                        // if (this.book.categories != null) {
+                        //     for (const category of this.book.categories) {
+                        //         const c: Category = category;
+                        //         const newC = {
+                        //             id: c.id,
+                        //             name: c.name,
+                        //             chip: true,
+                        //         } as CategoryWithChip;
+                        //         this.categories.push(newC);
+                        //     }
+                        // }
 
-                this.bookMount = {
-                    id: this.book.id,
-                    title: this.book.title,
-                    author: this.author,
-                    publishedAt: this.book.publishedAt,
-                    accountId: this.book.accountId,
-                    publisher: this.book.publisher,
-                    start_at: this.book.start_at,
-                    end_at: this.book.end_at,
-                    nextBookId: this.book.nextBookId,
-                    prevBookId: this.book.prevBookId,
-                    // categories: this.categories,
-                    medium_image_url: this.book.medium_image_url,
-                    small_image_url: this.book.small_image_url,
-                    item_url: this.book.item_url,
-                    affiliate_url: this.book.affiliate_url,
-                    created_at: this.book.created_at,
-                    updated_at: this.book.updated_at,
-                    isOpen: false,
-                } as BookDetail;
-                this.copyValue();
-            }).catch(() => {
-                console.log('error');
-            }).finally(() => {
-                this.isLoadingBook = false;
-                this.isLoadingBookState = false;
+                        this.bookMount = {
+                            id: this.book.id,
+                            title: this.book.title,
+                            author: this.author,
+                            publishedAt: this.book.publishedAt,
+                            accountId: this.book.accountId,
+                            publisher: this.book.publisher,
+                            start_at: this.book.start_at,
+                            end_at: this.book.end_at,
+                            nextBookId: this.book.nextBookId,
+                            prevBookId: this.book.prevBookId,
+                            // categories: this.categories,
+                            medium_image_url: this.book.medium_image_url,
+                            small_image_url: this.book.small_image_url,
+                            item_url: this.book.item_url,
+                            affiliate_url: this.book.affiliate_url,
+                            created_at: this.book.created_at,
+                            updated_at: this.book.updated_at,
+                            isOpen: false,
+                        } as BookDetail;
+                        this.copyValue();
+                    }
+                }).catch(() => {
+                    console.log('error');
+                }).finally(() => {
+                    this.isLoadingBook = false;
+                    this.isLoadingBookState = false;
+                });
             });
         }
 
-
-        private loadAuthors() {
+        private loadAuthors(): Promise<boolean> {
+            return new Promise((resolve, reject) => {
             api.author.getCounted()
                 .then((res) => {
                     this.authors = res.data.content as Author[];
+                    resolve(true);
                 })
-                .finally(() => {})
                 .catch(() => {
                     console.log('load author error');
+                    reject(false);
                 });
+            });
         }
 
         get bookID(): number {
@@ -479,14 +483,21 @@
                     title: this.bookMount.title,
                     author_id: authorID,
                 };
-                api.books.update(book).then((res) => {
-                    this.bookMount = null;
-                    this.author = null;
-                    // this.categories = [];
-                    this.load();
-                }).catch(() => {
-                    console.log('book create error');
-                });
+                api.books.update(book)
+                    .then((res) => {
+                        this.bookMount = null;
+                        this.author = null;
+                        // this.categories = [];
+                    })
+                    .then(() => {
+                        return this.loadBookDetail();
+                    })
+                    .then(() => {
+                        return this.loadAuthors();
+                    })
+                    .catch(() => {
+                        console.log('book create error');
+                    });
             }
         }
 
@@ -566,24 +577,36 @@
         private changeState(startAt: string | null, endAt: string | null) {
             if (endAt == null && startAt == null) {
                 const res = confirm('読み始めた本に設定しますか？');
+                this.isLoadingBookState = true;
                 if (res && this.bookDetail != null) {
-                    api.book.startRead(this.bookDetail.id).then(() => {
-                        this.load();
-                    });
+                    api.book.startRead(this.bookDetail.id)
+                        .then(() => {
+                            return this.loadBookDetail();
+                        })
+                        .then(() => this.isLoadingBookState = false)
+                        .catch(() => {});
                 }
             } else if (endAt == null) {
                 const res = confirm('読み終わった本に設定しますか？');
+                this.isLoadingBookState = true;
                 if (res && this.bookDetail != null) {
-                    api.book.endRead(this.bookDetail.id).then(() => {
-                        this.load();
-                    });
+                    api.book.endRead(this.bookDetail.id)
+                        .then(() => {
+                            return this.loadBookDetail();
+                        })
+                        .then(() => this.isLoadingBookState = false)
+                        .catch(() => {});
                 }
             } else {
                 const res = confirm('読み始めた本に設定しますか？');
+                this.isLoadingBookState = true;
                 if (res && this.bookDetail != null) {
-                    api.book.startRead(this.bookDetail.id).then(() => {
-                        this.load();
-                    });
+                    api.book.startRead(this.bookDetail.id)
+                        .then(() => {
+                            return this.loadBookDetail();
+                        })
+                        .then(() => this.isLoadingBookState = false)
+                        .catch(() => {});
                 }
             }
         }
@@ -613,6 +636,9 @@
                 });
             }
         }
+
+
+
     }
     function formatDate(d: string | null) {
         if (d != null) {
