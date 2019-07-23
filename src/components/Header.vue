@@ -1,11 +1,18 @@
 <template>
-    <div class="header">
-        <div style="margin: auto;margin-left: 13.5px;font-weight: 400;">
+    <v-toolbar
+            fixed
+            color="blue accent-2"
+            dark
+            :scroll-off-screen="$vuetify.breakpoint.xs"
+            :scroll-threshold="40"
+            height="50"
+    >
+        <div style="font-weight: 400;">
             <router-link :to="{name:'booksView'}" class="title">{{title}}</router-link>
         </div>
         <v-spacer></v-spacer>
         <v-btn v-if="$vuetify.breakpoint.xs"
-               style="margin: auto;color: white"
+               style="color: white"
                icon
                flat
                color="dark"
@@ -14,7 +21,7 @@
             <v-icon>exit_to_app</v-icon>
         </v-btn>
         <v-btn v-else
-               style="margin: auto;color: white"
+               style="color: white"
                flat
                color="dark"
                small
@@ -23,8 +30,7 @@
         ><div style="margin-right: 5px;">Logout</div>
             <v-icon small style="color: white">exit_to_app</v-icon>
         </v-btn>
-    </div>
-
+        </v-toolbar>
 </template>
 
 <script lang="ts">
