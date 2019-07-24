@@ -208,7 +208,6 @@
         private book: Book | null = null;
         private bookMount: BookDetail | null = null;
         private bookDetail: BookDetail | null = null;
-        private author: Author | null = null;
         // private categories: Category[] = [];
         private authors: Author[] = [];
 
@@ -225,7 +224,6 @@
 
         private mounted() {
             this.bookMount = null;
-            this.author = null;
             // this.categories = [];
             this.loadAuthors();
             this.loadBookDetail().then(() => this.isLoadingBook = false);
@@ -242,14 +240,7 @@
                         if (this.book == null) {
                             return reject(false);
                         }
-                        if (this.book.author != null) {
-                            this.author = {
-                                id: this.book.author.id,
-                                name: this.book.author.name,
-                            } as Author;
-                        } else {
-                            this.author = null;
-                        }
+
                         // TODO カテゴリは一旦off
                         // if (this.book.categories != null) {
                         //     for (const category of this.book.categories) {
@@ -262,11 +253,10 @@
                         //         this.categories.push(newC);
                         //     }
                         // }
-
                         this.bookMount = {
                             id: this.book.id,
                             title: this.book.title,
-                            author: this.author,
+                            author: this.book.author,
                             publishedAt: this.book.publishedAt,
                             accountId: this.book.accountId,
                             publisher: this.book.publisher,
@@ -489,7 +479,6 @@
                 api.books.update(book)
                     .then((res) => {
                         this.bookMount = null;
-                        this.author = null;
                         // this.categories = [];
                     })
                     .then(() => {
