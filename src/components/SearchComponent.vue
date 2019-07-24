@@ -270,19 +270,23 @@
                     .then((res1) => {
                         this.authors = res1.data.content as Author[];
                         this.selectMultiBooks.forEach((x) => {
-                            const authorId = this.getAuthorIDByName(x.author);
-                            if (authorId === -1) {
-                                notCreateAuthors.push(x.author);
-                            } else {
-                                authorIds.push(authorId);
+                            if (x.author !== '') {
+                                const authorId = this.getAuthorIDByName(x.author);
+                                if (authorId === -1) {
+                                    notCreateAuthors.push(x.author);
+                                } else {
+                                    authorIds.push(authorId);
+                                }
                             }
                         });
+                        console.log(notCreateAuthors);
                         const createP: Array<AxiosPromise<ContentResult<Author>>> = notCreateAuthors.map((x: string) => {
                             return api.author.create({author_name: x});
                         });
                         return Promise.all(createP);
                     })
                     .then((res) => {
+                        console.log('authors promise all');
                         res.forEach((x) => {
                             const newAuthor = x.data.content as Author;
                             authorIds.push(newAuthor.id);
@@ -290,6 +294,7 @@
                         resolve(authorIds);
                     })
                     .catch(() => {
+                        console.log('create author error');
                         reject();
                     })
             });
@@ -305,11 +310,13 @@
                     .then((res1) => {
                         this.publishers = res1.data.content as Publisher[];
                         this.selectMultiBooks.forEach((x) => {
-                            const publisherId = this.getPublisherIDByName(x.publisherName);
-                            if (publisherId === -1) {
-                                notCreatePublishers.push(x.publisherName);
-                            } else {
-                                publisherIds.push(publisherId);
+                            if (x.publisherName !== '') {
+                                const publisherId = this.getPublisherIDByName(x.publisherName);
+                                if (publisherId === -1) {
+                                    notCreatePublishers.push(x.publisherName);
+                                } else {
+                                    publisherIds.push(publisherId);
+                                }
                             }
                         });
                         const createP: Array<AxiosPromise<ContentResult<Publisher>>> = notCreatePublishers.map((x: string) => {
@@ -318,6 +325,7 @@
                         return Promise.all(createP);
                     })
                     .then((res) => {
+                        console.log('publishers promise all');
                         res.forEach((x) => {
                             const newPublisher = x.data.content as Publisher;
                             publisherIds.push(newPublisher.id);
@@ -325,17 +333,20 @@
                         resolve(publisherIds);
                     })
                     .catch(() => {
+                        console.log('create publisher error');
                         reject();
                     });
             });
         }
 
         private createBook(x: SearchResultWithCheck): AxiosPromise {
+            const authorID = this.getAuthorIDByName(x.author);
+            const publisherID = this.getPublisherIDByName(x.publisherName);
             const book = {
                 isbn: x.isbn,
                 title: x.title,
-                author_id: this.getAuthorIDByName(x.author),
-                publisher_Id: this.getPublisherIDByName(x.publisherName),
+                author_id: authorID === -1 ? null : authorID,
+                publisher_Id: publisherID === -1 ? null : publisherID,
                 medium_image_url: x.mediumImageUrl,
                 small_image_url: x.smallImageUrl,
                 item_url: x.itemUrl,
@@ -348,9 +359,11 @@
             this.isSaving = true;
             Promise.all([this.createAuthorP(), this.createPublisherP()])
                 .then(() => {
+                    console.log('create 1');
                     return Promise.all([api.author.getCounted(), api.publisher.getCounted()]);
                 })
                 .then((value) => {
+                    console.log('create 2');
                     this.authors = value[0].data.content as Author[];
                     this.publishers = value[1].data.content as Publisher[];
                     const p: AxiosPromise[] = this.selectMultiBooks.map((x) => {
@@ -359,10 +372,12 @@
                     return Promise.all(p);
                 })
                 .then(() => {
+                    console.log('create 3');
                     this.isSaving = false;
                     this.$router.push('/bookshelf');
                 })
                 .catch(() => {
+                    console.log('create error');
                     localStorage.clear();
                     this.$router.push('/login');
                 })
