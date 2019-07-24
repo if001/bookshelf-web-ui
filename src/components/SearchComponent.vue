@@ -155,8 +155,7 @@
                     this.searchResult = res.data as SearchResult;
                     this.totalCount = this.searchResult.pageCount;
                     this.searchResultWithCheck = this.searchResult.Items.map((x) => {
-                        // console.log(this.itemToResultWithCheck(x));
-                        return itemToResultWithCheck(x.Item);
+                        return this.itemToResultWithCheck(x.Item);
                     });
                     this.isSearchLoading = false;
                 }).catch(() => {
@@ -174,7 +173,7 @@
                     this.searchResult = res.data as SearchResult;
                     this.totalCount = this.searchResult.pageCount;
                     this.searchResultWithCheck = this.searchResult.Items.map((x) => {
-                        return itemToResultWithCheck(x.Item);
+                        return this.itemToResultWithCheck(x.Item);
                     });
                     this.isSearchLoading = false;
                 }).catch(() => {
@@ -182,7 +181,20 @@
                 });
             }
         }
-
+        private itemToResultWithCheck(item: Content): SearchResultWithCheck {
+            return {
+                isbn: item.isbn,
+                title: item.title,
+                author: item.author,
+                smallImageUrl: item.smallImageUrl,
+                mediumImageUrl: item.mediumImageUrl,
+                publisherName: item.publisherName,
+                itemPrice: item.itemPrice,
+                itemUrl: item.itemUrl,
+                affiliateUrl: item.affiliateUrl,
+                isChecked: this.isSelect(item.isbn),
+            } as SearchResultWithCheck;
+        }
         private validateTitleInput(): boolean {
             return (this.$refs.authorForm as Vue & { validate: () => boolean }).validate();
         }
@@ -219,6 +231,16 @@
             }
         }
 
+        private isSelect(isbn: string): boolean {
+            let res = false;
+            this.selectMultiBooks.forEach((x) => {
+               if (x.isbn === isbn) {
+                   res = true;
+               }
+            });
+            return res;
+        }
+
         private getAuthorIDByName(name: string): number {
             let id = -1;
             this.authors.forEach((x: Author) => {
@@ -243,29 +265,33 @@
             const authorIds: number[] = [];
             const notCreateAuthors: string[] = [];
 
-            return new Promise<number[]>((resolve) => {
-                api.author.getCounted().then((res1) => {
-                    this.authors = res1.data.content as Author[];
-                    this.selectMultiBooks.forEach((x) => {
-                        const authorId = this.getAuthorIDByName(x.author);
-                        if (authorId === -1) {
-                            notCreateAuthors.push(x.author);
-                        } else {
-                            authorIds.push(authorId);
-                        }
-                    });
-                    const createP: Array<AxiosPromise<ContentResult<Author>>> = notCreateAuthors.map((x: string) => {
-                        return api.author.create({author_name: x});
-                    });
-                    Promise.all(createP).then((res) => {
+            return new Promise<number[]>((resolve, reject) => {
+                api.author.getCounted()
+                    .then((res1) => {
+                        this.authors = res1.data.content as Author[];
+                        this.selectMultiBooks.forEach((x) => {
+                            const authorId = this.getAuthorIDByName(x.author);
+                            if (authorId === -1) {
+                                notCreateAuthors.push(x.author);
+                            } else {
+                                authorIds.push(authorId);
+                            }
+                        });
+                        const createP: Array<AxiosPromise<ContentResult<Author>>> = notCreateAuthors.map((x: string) => {
+                            return api.author.create({author_name: x});
+                        });
+                        return Promise.all(createP);
+                    })
+                    .then((res) => {
                         res.forEach((x) => {
                             const newAuthor = x.data.content as Author;
                             authorIds.push(newAuthor.id);
                         });
-                    });
-                }).finally(() => {
-                    resolve(authorIds);
-                });
+                        resolve(authorIds);
+                    })
+                    .catch(() => {
+                        reject();
+                    })
             });
         }
 
@@ -274,29 +300,33 @@
             const publisherIds: number[] = [];
             const notCreatePublishers: string[] = [];
 
-            return new Promise<number[]>((resolve) => {
-                api.publisher.getCounted().then((res1) => {
-                    this.publishers = res1.data.content as Publisher[];
-                    this.selectMultiBooks.forEach((x) => {
-                        const publisherId = this.getPublisherIDByName(x.publisherName);
-                        if (publisherId === -1) {
-                            notCreatePublishers.push(x.publisherName);
-                        } else {
-                            publisherIds.push(publisherId);
-                        }
-                    });
-                    const createP: Array<AxiosPromise<ContentResult<Publisher>>> = notCreatePublishers.map((x: string) => {
-                        return api.publisher.create({ publisher_name: x});
-                    });
-                    Promise.all(createP).then((res) => {
+            return new Promise<number[]>((resolve, reject) => {
+                api.publisher.getCounted()
+                    .then((res1) => {
+                        this.publishers = res1.data.content as Publisher[];
+                        this.selectMultiBooks.forEach((x) => {
+                            const publisherId = this.getPublisherIDByName(x.publisherName);
+                            if (publisherId === -1) {
+                                notCreatePublishers.push(x.publisherName);
+                            } else {
+                                publisherIds.push(publisherId);
+                            }
+                        });
+                        const createP: Array<AxiosPromise<ContentResult<Publisher>>> = notCreatePublishers.map((x: string) => {
+                            return api.publisher.create({publisher_name: x});
+                        });
+                        return Promise.all(createP);
+                    })
+                    .then((res) => {
                         res.forEach((x) => {
                             const newPublisher = x.data.content as Publisher;
                             publisherIds.push(newPublisher.id);
                         });
+                        resolve(publisherIds);
+                    })
+                    .catch(() => {
+                        reject();
                     });
-                }).finally(() => {
-                    resolve(publisherIds);
-                });
             });
         }
 
@@ -332,7 +362,10 @@
                     this.isSaving = false;
                     this.$router.push('/bookshelf');
                 })
-                .catch(() => {})
+                .catch(() => {
+                    localStorage.clear();
+                    this.$router.push('/login');
+                })
                 .finally(() => {});
         }
 
@@ -346,21 +379,6 @@
 
     function toTop() {
         window.scrollTo(0, 0);
-    }
-
-    function itemToResultWithCheck(item: Content): SearchResultWithCheck {
-        return {
-            isbn: item.isbn,
-            title: item.title,
-            author: item.author,
-            smallImageUrl: item.smallImageUrl,
-            mediumImageUrl: item.mediumImageUrl,
-            publisherName: item.publisherName,
-            itemPrice: item.itemPrice,
-            itemUrl: item.itemUrl,
-            affiliateUrl: item.affiliateUrl,
-            isChecked: false,
-        } as SearchResultWithCheck;
     }
 </script>
 
