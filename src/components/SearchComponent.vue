@@ -273,7 +273,9 @@
                             if (x.author !== '') {
                                 const authorId = this.getAuthorIDByName(x.author);
                                 if (authorId === -1) {
-                                    notCreateAuthors.push(x.author);
+                                    if (!notCreateAuthors.includes(x.author)) {
+                                        notCreateAuthors.push(x.author);
+                                    }
                                 } else {
                                     authorIds.push(authorId);
                                 }
@@ -286,7 +288,6 @@
                         return Promise.all(createP);
                     })
                     .then((res) => {
-                        console.log('authors promise all');
                         res.forEach((x) => {
                             const newAuthor = x.data.content as Author;
                             authorIds.push(newAuthor.id);
@@ -313,7 +314,9 @@
                             if (x.publisherName !== '') {
                                 const publisherId = this.getPublisherIDByName(x.publisherName);
                                 if (publisherId === -1) {
-                                    notCreatePublishers.push(x.publisherName);
+                                    if (!notCreatePublishers.includes(x.publisherName)) {
+                                        notCreatePublishers.push(x.publisherName);
+                                    }
                                 } else {
                                     publisherIds.push(publisherId);
                                 }
@@ -325,7 +328,6 @@
                         return Promise.all(createP);
                     })
                     .then((res) => {
-                        console.log('publishers promise all');
                         res.forEach((x) => {
                             const newPublisher = x.data.content as Publisher;
                             publisherIds.push(newPublisher.id);
@@ -359,11 +361,9 @@
             this.isSaving = true;
             Promise.all([this.createAuthorP(), this.createPublisherP()])
                 .then(() => {
-                    console.log('create 1');
                     return Promise.all([api.author.getCounted(), api.publisher.getCounted()]);
                 })
                 .then((value) => {
-                    console.log('create 2');
                     this.authors = value[0].data.content as Author[];
                     this.publishers = value[1].data.content as Publisher[];
                     const p: AxiosPromise[] = this.selectMultiBooks.map((x) => {
@@ -372,7 +372,6 @@
                     return Promise.all(p);
                 })
                 .then(() => {
-                    console.log('create 3');
                     this.isSaving = false;
                     this.$router.push('/bookshelf');
                 })
