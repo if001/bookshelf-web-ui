@@ -1,8 +1,9 @@
 <template>
-    <v-container>
+    <v-container style="min-height: 600px;">
         <v-layout row wrap align-center>
             <v-flex lg8 md8 sm12 xs12 offset-lg2 offset-md2 class="pa-2">
             <v-form
+                    id="title_box"
                     ref="titleForm"
                     v-model="validTitleSearchBox"
                     lazy-validation>
@@ -13,11 +14,13 @@
                         :roles="searchFormRules"
                         required
                         append-outer-icon="search"
+                        @click="scrollBox('title_box')"
                         @click:append-outer="searchTitle()"
                 ></v-text-field>
             </v-form>
 
             <v-form
+                    id="author_box"
                     ref="authorForm"
                     v-model="validAuthorSearchBox"
                     lazy-validation>
@@ -28,6 +31,7 @@
                         :roles="searchFormRules"
                         required
                         append-outer-icon="search"
+                        @click="scrollBox('author_box')"
                         @click:append-outer="searchAuthor()"
                 ></v-text-field>
             </v-form>
@@ -136,8 +140,11 @@
         ];
 
         @Emit()
-        private select(book: Content){}
+        private select(book: Content) {}
 
+        private mounted() {
+            toTop();
+        }
 
         private searchTitle() {
             if (this.validateTitleInput() && this.inputTitleForSearch.length !== 0) {
@@ -247,14 +254,14 @@
                             authorIds.push(authorId);
                         }
                     });
-                    const createP: AxiosPromise<ContentResult<Author>>[] = notCreateAuthors.map((x: string) => {
-                        return api.author.create({author_name: x})
+                    const createP: Array<AxiosPromise<ContentResult<Author>>> = notCreateAuthors.map((x: string) => {
+                        return api.author.create({author_name: x});
                     });
                     Promise.all(createP).then((res) => {
                         res.forEach((x) => {
                             const newAuthor = x.data.content as Author;
                             authorIds.push(newAuthor.id);
-                        })
+                        });
                     });
                 }).finally(() => {
                     resolve(authorIds);
@@ -278,7 +285,7 @@
                             publisherIds.push(publisherId);
                         }
                     });
-                    const createP: AxiosPromise<ContentResult<Publisher>>[] = notCreatePublishers.map((x: string) => {
+                    const createP: Array<AxiosPromise<ContentResult<Publisher>>> = notCreatePublishers.map((x: string) => {
                         return api.publisher.create({ publisher_name: x});
                     });
                     Promise.all(createP).then((res) => {
@@ -293,61 +300,47 @@
             });
         }
 
-        private createBook(x: SearchResultWithCheck): Promise<boolean> {
-            return new Promise<boolean>((resolve) => {
-                const book = {
-                    isbn: x.isbn,
-                    title: x.title,
-                    author_id: this.getAuthorIDByName(x.author),
-                    publisher_Id: this.getPublisherIDByName(x.publisherName),
-                    medium_image_url: x.mediumImageUrl,
-                    small_image_url: x.smallImageUrl,
-                    item_url: x.itemUrl,
-                    affiliate_url: x.affiliateUrl,
-                };
-                api.books.create(book).then(() => {
-                    resolve(true);
-                });
-            });
+        private createBook(x: SearchResultWithCheck): AxiosPromise {
+            const book = {
+                isbn: x.isbn,
+                title: x.title,
+                author_id: this.getAuthorIDByName(x.author),
+                publisher_Id: this.getPublisherIDByName(x.publisherName),
+                medium_image_url: x.mediumImageUrl,
+                small_image_url: x.smallImageUrl,
+                item_url: x.itemUrl,
+                affiliate_url: x.affiliateUrl,
+            };
+            return api.books.create(book);
         }
-
 
         private createBookMultiple() {
             this.isSaving = true;
             Promise.all([this.createAuthorP(), this.createPublisherP()])
                 .then(() => {
-                    Promise.all([api.author.getCounted(), api.publisher.getCounted()])
-                        .then((value) => {
-                            this.authors = value[0].data.content as Author[];
-                            this.publishers = value[1].data.content as Publisher[];
-                            const p: Promise<boolean>[] = this.selectMultiBooks.map((x) => {
-                                return this.createBook(x)
-                            });
-                            Promise.all(p)
-                                .then(() => {
-                                    // this.isSaving = false;
-                                    // this.$router.push('/bookshelf');
-                                    console.log("then");
-                                })
-                                .catch(() => {
-                                    console.log('books create error');
-                                })
-                                .finally(() => {
-                                    this.isSaving = false;
-                                    this.$router.push('/bookshelf');
-                                });
-                        })
-                        .catch(() => {
-                            console.log('author/publisher get error')
-                        });
+                    return Promise.all([api.author.getCounted(), api.publisher.getCounted()]);
                 })
-                .catch(() => {
-                    console.log('author/publisher create error')
+                .then((value) => {
+                    this.authors = value[0].data.content as Author[];
+                    this.publishers = value[1].data.content as Publisher[];
+                    const p: AxiosPromise[] = this.selectMultiBooks.map((x) => {
+                        return this.createBook(x);
+                    });
+                    return Promise.all(p);
                 })
-                .finally(() => {
-                    console.log('final outer')
-                    // this.isSaving = false;
-                });
+                .then(() => {
+                    this.isSaving = false;
+                    this.$router.push('/bookshelf');
+                })
+                .catch(() => {})
+                .finally(() => {});
+        }
+
+        private scrollBox(elmId: string) {
+            // const element: HTMLInputElement = document.getElementById(elmId) as HTMLInputElement;
+            // const top: number = element.getBoundingClientRect().top;
+            // console.log(top, element.scrollTop);
+            // window.scrollTo(0, top);
         }
     }
 

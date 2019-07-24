@@ -228,24 +228,28 @@
             this.author = null;
             // this.categories = [];
             this.loadAuthors();
-            this.loadBookDetail();
+            this.loadBookDetail().then(() => this.isLoadingBook = false);
         }
 
         private loadBookDetail(): Promise<boolean> {
-            return new Promise((resolve) => {
+            return new Promise((resolve, reject) => {
                 this.isLoadingBook = true;
-                api.book.get(this.bookID).then((response) => {
-                    this.book = response.data.content as Book;
-                }).then(() => {
-                    if (this.book == null) {
-                        resolve(false);
-                    }
-                    else if (this.book.author != null) {
-                        this.author = {
-                            id: this.book.author.id,
-                            name: this.book.author.name,
-                        } as Author;
-                    } else {
+                api.book.get(this.bookID)
+                    .then((response) => {
+                        this.book = response.data.content as Book;
+                    })
+                    .then(() => {
+                        if (this.book == null) {
+                            return reject(false);
+                        }
+                        if (this.book.author != null) {
+                            this.author = {
+                                id: this.book.author.id,
+                                name: this.book.author.name,
+                            } as Author;
+                        } else {
+                            this.author = null;
+                        }
                         // TODO カテゴリは一旦off
                         // if (this.book.categories != null) {
                         //     for (const category of this.book.categories) {
@@ -280,12 +284,11 @@
                             isOpen: false,
                         } as BookDetail;
                         this.copyValue();
-                    }
-                }).catch(() => {
+                        resolve(true);
+                    }).catch(() => {
                     console.log('error');
                 }).finally(() => {
                     this.isLoadingBook = false;
-                    this.isLoadingBookState = false;
                 });
             });
         }
@@ -492,6 +495,7 @@
                     .then(() => {
                         return this.loadBookDetail();
                     })
+                    .then(() => this.isLoadingBook = false)
                     .then(() => {
                         return this.loadAuthors();
                     })
@@ -583,7 +587,10 @@
                         .then(() => {
                             return this.loadBookDetail();
                         })
-                        .then(() => this.isLoadingBookState = false)
+                        .then(() => {
+                            this.isLoadingBook = false;
+                            this.isLoadingBookState = false;
+                        })
                         .catch(() => {});
                 }
             } else if (endAt == null) {
@@ -594,7 +601,10 @@
                         .then(() => {
                             return this.loadBookDetail();
                         })
-                        .then(() => this.isLoadingBookState = false)
+                        .then(() => {
+                            this.isLoadingBook = false;
+                            this.isLoadingBookState = false;
+                        })
                         .catch(() => {});
                 }
             } else {
@@ -605,7 +615,10 @@
                         .then(() => {
                             return this.loadBookDetail();
                         })
-                        .then(() => this.isLoadingBookState = false)
+                        .then(() => {
+                            this.isLoadingBook = false;
+                            this.isLoadingBookState = false;
+                        })
                         .catch(() => {});
                 }
             }
