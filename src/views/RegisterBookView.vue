@@ -324,14 +324,11 @@
                     }
                 });
             });
-
         }
 
 
         private createBookWithDetail() {
-            console.log(this.validateInput(), this.tmpValidateInput());
             if (this.validateInput() && this.tmpValidateInput()) {
-
                 const authorIdP: Promise<number> = this.getAuthorIdP(this.authorName);
                 const publisherIdP: Promise<number> = this.getPublisherIdP(this.publisherName);
                 Promise.all([authorIdP, publisherIdP]).then((value) => {
