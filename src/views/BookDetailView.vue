@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container style="min-height: 85vh;">
         <v-layout row wrap justify-space-around class="mb-3">
             <v-flex xs12 md5 class="ma-2">
                 <v-card color="white" class="black--text">
@@ -357,8 +357,8 @@
                 id: 0,
                 name: v,
             } as Author;
-            if (this.bookMount != null) {
-                this.bookMount.author = tmpAuthor;
+            if (this.bookDetail != null) {
+                this.bookDetail.author = tmpAuthor;
             }
         }
 
@@ -391,8 +391,8 @@
                 id: 0,
                 name: v,
             } as Publisher;
-            if (this.bookMount != null) {
-                this.bookMount.publisher = tmpPublisher;
+            if (this.bookDetail != null) {
+                this.bookDetail.publisher = tmpPublisher;
             }
         }
 
@@ -441,7 +441,7 @@
         }
         private isAuthorChanged(): boolean {
             if (this.bookMount != null && this.bookDetail != null && this.bookMount.author != null) {
-                return (this.bookMount.author.name !== this.authorNameForUpdate);
+                return (this.authorNameForShow !== this.authorNameForUpdate);
             } else {
                 return false;
             }
