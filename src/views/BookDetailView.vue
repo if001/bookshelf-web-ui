@@ -13,29 +13,30 @@
                                     <!-- TODO 出版年はひとまず消す <div>(2013)</div>-->
                                 </div>
                                 <div v-if="isOpen">
-                                    <v-form ref="form"
-                                            v-model="validEditBox"
-                                            lazy-validation>
-                                    <div class="pt-1" style="width: 100%">
-                                        <v-text-field
-                                                v-model="bookName"
-                                                maxlength="40"
-                                                :counter="40"
-                                                height="18"
-                                                label="Book Title"
-                                        ></v-text-field>
-                                    </div>
-                                    <div class="pt-1" style="width: 100%">
-                                        <v-combobox
-                                                v-model="authorNameForShow"
-                                                :items="getAuthors"
-                                                maxlength="40"
-                                                :counter="40"
-                                                height="18"
-                                                label="author"
-                                        ></v-combobox>
-                                    </div>
-                                    </v-form>
+<!--                                    一旦編集機能はなし-->
+<!--                                    <v-form ref="form"-->
+<!--                                            v-model="validEditBox"-->
+<!--                                            lazy-validation>-->
+<!--                                        <div class="pt-1" style="width: 100%">-->
+<!--                                            <v-text-field-->
+<!--                                                    v-model="bookName"-->
+<!--                                                    maxlength="40"-->
+<!--                                                    :counter="40"-->
+<!--                                                    height="18"-->
+<!--                                                    label="Book Title"-->
+<!--                                            ></v-text-field>-->
+<!--                                        </div>-->
+<!--                                        <div class="pt-1" style="width: 100%">-->
+<!--                                            <v-combobox-->
+<!--                                                    v-model="authorNameForShow"-->
+<!--                                                    :items="getAuthors"-->
+<!--                                                    maxlength="40"-->
+<!--                                                    :counter="40"-->
+<!--                                                    height="18"-->
+<!--                                                    label="author"-->
+<!--                                            ></v-combobox>-->
+<!--                                        </div>-->
+<!--                                    </v-form>-->
 <!--                                    <div class="pt-1" style="width: 100%">-->
 <!--                                        <v-text-field-->
 <!--                                                :counter="15"-->
@@ -78,10 +79,21 @@
                                        dark
                                        color="blue"
                                        small
-                                       @click="updateBookWithDetail"
+                                       @click="isOpen=!isOpen"
                                        style="position:absolute; top: 80px; right: 85px;">
                                     <v-icon small dark>done</v-icon>
                                 </v-btn>
+<!--                                編集機能つけるならこっち-->
+<!--                                <v-btn v-if="isOpen && !isLoadingBook"-->
+<!--                                       icon-->
+<!--                                       fab-->
+<!--                                       dark-->
+<!--                                       color="blue"-->
+<!--                                       small-->
+<!--                                       @click="updateBookWithDetail"-->
+<!--                                       style="position:absolute; top: 80px; right: 85px;">-->
+<!--                                    <v-icon small dark>done</v-icon>-->
+<!--                                </v-btn>-->
                             </v-card-title>
                         </v-flex>
                         <v-flex xs3 style="height: 128px;">
