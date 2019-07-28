@@ -1,39 +1,80 @@
 <template>
-    <v-content>
-        <v-toolbar>
-            <v-toolbar-title>サイトタイトル</v-toolbar-title>
-            <v-flex xs12 sm6 md3 class="ma-3">
-                <v-text-field
-                        label="hoge"
-                        append-icon=search
-                ></v-text-field>
-            </v-flex>
-            <v-icon right>exit_to_app</v-icon>
-            <v-btn @click="logout">ログアウト</v-btn>
+    <v-toolbar
+            fixed
+            color="blue accent-2"
+            dark
+            :scroll-off-screen="$vuetify.breakpoint.xs"
+            :scroll-threshold="40"
+            height="50"
+    >
+        <div style="font-weight: 400;">
+            <router-link :to="{name:'booksView'}" class="title">{{title}}</router-link>
+        </div>
+        <v-spacer></v-spacer>
+        <v-btn v-if="$vuetify.breakpoint.xs"
+               style="color: white"
+               icon
+               flat
+               color="dark"
+               right
+               v-on:click="logout">
+            <v-icon>exit_to_app</v-icon>
+        </v-btn>
+        <v-btn v-else
+               style="color: white"
+               flat
+               color="dark"
+               small
+               right
+               v-on:click="logout"
+        ><div style="margin-right: 5px;">Logout</div>
+            <v-icon small style="color: white">exit_to_app</v-icon>
+        </v-btn>
         </v-toolbar>
-    </v-content>
 </template>
 
 <script lang="ts">
-    import { Component, Vue } from 'vue-property-decorator';
+    import {Component, Vue} from 'vue-property-decorator';
     import store from '@/store';
+    import firebase from 'firebase/app';
 
     @Component
     export default class Header extends Vue {
+        private title: string = 'BookStorage';
+
         private logout() {
-            store.dispatch('logout').then(() => {
-                console.log(store.getters.loginStatus);
-                if (!store.getters.loginStatus) {
+            store.dispatch('removeToken').then(() => {
+                firebase.auth().signOut().then(() => {
+                    localStorage.clear();
                     this.$router.push('/login');
-                } else {
-                    alert('ログアウトエラー');
-                }
+                }).catch(() => {
+                    console.log('firebase sign out error');
+                });
+            }).catch(() => {
+                console.log('vuex remove token error');
             });
+        }
+
+        private search() {
+            console.log('search!!');
         }
     }
 
 </script>
 
 <style scoped>
-
+    .title {
+        text-decoration: none;
+        color:white;
+    }
+    .header{
+        display: flex;
+        flex-direction: row;
+        position: fixed;
+        top:0;
+        height:50px;
+        width: 100%;
+        background-color: dodgerblue;
+        z-index:2000;
+    }
 </style>

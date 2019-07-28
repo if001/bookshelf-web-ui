@@ -1,109 +1,262 @@
 <template>
-    <v-container>
-        <v-layout row wrap>
+    <!--<v-container  style="height: 1000px;">-->
+    <div>
+        <v-container v-bind:class="{ xs_height: $vuetify.breakpoint.xs}">
+            <v-layout row nowrap justify-center>
+                <v-flex md12>
+                    <v-tabs fixed-tabs color="#fafafa">
+                        <v-tab
+                                v-for="f in filterObject"
+                                :key="f.displayName"
+                                @change="changeFilter(f.filterKey)"
+                        >
+                            {{ f.displayName }}
+                        </v-tab>
+                    </v-tabs>
+                </v-flex>
+            </v-layout>
 
-            <v-flex class="ma-2" v-for="book in books">
-                <v-card>
-                    <v-layout row>
-                        <v-flex class="font-weight-light font title pa-2">タイトル５６７８９０１２３４</v-flex>
-                        <v-icon large right v-if="book.status==1">bookmark</v-icon>
-                        <v-icon large right v-if="book.status==2">done</v-icon>
-                        <v-icon large right v-if="book.status==3">close</v-icon>
-                    </v-layout>
+            <v-layout row nowrap justify-center>
+                <v-flex lg8 md8 sm8 xs8 class="ma-3">
+                    <v-text-field
+                            flat
+                            label="Search"
+                            append-icon=search
+                            @click:append="search"
+                    ></v-text-field>
+                </v-flex>
+                <v-flex lg4 md4 sm4 xs4 class="ma-3">
+                    <v-select
+                        v-model="selectSortKey"
+                        :items="sortObject"
+                        item-text="displayName"
+                        item-value="sortKey"
+                        append-icon="sort"
+                        label="Sort"
+                        @change="changeSort()"
+                ></v-select>
+                </v-flex>
+            </v-layout>
 
-                    <v-flex row class="font-weight-thin　subheading pa-2">著者３４５６７８９０</v-flex>
+            <v-layout row wrap justify-start>
+                <div v-if="loading" style="margin: auto;">
+                    <div style="display:inline-block; padding-right: 15px;">loading...</div>
+                    <div class="loading loading-content">
+                        <v-icon large>fa-book</v-icon>
+                    </div>
+                </div>
+                <div v-if="!loading && booksShow.length === 0" style="margin: auto;padding: 20px;">
+                    読みたい本を登録しましょう。
+                </div>
+                <v-flex v-else class="pa-2" v-for="book in booksShow" :key="book.id" lg4 md6 sm12
+                        xs12>
+                    <v-hover>
+                        <v-card
+                                slot-scope="{ hover }"
+                                :class="`elevation-${hover ? 12 : 2}`"
+                                :to="{ name: 'bookDetail', params: { bookId: book.id }}"
+                        >
+                            <v-layout class="font-weight-light font title pt-2 pl-3 pr-2 pb-0" row>
+                                <v-flex align-self-center>{{book.title}}</v-flex>
+                                <v-btn flat
+                                       icon
+                                       color="dark"
+                                       class="ma-0">
+                                    <v-icon large
+                                            color="blue-grey darken-1"
+                                    >{{ bookState(book.start_at, book.end_at).icon }}
+                                    </v-icon>
+                                </v-btn>
+                            </v-layout>
 
-                    <v-btn block small>
-                        <v-icon v-if="book.isOpen" style="width: 100%" @click="chengeBookDiscribe(book)">arrow_drop_up</v-icon>
-                        <v-icon v-else style="width: 100%" @click="chengeBookDiscribe(book)">arrow_drop_down</v-icon>
-                    </v-btn>
+                            <!--<v-icon large right v-if="book.status==1">bookmark</v-icon>-->
+                            <!--<v-icon large right v-if="book.status==2">done</v-icon>-->
+                            <!--<v-icon large right v-if="book.status==3">close</v-icon>-->
+                            <v-layout class="pt-0 pl-4 pr-2 pb-2" row>
+                                <v-flex align-self-center :class="{ noset_font: (book.author == null)}">
+                                    {{ (book.author != null) ? book.author.name : "not set" }}
+                                    ({{ (book.publisher != null) ? book.publisher.name : "not set" }})
+                                </v-flex>
+                            </v-layout>
+                        </v-card>
+                    </v-hover>
+                    <!--<v-divider></v-divider>-->
+                </v-flex>
+            </v-layout>
 
-                    <v-layout v-if="book.isOpen" row>
-                        <v-flex md6>
-                            <v-card-title>要素</v-card-title>
-                            <v-flex row sx-12>
-                                <v-btn outline round class="green">カテゴリ１</v-btn>
-                                <v-btn outline round class="green">カテゴリ１</v-btn>
-                            </v-flex>
-                            <v-card-title>要素</v-card-title>
-                            <v-card-title>要素</v-card-title>
-                        </v-flex>
-                        <v-flex md6>
-                            <v-textarea
-                                    outline
-                                    rows=3
-                                    label="Outline textarea"
-                                    value="The Woodman set to work at once"
-                            ></v-textarea>
-                        </v-flex>
-                    </v-layout>
-
-                </v-card>
-            </v-flex>
-
-        </v-layout>
-
-        <v-btn
-                fab
-                bottom
-                right
-                color="pink"
-                dark
-                fixed
-                @click="dialog = !dialog">
-            <v-icon>add</v-icon>
-        </v-btn>
-    </v-container>
+            <v-layout row nowrap justify-center>
+                <v-flex md12 class="mt-2 mb-5 text-xs-center">
+                    <v-pagination
+                            v-model="page"
+                            :length=totalPageNumber
+                            :total-visible="7"
+                            @input="pagenaite()"
+                            color="#1e90ff"
+                    ></v-pagination>
+                </v-flex>
+            </v-layout>
+            <v-btn
+                    fab
+                    bottom
+                    right
+                    color="pink"
+                    dark
+                    fixed
+                    @click="toRegister()">
+                <v-icon>add</v-icon>
+            </v-btn>
+        </v-container>
+    </div>
 </template>
 
 <script lang="ts">
-    import { Component, Vue } from 'vue-property-decorator';
+    import {Component, Vue} from 'vue-property-decorator';
+    import api, {Book} from '@/api';
 
-    interface Book {
-        status: number;
+    interface BookShow extends Book {
         isOpen: boolean;
-
     }
 
     @Component
     export default class BooksView extends Vue {
-        private books = [
-            {
-                status: 1,
-                isOpen: false,
-            },
-            {
-                status: 2,
-                isOpen: false,
-            },
-            {
-                status: 3,
-                isOpen: false,
-            },
-            {
-                status: 3,
-                isOpen: false,
-            },
-            {
-                status: 3,
-                isOpen: false,
-            },
-            {
-                status: 3,
-                isOpen: false,
-            },
+        private booksShow: BookShow[] = [];
+        private books: Book[] = [];
+        private totalCount: number = 0;
+        private page = 1;
+        private perPage: number = 16;
+        private loading: boolean = true;
 
-        ] as Book[];
+        private createModalIsOpen: boolean = false;
 
-        private chengeBookDiscribe(book: Book) {
-            book.isOpen = !book.isOpen;
+        private sortObject = [
+            {sortKey: 'updated_at', displayName: '更新日'},
+            {sortKey: 'created_at', displayName: '作成日'},
+            {sortKey: 'title', displayName: 'タイトル'},
+            {sortKey: 'author_id', displayName: '作者'},
+            {sortKey: 'publisher_id', displayName: '出版社'},
+        ];
+        private selectSortKey = '';
+        private filterObject = [
+            {filterKey: null, displayName: 'ALL'},
+            {filterKey: 'not_read', displayName: '未読'},
+            {filterKey: 'reading', displayName: '読中'},
+            {filterKey: 'read', displayName: '読了'},
+        ];
+        private selectFilter: string | null = null;
+
+
+
+        public mounted() {
+            this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);
+            toTop();
         }
 
+        private load(page: number | null, perPage: number | null, sortKey: string | null, filter: string | null) {
+            this.booksShow = [];
+            this.loading = true;
+            api.books.list(page, perPage, sortKey, filter).then((response) => {
+                this.books = response.data.content.books as Book[];
+                this.totalCount = response.data.content.total_count as number;
+            }).then(() => {
+                this.booksShow = this.books.map((book) => {
+                    return {
+                        id: book.id,
+                        title: book.title,
+                        author: book.author,
+                        publishedAt: book.publishedAt,
+                        accountId: book.accountId,
+                        publisher: book.publisher,
+                        start_at: book.start_at,
+                        end_at: book.end_at,
+                        nextBookId: book.nextBookId,
+                        prevBookId: book.prevBookId,
+                        categories: book.categories,
+                        created_at: book.created_at,
+                        updated_at: book.updated_at,
+                        isOpen: false,
+                    } as BookShow;
+                });
+                this.loading = false;
+            }).catch((err) => {
+                console.log('/books api error');
+                // console.log(err);
+                this.loading = false;
+                this.$router.push('/login');
+            });
+        }
 
+        private closeCreate() {
+            this.createModalIsOpen = false;
+            this.selectSortKey = 'created_at';
+            this.load(this.page, this.perPage, this.selectSortKey, null);
+        }
+        private search() {
+            console.log('search');
+        }
+        private bookState(startAt: string | null, endAt: string | null) {
+            if (endAt == null && startAt == null) {
+                return { icon : 'fa-book', label : '未読' };
+            } else if (endAt == null) {
+                return { icon : 'bookmark', label : '読中' };
+            } else {
+                return { icon : 'done', label : '了読' };
+            }
+        }
+
+        private changeSort() {
+            this.page = 1;
+            this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);
+        }
+
+        private changeFilter(filter: string) {
+            this.selectFilter = filter;
+            this.page = 1;
+            this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);
+            toTop();
+        }
+
+        private pagenaite() {
+            this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);
+            toTop();
+        }
+
+        get totalPageNumber() {
+            // return Math.floor(this.booksShow.length / this.perPage) + 1
+            return Math.floor(this.totalCount / this.perPage) + 1;
+        }
+
+        private toRegister() {
+            this.$router.push('/register');
+        }
+    }
+    function toTop() {
+        window.scrollTo(0, 0);
     }
 
 </script>
 
 <style scoped>
+    .reverse{
+        transform: scale(-1, 1);
+    }
+    .noset_font {
+        color: grey;
+    }
+    .xs_height {
+        min-height: 87vh;
+    }
 
+    .loading {
+        display: inline-block;
+        font-size: 3em;
+    }
+
+    .loading-content {
+        animation: r1 1s linear infinite;
+    }
+
+    @keyframes r1 {
+        0%   { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 </style>

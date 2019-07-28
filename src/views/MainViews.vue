@@ -1,7 +1,11 @@
 <template>
-    <v-app light>
+    <v-app light color="#fafafa">
         <v-header></v-header>
-        <books-view></books-view>
+        <div style="padding-top: 50px;">
+            <!--<books-view></books-view>-->
+            <router-view/>
+        </div>
+
         <v-footer></v-footer>
     </v-app>
 </template>
@@ -19,11 +23,9 @@
         },
     })
     export default class MainViews extends Vue {
-
     }
 
 </script>
 
 <style scoped>
-
 </style>

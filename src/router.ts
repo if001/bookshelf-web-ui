@@ -2,67 +2,86 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import BooksViews from './views/BooksView.vue';
-import BooksViewsOld from './views/BooksViewOld.vue';
-import VuetifyTest from './views/VuetifyTest.vue';
 import MainViews from '@/views/MainViews.vue';
 import LoginViews from '@/views/LoginViews.vue';
-import store from '@/store';
-import NotFoundViews from "@/views/NotFoundViews.vue";
+import SignUpViews from '@/views/SignUpView.vue';
+import ResetPasswordViews from '@/views/ResetPasswordView.vue';
+import RegisterBookViews from '@/views/RegisterBookView.vue';
+import BookDetailView from '@/views/BookDetailView.vue';
+import NotFoundViews from '@/views/NotFoundViews.vue';
+import PrivacyPolicy from '@/views/PrivalcyPolicyView.vue';
 
 Vue.use(Router);
 
 const router = new Router({
-  mode: 'history',
-  base: process.env.BASE_URL,
-  routes:  [
-    {
-      path: '/login',
-      name: 'loginViews',
-      component: LoginViews,
-    },
-    {
-      path: '/bookshelf',
-      name: 'mainViews',
-      component: MainViews,
-      meta: { requiresAuth: true },
-      children: [
+    mode: 'history',
+    base: process.env.BASE_URL,
+    routes: [
         {
-          path: '/books',
-          name: 'booksView',
-          component: BooksViews,
+            path: '/login',
+            name: 'loginViews',
+            component: LoginViews,
         },
         {
-          path: '/old',
-          name: 'booksViewOld',
-          component: BooksViewsOld,
+            path: '/',
+            component: LoginViews,
         },
         {
-          path: '/vuetify',
-          name: 'vuetify',
-          component: VuetifyTest,
+            path: '/signup',
+            name: 'signUpViews',
+            component: SignUpViews,
         },
-      ],
-    },
-    {
-      path: '*',
-      component: NotFoundViews,
-    },
-  ],
+        {
+            path: '/reset_password',
+            name: 'resetPasswordViews',
+            component: ResetPasswordViews,
+        },
+        {
+            path: '/policy',
+            name: 'privacyPolicy',
+            component: PrivacyPolicy,
+        },
+        {
+            path: '/bookshelf',
+            component: MainViews,
+            meta: {requiresAuth: true},
+            children: [
+                {
+                    path: '/',
+                    name: 'booksView',
+                    component: BooksViews,
+                },
+                {
+                    path: ':bookId',
+                    name: 'bookDetail',
+                    component: BookDetailView,
+                },
+                {
+                    path: '/register',
+                    name: 'register',
+                    component: RegisterBookViews,
+                },
+            ],
+        },
+        {
+            path: '*',
+            redirect: {name: 'loginViews'},
+        },
+    ],
 });
 
 router.beforeEach((to, from, next) => {
-  const isLogin = store.getters.loginStatus;
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (isLogin) {
-      console.log('success');
-      next();
+    const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+    // const token = store.getters.getToken;
+    const token = localStorage.getItem('token');
+    if (requiresAuth && token == null) {
+        console.log('token not hold');
+        localStorage.clear();
+        next({path: '/login'});
     } else {
-      next({path: '/login'});
+        console.log('success');
+        next();
     }
-  } else {
-    console.log('error');
-    next();
-  }
 });
 
 export default router;
