@@ -147,10 +147,20 @@ export default {
     },
     rakuten: {
         searchByTitle(title: string, page: number, perPage: number) {
-            return Axios.get(`${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&page=${page}&hits=${perPage}&title=${title}`);
+            return Axios.get(
+                `${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&page=${page}&hits=${perPage}&title=${title}`,
+                {
+                    headers: {'Content-Type': 'application/json', 'Cache-Control': 'max-age=86400'},
+                }
+            );
         },
         searchByAuthor(author: string, page: number, perPage: number) {
-            return Axios.get(`${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&page=${page}&hits=${perPage}&author=${author}`);
+            return Axios.get(
+                `${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&page=${page}&hits=${perPage}&author=${author}`,
+                {
+                    headers: {'Content-Type': 'application/json', 'Cache-Control': 'max-age=86400'},
+                }
+            );
         },
     },
 };
