@@ -193,7 +193,16 @@
                     :bookID="bookID"
             ></BookDescription>
         </v-layout>
-
+        <v-btn
+                fab
+                bottom
+                right
+                color="blue"
+                dark
+                fixed
+                @click="toListPage()">
+            <v-icon>arrow_back</v-icon>
+        </v-btn>
     </v-container>
 </template>
 
@@ -651,7 +660,9 @@
             }
         }
 
-
+        private toListPage() {
+            this.$router.push('/bookshelf');
+        }
 
     }
     function formatDate(d: string | null) {

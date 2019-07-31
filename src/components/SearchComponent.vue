@@ -45,7 +45,7 @@
                     <v-icon large>fa-book</v-icon>
                 </div>
             </div>
-            <v-flex v-else class="pa-2" v-for="result in getSearchResult" lg4 md6 sm12 xs12>
+            <v-flex v-else class="pa-2" v-for="result in getSearchResult" :key="index" lg4 md6 sm12 xs12>
                 <v-card color="white" class="black--text" @click="selectBook(result)" style="cursor:pointer">
                     <v-layout row>
                         <v-flex xs8>
@@ -99,7 +99,7 @@
 
 <script lang="ts">
     import {Component, Emit, Prop, Vue} from 'vue-property-decorator';
-    import api, {SearchResult, Book, Content, Author, Publisher, ContentResult} from "../api";
+    import api, {SearchResult, Book, Content, Author, Publisher, ContentResult} from '../api';
     import {AxiosPromise} from 'axios';
 
     export interface SearchResultWithCheck {

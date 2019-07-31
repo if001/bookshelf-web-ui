@@ -64,7 +64,7 @@
                                flat
                                icon
                                small
-                               v-on:click="delete(description.id)">
+                               @click="deleteDescription(description.id)">
                             <v-icon small color="red darken-2">delete</v-icon>
                         </v-btn>
                         <!--TODO シェアボタン-->
@@ -131,7 +131,7 @@
             return formatDateTime(created_at);
         }
 
-        private delete(id: number) {
+        private deleteDescription(id: number) {
             const ans = confirm('削除しますか?');
             if (ans) {
                 api.description.delete(id).then((res) => {
