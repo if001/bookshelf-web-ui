@@ -34,7 +34,7 @@ module.exports = {
                 },
                 {
                     urlPattern: /.+\.(png|gif|jpg|jpeg|svg)$/,
-                    handler: "CacheFirst",
+                    handler: "cacheFirst",
                     options: {
                         cacheName: cacheId + "-image-cache",
                         expiration: {
