@@ -225,8 +225,8 @@
             return publisherNames;
         }
 
-        private getAuthorIDByName(authors: Author[], name: string): number {
-            let id = -1;
+        private getAuthorIDByName(authors: Author[], name: string): number | null {
+            let id: number | null = null;
             authors.forEach((x: Author) => {
                 if (name === x.name) {
                     id = x.id;
@@ -235,8 +235,8 @@
             return id;
         }
 
-        private getPublisherIDByName(publishers: Publisher[], name: string): number {
-            let id = -1;
+        private getPublisherIDByName(publishers: Publisher[], name: string): number | null {
+            let id: number | null = null;
             publishers.forEach((x: Publisher) => {
                 if (name === x.name) {
                     id = x.id;
@@ -270,26 +270,28 @@
         //     }
         // }
 
-        private getAuthorIdP(authorName: string): Promise<number> {
+        private getAuthorIdP(authorName: string): Promise<number | null> {
             return api.author.getCounted().then((res) => {
                 return new Promise<Author[]>((resolve) => {
                     resolve(res.data.content as Author[]);
                 });
             }).then((authors) => {
-                return new Promise<number>((resolve) => {
+                return new Promise<number | null>((resolve) => {
                     resolve(this.getAuthorIDByName(authors, authorName));
                 });
-            }).then((authorId: number) => {
-                return new Promise<number>((resolve) => {
+            }).then((authorId: number | null) => {
+                return new Promise<number | null>((resolve, reject) => {
                     if (this.authorName.length === 0) {
-                     resolve(-2);
-                    } else if (authorId === -1) {
+                        resolve(null);
+                    } else if (authorId === null) {
                         const author = {
                             author_name: authorName,
                         };
                         api.author.create(author).then((res) => {
                             const newAuthor = res.data.content as Author;
                             resolve(newAuthor.id);
+                        }).catch((err) => {
+                            reject(err.toString());
                         });
                     } else {
                         resolve(authorId);
@@ -298,50 +300,56 @@
             });
         }
 
-        private getPublisherIdP(publisherName: string): Promise<number> {
-            return api.publisher.getCounted().then((res) => {
-                return new Promise<Publisher[]>((resolve) => {
-                    resolve(res.data.content as Publisher[]);
+        private getPublisherIdP(publisherName: string): Promise<number | null> {
+            return api.publisher.getCounted()
+                .then((res) => {
+                    return new Promise<Publisher[]>((resolve) => {
+                        resolve(res.data.content as Publisher[]);
+                    });
+                })
+                .then((publishers: Publisher[]) => {
+                    return new Promise<number | null>((resolve) => {
+                        resolve(this.getPublisherIDByName(publishers, publisherName));
+                    });
+                })
+                .then((publisherId: number | null) => {
+                    return new Promise<number | null>((resolve,reject) => {
+                        if (publisherName.length === 0) {
+                            resolve(null);
+                        } else if (publisherId === null) {
+                            const publisher = {
+                                publisher_name: publisherName,
+                            };
+                            api.publisher.create(publisher).then((res) => {
+                                const newPublisher = res.data.content as Publisher;
+                                resolve(newPublisher.id);
+                            }).catch((err) => {
+                                reject(err.toString());
+                            });
+                        } else {
+                            console.log("debug3");
+                            resolve(publisherId);
+                        }
+                    });
                 });
-            }).then((publishers: Publisher[]) => {
-                return new Promise<number>((resolve) => {
-                    resolve(this.getPublisherIDByName(publishers, publisherName));
-                });
-            }).then((publisherId: number) => {
-                return new Promise<number>((resolve) => {
-                    if (this.publisherName.length === 0) {
-                        resolve(-2);
-                    } else if (publisherId === -1) {
-                        const publisher = {
-                            publisher_name: publisherName,
-                        };
-                        api.publisher.create(publisher).then((res) => {
-                            const newPublisher = res.data.content as Publisher;
-                            resolve(newPublisher.id);
-                        });
-                    } else {
-                        resolve(publisherId);
-                    }
-                });
-            });
         }
 
 
         private createBookWithDetail() {
             if (this.validateInput() && this.tmpValidateInput()) {
-                const authorIdP: Promise<number> = this.getAuthorIdP(this.authorName);
-                const publisherIdP: Promise<number> = this.getPublisherIdP(this.publisherName);
-                Promise.all([authorIdP, publisherIdP]).then((value) => {
-                    const authorId: number | null = (value[0] === -2) ? null : value[0];
-                    const publisherId: number | null = (value[1] === -2) ? null : value[1];
-                    if (authorId !== -1 && publisherId !== -1) {
+                const authorIdP: Promise<number | null> = this.getAuthorIdP(this.authorName);
+                const publisherIdP: Promise<number | null> = this.getPublisherIdP(this.publisherName);
+                Promise.all([authorIdP, publisherIdP])
+                    .then((value) => {
+                        console.log("result:",value);
+                        const authorId: number | null = value[0];
+                        const publisherId: number | null = value[1];
                         this.createBook(authorId, publisherId);
-                    } else {
-                        console.log('create author or publisher error');
-                    }
-                }).catch(() => {
-                    console.log('create author/publisher error');
-                });
+                    })
+                    .catch(() => {
+                        console.log('create author/publisher error');
+                        this.$router.push("/bookshelf");
+                    });
             }
         }
 
@@ -363,7 +371,7 @@
         }
 
         private closeRegister() {
-            if (this.bookName.length > 0 && this.authorName.length > 0) {
+            if (this.bookName.length > 0 || this.authorName.length > 0 || this.publisherName.length > 0) {
                 const ans = confirm('このページを離れてよろしいですか。変更は保存されません。');
                 if (ans) {
                     this.$router.push('/bookshelf');

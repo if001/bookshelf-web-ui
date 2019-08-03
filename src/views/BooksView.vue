@@ -45,7 +45,7 @@
                         <v-icon large>fa-book</v-icon>
                     </div>
                 </div>
-                <div v-if="!loading && booksShow.length === 0" style="margin: auto;padding: 20px;">
+                <div v-if="!loading && booksShow.length === 0 && selectFilter === null" style="margin: auto;padding: 20px;">
                     読みたい本を登録しましょう。
                 </div>
                 <v-flex v-else class="pa-2" v-for="book in booksShow" :key="book.id" lg4 md6 sm12
@@ -143,8 +143,6 @@
             {filterKey: 'read', displayName: '読了'},
         ];
         private selectFilter: string | null = null;
-
-
 
         public mounted() {
             this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);

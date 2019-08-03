@@ -45,7 +45,7 @@
                     <v-icon large>fa-book</v-icon>
                 </div>
             </div>
-            <v-flex v-else class="pa-2" v-for="result in getSearchResult" :key="index" lg4 md6 sm12 xs12>
+            <v-flex v-else class="pa-2" v-for="result in getSearchResult" lg4 md6 sm12 xs12>
                 <v-card color="white" class="black--text" @click="selectBook(result)" style="cursor:pointer">
                     <v-layout row>
                         <v-flex xs8>
@@ -69,6 +69,18 @@
                 </v-card>
             </v-flex>
         </v-layout>
+        <v-flex lg6 md6 sm6 xs12 offset-lg3 offset-md3 offset-sm3>
+            <v-alert
+                    v-if="alert"
+                    v-model="alert"
+                    dismissible
+                    color="error"
+                    icon="warning"
+                    outline
+                    @click="alert = false">
+                {{message}}
+            </v-alert>
+        </v-flex>
         <v-layout row nowrap justify-center v-if="getSearchResult.length !== 0">
             <v-flex md12 class="mt-2 mb-4 text-xs-center">
                 <v-pagination
@@ -135,6 +147,9 @@
         private authors: Author[] = [];
         private publishers: Publisher[] = [];
 
+        private alert: boolean = false;
+        private message: string = '';
+
         private searchFormRules = [
             (v: any) => !!v || 'required',
         ];
@@ -150,6 +165,7 @@
             if (this.validateTitleInput() && this.inputTitleForSearch.length !== 0) {
                 toTop();
                 this.isSearchLoading = true;
+                this.alert = false;
                 this.searchType = 'title';
                 api.rakuten.searchByTitle(this.inputTitleForSearch, this.page, this.perPage).then((res) => {
                     this.searchResult = res.data as SearchResult;
@@ -157,9 +173,11 @@
                     this.searchResultWithCheck = this.searchResult.Items.map((x) => {
                         return this.itemToResultWithCheck(x.Item);
                     });
-                    this.isSearchLoading = false;
                 }).catch(() => {
+                    this.setAlertMessage('検索エラー');
                     // console.log('search api error');
+                }).finally(() => {
+                    this.isSearchLoading = false;
                 });
             }
         }
@@ -168,6 +186,7 @@
             if (this.validateAuthorInput() && this.inputAuthorForSearch.length !== 0) {
                 toTop();
                 this.isSearchLoading = true;
+                this.alert = false;
                 this.searchType = 'author';
                 api.rakuten.searchByAuthor(this.inputAuthorForSearch, this.page, this.perPage).then((res) => {
                     this.searchResult = res.data as SearchResult;
@@ -175,9 +194,11 @@
                     this.searchResultWithCheck = this.searchResult.Items.map((x) => {
                         return this.itemToResultWithCheck(x.Item);
                     });
-                    this.isSearchLoading = false;
                 }).catch(() => {
+                    this.setAlertMessage('検索エラー');
                     // console.log('search api error');
+                }).finally(() => {
+                    this.isSearchLoading = false;
                 });
             }
         }
@@ -388,6 +409,11 @@
             // const top: number = element.getBoundingClientRect().top;
             // console.log(top, element.scrollTop);
             // window.scrollTo(0, top);
+        }
+
+        private setAlertMessage(msg: string) {
+            this.alert = true;
+            this.message = msg;
         }
     }
 
