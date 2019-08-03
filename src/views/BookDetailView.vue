@@ -102,6 +102,10 @@
                                     <img style="float:right;" :src="bookImage" height="128px" alt="bookImage">
                                 </a>
                             </div>
+                            <div v-else>
+                                <img src="@/assets/not_found.png" alt="not_found" height="128px">
+                            </div>
+
                         </v-flex>
                     </v-layout>
                     <v-divider light></v-divider>
