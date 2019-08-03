@@ -126,10 +126,6 @@
 
         public mounted() {
             window.scrollTo(0, 0);
-            const ref = document.referrer;
-            console.log("hoge:",document.referrer);
-            console.log("hoge:",document);
-            // if (this.isMobile() && ref === 'https://bookshelf-239408.firebaseapp.com') {
             const isRedirectAfter = localStorage.getItem(this.isRedirectLogin);
             if (this.isMobile() && isRedirectAfter != null && isRedirectAfter === 'true') {
                 this.afterRedirect();
