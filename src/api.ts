@@ -150,7 +150,7 @@ export default {
             return Axios.get(
                 `${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&page=${page}&hits=${perPage}&title=${title}`,
                 {
-                    headers: {'Content-Type': 'application/json', 'Cache-Control': 'max-age=86400'},
+                    headers: {'Content-Type': 'application/json'},
                 }
             );
         },
@@ -158,7 +158,7 @@ export default {
             return Axios.get(
                 `${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&page=${page}&hits=${perPage}&author=${author}`,
                 {
-                    headers: {'Content-Type': 'application/json', 'Cache-Control': 'max-age=86400'},
+                    headers: {'Content-Type': 'application/json'},
                 }
             );
         },
