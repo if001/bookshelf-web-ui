@@ -102,6 +102,10 @@
                                     <img style="float:right;" :src="bookImage" height="128px" alt="bookImage">
                                 </a>
                             </div>
+                            <div v-else>
+                                <img src="@/assets/not_found.png" alt="not_found" height="128px">
+                            </div>
+
                         </v-flex>
                     </v-layout>
                     <v-divider light></v-divider>
@@ -193,7 +197,16 @@
                     :bookID="bookID"
             ></BookDescription>
         </v-layout>
-
+        <v-btn
+                fab
+                bottom
+                right
+                color="blue"
+                dark
+                fixed
+                @click="toListPage()">
+            <v-icon>arrow_back</v-icon>
+        </v-btn>
     </v-container>
 </template>
 
@@ -651,7 +664,9 @@
             }
         }
 
-
+        private toListPage() {
+            this.$router.push('/bookshelf');
+        }
 
     }
     function formatDate(d: string | null) {

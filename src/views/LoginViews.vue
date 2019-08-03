@@ -64,7 +64,7 @@
                     </div>
                 </v-flex>
 
-                <v-flex lg8 md8 sm8 sm8 xs8 offset-lg2 offset-md2 offset-sm2 offset-xs2>
+                <v-flex lg8 md8 sm8 sm8 xs10 offset-lg2 offset-md2 offset-sm2 offset-xs1>
                     <v-btn
                             fab
                             color="gray"
@@ -78,9 +78,14 @@
                 <!--<div style="display: inline-block; margin: 10px;">OR</div>-->
                 <!--<hr class="divide" style="display: inline-block;width: 40%;">-->
                 <!--</v-flex>-->
-                <v-flex lg8 md8 sm8 xs8 offset-lg2 offset-md2 offset-sm2 offset-xs2>
-                    <div class="pa-3">
+                <v-flex lg8 md8 sm8 xs10 offset-lg2 offset-md2 offset-sm2 offset-xs1>
+                    <div class="pa-3" v-if="isMobile()">
+                        <img class="google-login" src="@/assets/btn_google.png" @click="loginWithGoogleAsMobile">
+                        <p style="font-size: 0.8em; color:dimgray">※ログインにのみ使われます</p>
+                    </div>
+                    <div class="pa-3" v-else>
                         <img class="google-login" src="@/assets/btn_google.png" @click="loginWithGoogle">
+                        <p style="font-size: 0.8em; color:dimgray">※ログインにのみ使われます</p>
                     </div>
                 </v-flex>
 
@@ -90,36 +95,45 @@
     </v-app>
 </template>
 <script lang="ts">
-    import {Component, Vue} from 'vue-property-decorator';
-    import firebase from 'firebase/app';
-    import 'firebase/auth';
-    import Footer from '@/components/Footer.vue';
+    import {Component, Vue} from "vue-property-decorator";
+    import firebase from "firebase/app";
+    import "firebase/auth";
+    import Footer from "@/components/Footer.vue";
 
     @Component({
         components: {
-            'v-footer': Footer,
+            "v-footer": Footer,
         },
     })
     export default class LoginViews extends Vue {
-        private email: string = '';
-        private password: string = '';
+        private email: string = "";
+        private password: string = "";
         private valid = false;
         private showPassword: boolean = false;
-        private message = '';
+        private message = "";
         private isLoading: boolean = false;
         private alert: boolean = false;
+        private isRedirectLogin = 'isRedirectLogin';
 
         private passRules = [
-            (v: any) => !!v || 'Name is required',
+            (v: any) => !!v || "Name is required",
         ];
 
         private emailRules = [
-            (v: any) => !!v || 'E-mail is required',
-            (v: any) => /.+@.+/.test(v) || 'E-mail must be valid',
+            (v: any) => !!v || "E-mail is required",
+            (v: any) => /.+@.+/.test(v) || "E-mail must be valid",
         ];
 
         public mounted() {
             window.scrollTo(0, 0);
+            const ref = document.referrer;
+            console.log("hoge:",document.referrer);
+            console.log("hoge:",document);
+            // if (this.isMobile() && ref === 'https://bookshelf-239408.firebaseapp.com') {
+            const isRedirectAfter = localStorage.getItem(this.isRedirectLogin);
+            if (this.isMobile() && isRedirectAfter != null && isRedirectAfter === 'true') {
+                this.afterRedirect();
+            }
         }
 
 
@@ -134,29 +148,63 @@
             this.loginOps(firebase.auth().signInWithPopup(provider));
         }
 
+        public loginWithGoogleAsMobile() {
+            localStorage.setItem("isRedirectLogin", 'true');
+            const provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithRedirect(provider)
+                .catch((err) => {
+                    console.log(err);
+                    // this.message = err.toString();
+                    localStorage.clear();
+                    this.setAlertMessage('ログインエラー');
+                    console.log("firebase sign in error");
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
+        }
+
+        private afterRedirect() {
+            this.isLoading = true;
+            firebase.auth().getRedirectResult()
+                .then((res: firebase.auth.UserCredential) => {
+                    const user = firebase.auth().currentUser;
+                    if (user === null) {
+                        return new Promise<string>((resolve, reject) => resolve(''));
+                    }
+                    return user.getIdToken();
+                })
+                .then((idToken: string) => {
+                    if (idToken !== '') {
+                        localStorage.setItem("token", idToken.toString());
+                        this.$router.push("/bookshelf");
+                    }
+                })
+                .catch((err) => {
+                    //console.log(err);
+                    // this.message = err.toString();
+                    localStorage.clear();
+                    this.setAlertMessage('ログインエラー');
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
+        }
+
         private loginOps(p: Promise<firebase.auth.UserCredential>) {
             this.isLoading = true;
             p.then((res: firebase.auth.UserCredential) => {
-                if (res.user == null) {
-                    this.message = 'メールアドレスかパスワードが間違っています。';
-                    this.alert = true;
-                    // console.log('user not found');
-                    // alert('auth failed');
-                    return;
+                if (res.user === null) {
+                    return new Promise<string>((_, reject) => reject('user not found'));
                 }
-                res.user.getIdToken()
-                    .then((idToken) => {
-                        localStorage.setItem('token', idToken.toString());
-                        this.$router.push('/bookshelf');
-                    }).catch((err) => {
-                    // console.log(err);
-                    console.log('firebase get token error');
-                });
+                return res.user.getIdToken();
+            }).then((idToken: string) => {
+                localStorage.setItem("token", idToken.toString());
+                this.$router.push("/bookshelf");
             }).catch((err) => {
-                this.message = 'メールアドレスかパスワードが間違っています。';
-                this.alert = true;
-                // alert('ログインエラー');
-                // console.log(err);
+                this.setAlertMessage('ログインエラー');
+                // this.message = err.toString();
+                // console.log("firebase get token error");
             }).finally(() => {
                 this.isLoading = false;
             });
@@ -164,6 +212,20 @@
 
         private validateInput(): boolean {
             return (this.$refs.form as Vue & { validate: () => boolean }).validate();
+        }
+
+        private setAlertMessage(msg: string) {
+            this.alert = true;
+            this.message = msg;
+        }
+
+        private isMobile(): boolean {
+            const ua = navigator.userAgent.toLowerCase();
+            const isiPhone = (ua.indexOf('iphone') > -1);
+            const isiPad = (ua.indexOf('ipad') > -1);
+            const isAndroid = (ua.indexOf('android') > -1) && (ua.indexOf('mobile') > -1);
+            const isAndroidTablet = (ua.indexOf('android') > -1) && (ua.indexOf('mobile') == -1);
+            return (isiPhone || isiPad || isAndroid || isAndroidTablet);
         }
 
     }
@@ -213,7 +275,8 @@
         cursor: pointer;
         height: 50px;
     }
-    .divide{
+
+    .divide {
         border: 0 none;
         height: 2px;
         border-top: 1px solid #8c8b8b;

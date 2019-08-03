@@ -51,7 +51,7 @@ export default {
         },
     },
     books: {
-        list(page: number | null, perPage: number | null, sortKey: string | null, filter: string | null) {
+        list(page: number | null, perPage: number | null, sortKey: string | null, state: string | null, isbn: string | null) {
             const p: { [key: string]: any; } = {};
             if (page != null && perPage != null) {
                 p.page = page;
@@ -60,8 +60,11 @@ export default {
             if (sortKey != null) {
                 p.sort_key = sortKey;
             }
-            if (filter != null) {
-                p.status = filter;
+            if (state != null) {
+                p.status = state;
+            }
+            if (isbn != null) {
+                p.isbn = isbn
             }
             return axios.request<ContentResult<PaginateBooks>>({
                 method: 'GET',
@@ -147,10 +150,20 @@ export default {
     },
     rakuten: {
         searchByTitle(title: string, page: number, perPage: number) {
-            return Axios.get(`${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&page=${page}&hits=${perPage}&title=${title}`);
+            return Axios.get(
+                `${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&page=${page}&hits=${perPage}&title=${title}`,
+                {
+                    headers: {'Content-Type': 'application/json'},
+                }
+            );
         },
         searchByAuthor(author: string, page: number, perPage: number) {
-            return Axios.get(`${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&page=${page}&hits=${perPage}&author=${author}`);
+            return Axios.get(
+                `${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&page=${page}&hits=${perPage}&author=${author}`,
+                {
+                    headers: {'Content-Type': 'application/json'},
+                }
+            );
         },
     },
 };

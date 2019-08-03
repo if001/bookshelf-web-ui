@@ -43,16 +43,14 @@
         private title: string = 'BookStorage';
 
         private logout() {
-            store.dispatch('removeToken').then(() => {
-                firebase.auth().signOut().then(() => {
+            firebase.auth().signOut()
+                .then(() => {
                     localStorage.clear();
                     this.$router.push('/login');
-                }).catch(() => {
+                })
+                .catch(() => {
                     console.log('firebase sign out error');
                 });
-            }).catch(() => {
-                console.log('vuex remove token error');
-            });
         }
 
         private search() {
@@ -67,7 +65,8 @@
         text-decoration: none;
         color:white;
     }
-    .header{
+
+    .header {
         display: flex;
         flex-direction: row;
         position: fixed;

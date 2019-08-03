@@ -51,12 +51,21 @@
                         <v-flex xs8>
                             <div class="ma-1" style="width: 100%; float:left; font-size: 1.2em">{{result.title}}</div>
                             <div class="ma-1" style="width: 100%; float:left;">{{result.author}}</div>
-                            <div class="ma-1" style="width: 100%; float:left;">{{result.publisherName}} / ￥ {{result.itemPrice}}</div>
+                            <div class="ma-1" style="width: 100%; float:left;">{{result.publisherName}} /  {{result.itemPrice}}</div>
                             <v-btn v-if="result.isChecked"
                                    icon
                                    fab
                                    dark
                                    color="blue"
+                                   small
+                                   style="position:absolute; top: 0; right: 0;">
+                                <v-icon small dark>done</v-icon>
+                            </v-btn>
+                            <v-btn v-if="result.isAlreadyRegister"
+                                   icon
+                                   fab
+                                   dark
+                                   color="green"
                                    small
                                    style="position:absolute; top: 0; right: 0;">
                                 <v-icon small dark>done</v-icon>
@@ -69,6 +78,18 @@
                 </v-card>
             </v-flex>
         </v-layout>
+        <v-flex lg6 md6 sm6 xs12 offset-lg3 offset-md3 offset-sm3>
+            <v-alert
+                    v-if="alert"
+                    v-model="alert"
+                    dismissible
+                    color="error"
+                    icon="warning"
+                    outline
+                    @click="alert = false">
+                {{message}}
+            </v-alert>
+        </v-flex>
         <v-layout row nowrap justify-center v-if="getSearchResult.length !== 0">
             <v-flex md12 class="mt-2 mb-4 text-xs-center">
                 <v-pagination
@@ -99,7 +120,7 @@
 
 <script lang="ts">
     import {Component, Emit, Prop, Vue} from 'vue-property-decorator';
-    import api, {SearchResult, Book, Content, Author, Publisher, ContentResult} from "../api";
+    import api, {SearchResult, Book, Content, Author, Publisher, ContentResult} from '../api';
     import {AxiosPromise} from 'axios';
 
     export interface SearchResultWithCheck {
@@ -113,6 +134,7 @@
         itemUrl: string;
         affiliateUrl: string;
         isChecked: boolean;
+        isAlreadyRegister: boolean;
     }
     const maxRegisterNum: number = 5;
 
@@ -135,6 +157,9 @@
         private authors: Author[] = [];
         private publishers: Publisher[] = [];
 
+        private alert: boolean = false;
+        private message: string = '';
+
         private searchFormRules = [
             (v: any) => !!v || 'required',
         ];
@@ -150,6 +175,7 @@
             if (this.validateTitleInput() && this.inputTitleForSearch.length !== 0) {
                 toTop();
                 this.isSearchLoading = true;
+                this.alert = false;
                 this.searchType = 'title';
                 api.rakuten.searchByTitle(this.inputTitleForSearch, this.page, this.perPage).then((res) => {
                     this.searchResult = res.data as SearchResult;
@@ -157,9 +183,11 @@
                     this.searchResultWithCheck = this.searchResult.Items.map((x) => {
                         return this.itemToResultWithCheck(x.Item);
                     });
-                    this.isSearchLoading = false;
                 }).catch(() => {
+                    this.setAlertMessage('検索エラー');
                     // console.log('search api error');
+                }).finally(() => {
+                    this.isSearchLoading = false;
                 });
             }
         }
@@ -168,6 +196,7 @@
             if (this.validateAuthorInput() && this.inputAuthorForSearch.length !== 0) {
                 toTop();
                 this.isSearchLoading = true;
+                this.alert = false;
                 this.searchType = 'author';
                 api.rakuten.searchByAuthor(this.inputAuthorForSearch, this.page, this.perPage).then((res) => {
                     this.searchResult = res.data as SearchResult;
@@ -175,9 +204,11 @@
                     this.searchResultWithCheck = this.searchResult.Items.map((x) => {
                         return this.itemToResultWithCheck(x.Item);
                     });
-                    this.isSearchLoading = false;
                 }).catch(() => {
+                    this.setAlertMessage('検索エラー');
                     // console.log('search api error');
+                }).finally(() => {
+                    this.isSearchLoading = false;
                 });
             }
         }
@@ -193,6 +224,7 @@
                 itemUrl: item.itemUrl,
                 affiliateUrl: item.affiliateUrl,
                 isChecked: this.isSelect(item.isbn),
+                isAlreadyRegister: false,
             } as SearchResultWithCheck;
         }
         private validateTitleInput(): boolean {
@@ -219,12 +251,22 @@
         private selectBook(book: SearchResultWithCheck) {
             if (book.isChecked) {
                 book.isChecked = false;
+                book.isAlreadyRegister = false;
                 const ind = this.selectMultiBooks.indexOf(book);
                 this.selectMultiBooks.splice(ind, 1);
             } else {
                 if (this.selectMultiBooks.length < maxRegisterNum) {
                     book.isChecked = true;
                     this.selectMultiBooks.push(book);
+                    api.books.list(null, null, null, null, book.isbn)
+                        .then((res) => {
+                            if (res.data.content.total_count > 0) {
+                                book.isAlreadyRegister = true;
+                            }
+                        })
+                        .catch((err) => {
+                            console.log('get isbn error');
+                        });
                 } else {
                     alert(`一括で登録できる数は${maxRegisterNum}個までです。`);
                 }
@@ -388,6 +430,11 @@
             // const top: number = element.getBoundingClientRect().top;
             // console.log(top, element.scrollTop);
             // window.scrollTo(0, top);
+        }
+
+        private setAlertMessage(msg: string) {
+            this.alert = true;
+            this.message = msg;
         }
     }
 

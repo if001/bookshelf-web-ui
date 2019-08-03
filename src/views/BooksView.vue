@@ -45,7 +45,7 @@
                         <v-icon large>fa-book</v-icon>
                     </div>
                 </div>
-                <div v-if="!loading && booksShow.length === 0" style="margin: auto;padding: 20px;">
+                <div v-if="!loading && booksShow.length === 0 && selectFilter === null" style="margin: auto;padding: 20px;">
                     読みたい本を登録しましょう。
                 </div>
                 <v-flex v-else class="pa-2" v-for="book in booksShow" :key="book.id" lg4 md6 sm12
@@ -144,17 +144,15 @@
         ];
         private selectFilter: string | null = null;
 
-
-
         public mounted() {
             this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);
             toTop();
         }
 
-        private load(page: number | null, perPage: number | null, sortKey: string | null, filter: string | null) {
+        private load(page: number | null, perPage: number | null, sortKey: string | null, state: string | null) {
             this.booksShow = [];
             this.loading = true;
-            api.books.list(page, perPage, sortKey, filter).then((response) => {
+            api.books.list(page, perPage, sortKey, state, null).then((response) => {
                 this.books = response.data.content.books as Book[];
                 this.totalCount = response.data.content.total_count as number;
             }).then(() => {
