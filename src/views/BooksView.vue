@@ -149,10 +149,10 @@
             toTop();
         }
 
-        private load(page: number | null, perPage: number | null, sortKey: string | null, filter: string | null) {
+        private load(page: number | null, perPage: number | null, sortKey: string | null, state: string | null) {
             this.booksShow = [];
             this.loading = true;
-            api.books.list(page, perPage, sortKey, filter).then((response) => {
+            api.books.list(page, perPage, sortKey, state, null).then((response) => {
                 this.books = response.data.content.books as Book[];
                 this.totalCount = response.data.content.total_count as number;
             }).then(() => {

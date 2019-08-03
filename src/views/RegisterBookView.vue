@@ -313,7 +313,7 @@
                     });
                 })
                 .then((publisherId: number | null) => {
-                    return new Promise<number | null>((resolve,reject) => {
+                    return new Promise<number | null>((resolve, reject) => {
                         if (publisherName.length === 0) {
                             resolve(null);
                         } else if (publisherId === null) {
@@ -327,7 +327,6 @@
                                 reject(err.toString());
                             });
                         } else {
-                            console.log("debug3");
                             resolve(publisherId);
                         }
                     });
@@ -341,14 +340,13 @@
                 const publisherIdP: Promise<number | null> = this.getPublisherIdP(this.publisherName);
                 Promise.all([authorIdP, publisherIdP])
                     .then((value) => {
-                        console.log("result:",value);
                         const authorId: number | null = value[0];
                         const publisherId: number | null = value[1];
                         this.createBook(authorId, publisherId);
                     })
                     .catch(() => {
                         console.log('create author/publisher error');
-                        this.$router.push("/bookshelf");
+                        this.$router.push('/bookshelf');
                     });
             }
         }

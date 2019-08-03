@@ -51,7 +51,7 @@ export default {
         },
     },
     books: {
-        list(page: number | null, perPage: number | null, sortKey: string | null, filter: string | null) {
+        list(page: number | null, perPage: number | null, sortKey: string | null, state: string | null, isbn: string | null) {
             const p: { [key: string]: any; } = {};
             if (page != null && perPage != null) {
                 p.page = page;
@@ -60,8 +60,11 @@ export default {
             if (sortKey != null) {
                 p.sort_key = sortKey;
             }
-            if (filter != null) {
-                p.status = filter;
+            if (state != null) {
+                p.status = state;
+            }
+            if (isbn != null) {
+                p.isbn = isbn
             }
             return axios.request<ContentResult<PaginateBooks>>({
                 method: 'GET',

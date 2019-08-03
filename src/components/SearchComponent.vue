@@ -51,12 +51,21 @@
                         <v-flex xs8>
                             <div class="ma-1" style="width: 100%; float:left; font-size: 1.2em">{{result.title}}</div>
                             <div class="ma-1" style="width: 100%; float:left;">{{result.author}}</div>
-                            <div class="ma-1" style="width: 100%; float:left;">{{result.publisherName}} / ￥ {{result.itemPrice}}</div>
+                            <div class="ma-1" style="width: 100%; float:left;">{{result.publisherName}} /  {{result.itemPrice}}</div>
                             <v-btn v-if="result.isChecked"
                                    icon
                                    fab
                                    dark
                                    color="blue"
+                                   small
+                                   style="position:absolute; top: 0; right: 0;">
+                                <v-icon small dark>done</v-icon>
+                            </v-btn>
+                            <v-btn v-if="result.isAlreadyRegister"
+                                   icon
+                                   fab
+                                   dark
+                                   color="green"
                                    small
                                    style="position:absolute; top: 0; right: 0;">
                                 <v-icon small dark>done</v-icon>
@@ -125,6 +134,7 @@
         itemUrl: string;
         affiliateUrl: string;
         isChecked: boolean;
+        isAlreadyRegister: boolean;
     }
     const maxRegisterNum: number = 5;
 
@@ -214,6 +224,7 @@
                 itemUrl: item.itemUrl,
                 affiliateUrl: item.affiliateUrl,
                 isChecked: this.isSelect(item.isbn),
+                isAlreadyRegister: false,
             } as SearchResultWithCheck;
         }
         private validateTitleInput(): boolean {
@@ -240,12 +251,22 @@
         private selectBook(book: SearchResultWithCheck) {
             if (book.isChecked) {
                 book.isChecked = false;
+                book.isAlreadyRegister = false;
                 const ind = this.selectMultiBooks.indexOf(book);
                 this.selectMultiBooks.splice(ind, 1);
             } else {
                 if (this.selectMultiBooks.length < maxRegisterNum) {
                     book.isChecked = true;
                     this.selectMultiBooks.push(book);
+                    api.books.list(null, null, null, null, book.isbn)
+                        .then((res) => {
+                            if (res.data.content.total_count > 0) {
+                                book.isAlreadyRegister = true;
+                            }
+                        })
+                        .catch((err) => {
+                            console.log('get isbn error');
+                        });
                 } else {
                     alert(`一括で登録できる数は${maxRegisterNum}個までです。`);
                 }
