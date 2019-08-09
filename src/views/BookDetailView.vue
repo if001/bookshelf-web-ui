@@ -464,12 +464,6 @@
         private copyValue() {
             let authorCopy: Author | null = null;
             if (this.bookMount != null) {
-                if (this.bookMount.author != null) {
-                    authorCopy = {
-                        id: this.bookMount.author.id,
-                        name: this.bookMount.author.name,
-                    } as Author;
-                }
                 // TODO カテゴリは一旦消す
                 // if (this.bookDetailShow.categories != null) {
                 //     for (const category of this.bookDetailShow.categories) {
@@ -669,9 +663,9 @@
                             this.isLoadingBook = false;
                             this.isOpen = false;
                         })
-                        .then(() => {
-                            return this.loadAuthors();
-                        })
+                        // .then(() => { // TODO 編集機能OFFのためロードしない
+                        //     return this.loadAuthors();
+                        // })
                         .catch((err) => {
                             console.log('book create error');
                             this.errorRouteAtDetail(err.response.status);

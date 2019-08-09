@@ -149,7 +149,7 @@
             const provider = new firebase.auth.GoogleAuthProvider();
             firebase.auth().signInWithRedirect(provider)
                 .catch((err) => {
-                    console.log(err);
+                    // console.log(err);
                     // this.message = err.toString();
                     localStorage.clear();
                     this.setAlertMessage('ログインエラー');
@@ -193,7 +193,6 @@
                 if (res.user === null) {
                     return new Promise<string>((_, reject) => reject('user not found'));
                 }
-                console.log(res.user);
                 return res.user.getIdToken();
             }).then((idToken: string) => {
                 localStorage.setItem('token', idToken.toString());
