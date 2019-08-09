@@ -1,5 +1,5 @@
 <template>
-    <v-container style="min-height: 600px;">
+    <v-container class="pr-0 pl-0" style="min-height: 600px;">
         <v-layout row wrap align-center>
             <v-flex lg8 md8 sm12 xs12 offset-lg2 offset-md2 class="pa-2">
             <v-form
@@ -96,6 +96,7 @@
                         v-model="page"
                         :length=totalCount
                         @input="pagenaite()"
+                        total-visible="5"
                         color="#1e90ff"
                 ></v-pagination>
             </v-flex>
