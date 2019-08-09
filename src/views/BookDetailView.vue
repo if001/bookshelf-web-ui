@@ -1,7 +1,7 @@
 <template>
     <v-container style="min-height: 85vh;">
         <v-layout row wrap justify-space-around class="mb-3">
-            <v-flex xs12 md5 class="ma-2">
+            <v-flex lg4 md5 xs12 class="ma-2">
                 <v-card color="white" class="black--text">
                     <v-layout row>
                         <v-flex xs9>
@@ -83,17 +83,17 @@
                                        style="position:absolute; top: 80px; right: 85px;">
                                     <v-icon small dark>done</v-icon>
                                 </v-btn>
-<!--                                編集機能つけるならこっち-->
-<!--                                <v-btn v-if="isOpen && !isLoadingBook"-->
-<!--                                       icon-->
-<!--                                       fab-->
-<!--                                       dark-->
-<!--                                       color="blue"-->
-<!--                                       small-->
-<!--                                       @click="updateBookWithDetail"-->
-<!--                                       style="position:absolute; top: 80px; right: 85px;">-->
-<!--                                    <v-icon small dark>done</v-icon>-->
-<!--                                </v-btn>-->
+                                <v-btn v-if="isOpen && !isLoadingBook && isBookEdit()"
+                                       icon
+                                       fab
+                                       dark
+                                       color="green"
+                                       small
+                                       :loading="isUpdatingBook"
+                                       @click="updateBookWithDetail"
+                                       style="position:absolute; top: 80px; right: 85px;">
+                                    <v-icon small dark>done</v-icon>
+                                </v-btn>
                             </v-card-title>
                         </v-flex>
                         <v-flex xs3 style="height: 128px;">
@@ -109,24 +109,113 @@
                         </v-flex>
                     </v-layout>
                     <v-divider light></v-divider>
-                    <v-layout column>
-                        <v-layout nowrap class="pl-3 pt-2 pb-2 pr-3" align-content-end>
-                            <v-btn flat
-                                   icon
-                                   color="dark"
-                                   class="ma-0"
-                                   :loading="isLoadingBookState"
-                                   @click="changeState(startAt, endAt)">
-                                <v-icon large
-                                        color="blue-grey darken-1"> {{ bookState(startAt, endAt).icon }}
-                                </v-icon>
-                            </v-btn>
-                            <div class="pa-2">{{ bookState(startAt, endAt).label }} </div>
+<!--                    <v-layout column>-->
+                    <v-layout nowrap class="pa-2" align-center>
+                        <v-flex lg3 md3 sm4 xs4>
+                            <v-layout align-center row>
+                                <v-flex lg4 md4 sm4 xs4>
+                                    <v-btn flat
+                                           icon
+                                           color="dark"
+                                           class="ma-0"
+                                           :loading="isLoadingBookState"
+                                           @click="changeState(startAt, endAt)">
+                                        <v-icon large
+                                                color="blue-grey darken-1"> {{ bookState(startAt, endAt).icon }}
+                                        </v-icon>
+                                    </v-btn>
+                                </v-flex>
+                                <v-flex lg8 md8 sm8 xs8>
+                                    <div class="pl-3" style="display: inline;">{{ bookState(startAt, endAt).label }} </div>
+                                </v-flex>
+                            </v-layout>
+                        </v-flex>
 
+                        <v-flex lg9 md9 sm8 xs8 v-if="!isOpen" style="color: gray;">
+                            <v-layout row wrap justify-center>
+                                <v-flex lg5 md5 sm12 xs12>
+                                    <div style="text-align: center;">
+                                        {{formatNullDate(startAtFormatted)}}
+                                    </div>
+                                </v-flex>
+                                <v-flex lg2 md2 sm12 xs12>
+                                    <div style="text-align: center;">
+                                        〜
+                                    </div>
+                                </v-flex>
+                                <v-flex lg5 md5 sm12 xs12>
+                                    <div style="text-align: center;">
+                                        {{formatNullDate(endAtFormatted)}}
+                                    </div>
+                                </v-flex>
+                            </v-layout>
+                        </v-flex>
 
-                            <v-spacer></v-spacer>
-                            <div class="pa-2" style="color: gray;">{{startAtFormatted}} 〜 {{endAtFormatted}}</div>
-                        </v-layout>
+                        <v-flex lg9 md9 sm8 xs8 v-else style="color: gray;">
+                            <v-layout row wrap justify-center>
+                                <v-flex lg5 md5 sm12 xs12>
+                                    <v-icon small @click="isOpenDatePicker=!isOpenDatePicker">event</v-icon>
+                                    <div class="text-center" style="text-align: center; display: inline;">
+                                        {{formatNullDate(startAtDatePicker)}}
+                                    </div>
+                                </v-flex>
+                                <v-flex lg2 md2 sm12 xs12>
+                                    <div style="text-align: center;">
+                                        〜
+                                    </div>
+                                </v-flex>
+                                <v-flex lg5 md5 sm12 xs12>
+                                    <div style="text-align: center;">
+                                        {{formatNullDate(endAtFormatted)}}
+                                    </div>
+                                </v-flex>
+                            </v-layout>
+                        </v-flex>
+                        <div v-if="isOpen && isOpenDatePicker">
+                            <v-menu
+                                    ref="menu"
+                                    v-model="isOpenDatePicker"
+                                    :close-on-content-click="false"
+                                    :return-value.sync="startAtDatePicker"
+                                    transition="scale-transition"
+                                    offset-y
+                                    full-width
+                                    min-width="290px"
+                            >
+                                <v-date-picker
+                                        v-model="startAtDatePicker"
+                                        no-title
+                                        :max="maxStartAt()"
+                                        scrollable
+                                        @input="isOpenDatePicker = false">
+                                    <v-spacer></v-spacer>
+                                    <v-btn text color="primary" @click="isOpenDatePicker = false">OK</v-btn>
+                                </v-date-picker>
+                            </v-menu>
+                        </div>
+
+                    </v-layout>
+
+                    <v-divider light></v-divider>
+
+                    <v-layout column justify-end class="pr-2 pl-2 pt-1 pb-1">
+<!--                        <v-flex lg3 md3 ms3 xs3 offset-lg9 offset-md9 offset-ms9 offset-xs9>-->
+                        <v-flex lg4 md4 ms4 xs4>
+                            <div v-if="createTwitterURL() != null" class="twitter-link share-button">
+                                <a :href="createTwitterURL()"
+                                   onClick="window.open(encodeURI(decodeURI(this.href)), 'tweetwindow', 'width=650, height=470, personalbar=0, toolbar=0, scrollbars=1, sizable=1'); return false;"
+                                   rel="nofollow"
+                                   style="text-decoration:none;">
+                                    <img src="@/assets/twitter-icon-96.png" alt="twittericon" height="24px" style="vertical-align: middle; ">
+                                    Share
+                                </a>
+                            </div>
+                            <div v-else class="twitter-link-disable share-button">
+                                <img src="@/assets/twitter-icon-96-disable.png" alt="twittericon" height="24px" style="vertical-align: middle; padding: 2px">
+                                Share
+                            </div>
+                        </v-flex>
+                    </v-layout>
 
                         <!-- TODO Ratingはひとまずつけない -->
                         <!--<v-divider light></v-divider>-->
@@ -190,7 +279,7 @@
                                 <!--</div>-->
                             <!--</div>-->
                         <!--</v-flex>-->
-                    </v-layout>
+
                 </v-card>
             </v-flex>
             <BookDescription
@@ -238,19 +327,61 @@
 
         // private rating = 0;
         private isOpen: boolean = false;
+        private isOpenDatePicker: boolean = false;
         private isLoadingBook: boolean = false;
         private isLoadingBookState: boolean = false;
+        private isUpdatingBook: boolean = false;
         private validEditBox: boolean = false;
+
 
         private rules: any =  {
             counter12: (value: any) => value.length <= 12 || 'Max 12 characters',
             counter15: (value: any) => value.length <= 15 || 'Max 15 characters',
         };
 
+        private createTwitterURL(): string | null {
+            if (this.bookDetail == null) {
+                return '';
+            } else {
+                const base = 'https://twitter.com/intent/tweet';
+
+                const state = this.bookState(this.bookDetail.start_at, this.bookDetail.end_at);
+                let url = '';
+
+                let text = '';
+                let bookInfo = '';
+                let bookURL = '';
+                let hashTag = '';
+
+                if (state.label === '未読') {
+                    text = 'を読み始めた本に登録しました。';
+                } else if (state.label === '読中') {
+                    text = 'を読書中です。';
+                } else if (state.label === '読了') {
+                    text = 'を読み終わりました。';
+                    hashTag = state.label;
+                } else {
+                    return null;
+                }
+
+                bookInfo = this.bookDetail.title;
+                if (this.bookDetail.author != null) {
+                    bookInfo += '(' + this.bookDetail.author.name + ')'
+                }
+
+                if (this.bookDetail.affiliate_url != null) {
+                    bookURL = this.bookDetail.affiliate_url;
+                }
+
+                url = base + '?text=' + ' [' + bookInfo + '] ' + text + '&hashtags=' + hashTag + ',読書' + '&url=' + bookURL;
+                return url;
+            }
+        }
+
         private mounted() {
             this.bookMount = null;
             // this.categories = [];
-            this.loadAuthors();
+            // this.loadAuthors();
             this.loadBookDetail().then(() => this.isLoadingBook = false);
         }
 
@@ -301,7 +432,9 @@
                         this.copyValue();
                         resolve(true);
                     }).catch(() => {
-                    console.log('error');
+                    console.log('load book error');
+                    localStorage.clear();
+                    this.$router.push('/login');
                 }).finally(() => {
                     this.isLoadingBook = false;
                 });
@@ -437,7 +570,7 @@
             if (this.bookDetail != null) {
                 return formatDate(this.bookDetail.start_at);
             } else {
-                return '';
+                return null;
             }
         }
 
@@ -445,7 +578,29 @@
             if (this.bookDetail != null) {
                 return formatDate(this.bookDetail.end_at);
             } else {
-                return '----/--/--';
+                return null;
+            }
+        }
+
+        private maxStartAt(): string {
+            if (this.bookDetail != null && this.bookDetail.end_at != null) {
+                return this.bookDetail.end_at.substring(0, 10);
+            } else {
+                return new Date().toISOString().substring(0, 10);
+            }
+        }
+
+        get startAtDatePicker() {
+            if (this.bookDetail != null && this.bookDetail.start_at != null) {
+                return this.bookDetail.start_at.substring(0, 10);
+            } else {
+                return '';
+            }
+        }
+
+        set startAtDatePicker(date: string) {
+            if (this.bookDetail != null && date != '') {
+                this.bookDetail.start_at = date;
             }
         }
 
@@ -457,65 +612,71 @@
             }
         }
 
-        private isBookChanged(): boolean {
+        private isBookEdit(): boolean {
             if (this.bookMount != null && this.bookDetail != null) {
-                return (this.bookMount.title !== this.bookDetail.title);
-            } else {
-                return false;
-            }
-        }
-        private isAuthorChanged(): boolean {
-            if (this.bookMount != null && this.bookDetail != null && this.bookMount.author != null) {
-                return (this.authorNameForShow !== this.authorNameForUpdate);
+                const isBookChange = (this.bookMount.title !== this.bookDetail.title);
+                const isAuthorChange = (this.authorNameForShow !== this.authorNameForUpdate);
+                let isDateChange = false;
+                if (this.bookMount.start_at != null && this.bookDetail.start_at != null) {
+                    isDateChange = (this.bookMount.start_at.substring(0, 10) !== this.bookDetail.start_at.substring(0, 10));
+                    console.log(this.bookMount.start_at.substring(0, 10));
+                    console.log(this.bookDetail.start_at.substring(0, 10));
+                }
+                if (this.bookMount.start_at === null && this.bookDetail.start_at != null) {
+                    isDateChange = true;
+                }
+                return (isBookChange || isAuthorChange || isDateChange);
             } else {
                 return false;
             }
         }
 
         private updateBookWithDetail() {
-            if (this.validateInput()  && this.bookMount != null) {
-                this.isOpen = false;
-                if (this.isBookChanged() || this.isAuthorChanged()) {
-                    const authorId = this.getAuthorIDByName(this.authorNameForUpdate);
-                    if (authorId === 0) {
-                        const author = {
-                            author_name: this.authorNameForUpdate,
-                        };
-                        api.author.create(author).then((res) => {
-                            const newAuthor = res.data.content as Author;
-                            this.updateBook(newAuthor.id);
-                        }).catch(() => {
-                            console.log('author create error');
-                        });
-                    } else {
-                        this.updateBook(authorId);
-                    }
-                }
-            }
-        }
+            //if (this.validateInput()  && this.bookMount != null) {
+            if (this.bookMount != null && this.bookDetail != null) {
+                if (this.isBookEdit()) {
+                    this.isUpdatingBook = true;
+                    const authorID: number | null = this.bookMount.author != null ? this.bookMount.author.id : null;
+                    const publisherID: number | null = this.bookMount.publisher != null ? this.bookMount.publisher.id : null;
 
-        private updateBook(authorID: number) {
-            if (this.bookMount != null) { // 前段でbookMountはnullでないことは確認済み
-                const book = {
-                    id: this.bookMount.id,
-                    title: this.bookMount.title,
-                    author_id: authorID,
-                };
-                api.books.update(book)
-                    .then((res) => {
-                        this.bookMount = null;
-                        // this.categories = [];
-                    })
-                    .then(() => {
-                        return this.loadBookDetail();
-                    })
-                    .then(() => this.isLoadingBook = false)
-                    .then(() => {
-                        return this.loadAuthors();
-                    })
-                    .catch(() => {
-                        console.log('book create error');
-                    });
+                    let startAt: string | null = null;
+                    if (this.bookDetail.start_at != null) {
+                        startAt = new Date(this.bookDetail.start_at).toISOString()
+                    }
+                    let endAt: string | null = null;
+                    if (this.bookDetail.end_at != null) {
+                        endAt = new Date(this.bookDetail.end_at).toISOString()
+                    }
+
+                    const book = {
+                        id: this.bookMount.id,
+                        title: this.bookMount.title,
+                        author_id: authorID,
+                        publisher_id: publisherID,
+                        start_at: startAt,
+                        end_at: endAt,
+                    };
+
+                    api.books.update(book)
+                        .then((res) => {
+                            this.bookMount = null;
+                            // this.categories = [];
+                        })
+                        .then(() => {
+                            return this.loadBookDetail();
+                        })
+                        .then(() => {
+                            this.isUpdatingBook = false;
+                            this.isLoadingBook = false;
+                            this.isOpen = false;
+                        })
+                        .then(() => {
+                            return this.loadAuthors();
+                        })
+                        .catch(() => {
+                            console.log('book create error');
+                        });
+                }
             }
         }
 
@@ -538,16 +699,6 @@
             });
             return id;
         }
-
-        // get ratingSize() {
-        //     switch (this.$vuetify.breakpoint.name) {
-        //         case 'xs':
-        //             return 20;
-        //         default:
-        //             return 20;
-        //     }
-        // }
-
 
         // TODO カテゴリは一旦消す
         // private appendCategory(event: any) {
@@ -595,8 +746,8 @@
         private changeState(startAt: string | null, endAt: string | null) {
             if (endAt == null && startAt == null) {
                 const res = confirm('読み始めた本に設定しますか？');
-                this.isLoadingBookState = true;
                 if (res && this.bookDetail != null) {
+                    this.isLoadingBookState = true;
                     api.book.startRead(this.bookDetail.id)
                         .then(() => {
                             return this.loadBookDetail();
@@ -609,8 +760,8 @@
                 }
             } else if (endAt == null) {
                 const res = confirm('読み終わった本に設定しますか？');
-                this.isLoadingBookState = true;
                 if (res && this.bookDetail != null) {
+                    this.isLoadingBookState = true;
                     api.book.endRead(this.bookDetail.id)
                         .then(() => {
                             return this.loadBookDetail();
@@ -623,8 +774,8 @@
                 }
             } else {
                 const res = confirm('読み始めた本に設定しますか？');
-                this.isLoadingBookState = true;
                 if (res && this.bookDetail != null) {
+                    this.isLoadingBookState = true;
                     api.book.startRead(this.bookDetail.id)
                         .then(() => {
                             return this.loadBookDetail();
@@ -667,16 +818,25 @@
         private toListPage() {
             this.$router.push('/bookshelf');
         }
+        private formatNullDate(d: string | null) {
+            if (d === null || d === '') {
+                return '----/--/--';
+            } else {
+                return d;
+            }
+        }
 
     }
-    function formatDate(d: string | null) {
+    function formatDate(d: string | null): string | null {
         if (d != null) {
             const date = moment(d);
             return date.format('YYYY') + '/' + date.format('MM') + '/' + date.format('DD');
         } else {
-            return '----/--/--';
+            return null;
         }
     }
+
+
 </script>
 
 <style scoped>
@@ -697,6 +857,33 @@
     .custom-loader {
         animation: loader 1s infinite;
         display: flex;
+    }
+
+    .twitter-link {
+        font-size: 0.9em;
+        margin: 5px;
+        padding-left: 8px;
+        padding-right: 8px;
+        font-weight: bold;
+        color: #03a9f4;/*文字色*/
+        background: #FFF;
+        border: solid 1px #03a9f4;/*線*/
+        border-radius: 10px;/*角の丸み*/
+    }
+    .twitter-link-disable {
+        font-size: 0.9em;
+        margin: 5px;
+        padding-left: 8px;
+        padding-right: 8px;
+        font-weight: bold;
+        color: gray;/*文字色*/
+        background: #FFF;
+        border: solid 1px gray;/*線*/
+        border-radius: 10px;/*角の丸み*/
+    }
+
+    .share-button {
+        width: 80px;
     }
     @-moz-keyframes loader {
         from {

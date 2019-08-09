@@ -179,6 +179,7 @@
                 console.log('/books api error');
                 // console.log(err);
                 this.loading = false;
+                localStorage.clear();
                 this.$router.push('/login');
             });
         }
