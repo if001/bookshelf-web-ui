@@ -95,33 +95,33 @@
     </v-app>
 </template>
 <script lang="ts">
-    import {Component, Vue} from "vue-property-decorator";
-    import firebase from "firebase/app";
-    import "firebase/auth";
-    import Footer from "@/components/Footer.vue";
+    import {Component, Vue} from 'vue-property-decorator';
+    import firebase from 'firebase/app';
+    import 'firebase/auth';
+    import Footer from '@/components/Footer.vue';
 
     @Component({
         components: {
-            "v-footer": Footer,
+            'v-footer': Footer,
         },
     })
     export default class LoginViews extends Vue {
-        private email: string = "";
-        private password: string = "";
+        private email: string = '';
+        private password: string = '';
         private valid = false;
         private showPassword: boolean = false;
-        private message = "";
+        private message = '';
         private isLoading: boolean = false;
         private alert: boolean = false;
         private isRedirectLogin = 'isRedirectLogin';
 
         private passRules = [
-            (v: any) => !!v || "Name is required",
+            (v: any) => !!v || 'Name is required',
         ];
 
         private emailRules = [
-            (v: any) => !!v || "E-mail is required",
-            (v: any) => /.+@.+/.test(v) || "E-mail must be valid",
+            (v: any) => !!v || 'E-mail is required',
+            (v: any) => /.+@.+/.test(v) || 'E-mail must be valid',
         ];
 
         public mounted() {
@@ -145,7 +145,7 @@
         }
 
         public loginWithGoogleAsMobile() {
-            localStorage.setItem("isRedirectLogin", 'true');
+            localStorage.setItem('isRedirectLogin', 'true');
             const provider = new firebase.auth.GoogleAuthProvider();
             firebase.auth().signInWithRedirect(provider)
                 .catch((err) => {
@@ -153,7 +153,7 @@
                     // this.message = err.toString();
                     localStorage.clear();
                     this.setAlertMessage('ログインエラー');
-                    console.log("firebase sign in error");
+                    console.log('firebase sign in error');
                 })
                 .finally(() => {
                     this.isLoading = false;
@@ -172,8 +172,8 @@
                 })
                 .then((idToken: string) => {
                     if (idToken !== '') {
-                        localStorage.setItem("token", idToken.toString());
-                        this.$router.push("/bookshelf");
+                        localStorage.setItem('token', idToken.toString());
+                        this.$router.push('/bookshelf');
                     }
                 })
                 .catch((err) => {
@@ -193,10 +193,11 @@
                 if (res.user === null) {
                     return new Promise<string>((_, reject) => reject('user not found'));
                 }
+                console.log(res.user);
                 return res.user.getIdToken();
             }).then((idToken: string) => {
-                localStorage.setItem("token", idToken.toString());
-                this.$router.push("/bookshelf");
+                localStorage.setItem('token', idToken.toString());
+                this.$router.push('/bookshelf');
             }).catch((err) => {
                 this.setAlertMessage('ログインエラー');
                 // this.message = err.toString();
@@ -220,7 +221,7 @@
             const isiPhone = (ua.indexOf('iphone') > -1);
             const isiPad = (ua.indexOf('ipad') > -1);
             const isAndroid = (ua.indexOf('android') > -1) && (ua.indexOf('mobile') > -1);
-            const isAndroidTablet = (ua.indexOf('android') > -1) && (ua.indexOf('mobile') == -1);
+            const isAndroidTablet = (ua.indexOf('android') > -1) && (ua.indexOf('mobile') === -1);
             return (isiPhone || isiPad || isAndroid || isAndroidTablet);
         }
 
