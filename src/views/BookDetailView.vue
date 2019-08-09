@@ -302,8 +302,9 @@
 <script lang="ts">
     import {Component, Prop, Vue} from 'vue-property-decorator';
     import BookDescription from '@/components/BookDescriptionComponent.vue';
-    import api, {Author, Book, Category, Description, errorRoute, Publisher} from "../api";
+    import api, {Author, Book, Category, ContentResult, Description, errorRoute, Publisher} from '../api';
     import moment from 'moment';
+    import {AxiosPromise} from 'axios';
 
     interface BookDetail extends Book {
         isOpen: boolean;
@@ -655,7 +656,6 @@
                         start_at: startAt,
                         end_at: endAt,
                     };
-
                     api.books.update(book)
                         .then((res) => {
                             this.bookMount = null;
@@ -744,54 +744,33 @@
         }
 
         private changeState(startAt: string | null, endAt: string | null) {
-            if (endAt == null && startAt == null) {
-                const res = confirm('読み始めた本に設定しますか？');
-                if (res && this.bookDetail != null) {
-                    this.isLoadingBookState = true;
-                    api.book.startRead(this.bookDetail.id)
-                        .then(() => {
-                            return this.loadBookDetail();
-                        })
-                        .then(() => {
-                            this.isLoadingBook = false;
-                            this.isLoadingBookState = false;
-                        })
-                        .catch((err) => {
-                            this.errorRouteAtDetail(err.response.status);
-                        });
-                }
-            } else if (endAt == null) {
-                const res = confirm('読み終わった本に設定しますか？');
-                if (res && this.bookDetail != null) {
-                    this.isLoadingBookState = true;
-                    api.book.endRead(this.bookDetail.id)
-                        .then(() => {
-                            return this.loadBookDetail();
-                        })
-                        .then(() => {
-                            this.isLoadingBook = false;
-                            this.isLoadingBookState = false;
-                        })
-                        .catch((err) => {
-                            this.errorRouteAtDetail(err.response.status);
-                        });
-                }
+            let msg = '';
+            if (startAt == null && endAt == null) {
+                this.doChangeStateAPI('読み始めた本に設定しますか？', api.book.startRead);
+            } else if (startAt != null && endAt == null) {
+                this.doChangeStateAPI('読み終わった本に設定しますか？', api.book.endRead);
+            } else if (startAt != null && endAt != null) {
+                this.doChangeStateAPI('読み始めた本に設定しますか？', api.book.startRead);
             } else {
-                const res = confirm('読み始めた本に設定しますか？');
-                if (res && this.bookDetail != null) {
-                    this.isLoadingBookState = true;
-                    api.book.startRead(this.bookDetail.id)
-                        .then(() => {
-                            return this.loadBookDetail();
-                        })
-                        .then(() => {
-                            this.isLoadingBook = false;
-                            this.isLoadingBookState = false;
-                        })
-                        .catch((err) => {
-                            this.errorRouteAtDetail(err.response.status);
-                        });
-                }
+                console.log('bad read state');
+            }
+        }
+
+        private doChangeStateAPI(msg :string, apiFunc: (id: number) => AxiosPromise<ContentResult<Book>>) {
+            const res = confirm(msg);
+            if (res && this.bookDetail != null) {
+                this.isLoadingBookState = true;
+                apiFunc(this.bookDetail.id)
+                    .then(() => {
+                        return this.loadBookDetail();
+                    })
+                    .then(() => {
+                        this.isLoadingBook = false;
+                        this.isLoadingBookState = false;
+                    })
+                    .catch((err) => {
+                        this.errorRouteAtDetail(err.response.status);
+                    });
             }
         }
 
