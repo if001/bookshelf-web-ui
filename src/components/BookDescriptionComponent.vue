@@ -82,7 +82,7 @@
 
 <script lang="ts">
     import {Component, Vue, Prop, Emit} from 'vue-property-decorator';
-    import api, {Description, DescriptionForm} from '@/api';
+    import api, {Description, DescriptionForm, errorRoute} from "@/api";
     import moment from 'moment';
 
 
@@ -116,14 +116,19 @@
         private load() {
             if (this.bookID != null) {
                 this.isLoading = true;
-                api.description.get(this.bookID).then((response) => {
-                    this.descriptions = [];
-                    this.descriptions = response.data.content as Description[];
-                }).catch(() => {
-                    console.log('book detail view: description get error');
-                }).finally(() => {
-                    this.isLoading = false;
-                });
+                api.description.get(this.bookID)
+                    .then((response) => {
+                        this.descriptions = [];
+                        this.descriptions = response.data.content as Description[];
+                        this.isLoading = false;
+                    })
+                    .catch((err) => {
+                        console.log('book detail view: description get error');
+                        this.errorRouteAtDetail(err.response.status);
+                    })
+                    .finally(() => {
+                        // this.isLoading = false;
+                    });
             }
         }
 
@@ -134,12 +139,14 @@
         private deleteDescription(id: number) {
             const ans = confirm('削除しますか?');
             if (ans) {
-                api.description.delete(id).then((res) => {
-                    // console.log(res);
-                    this.load();
-                }).catch(() => {
-                    console.log('delete description error');
-                });
+                api.description.delete(id)
+                    .then((res) => {
+                        this.load();
+                    })
+                    .catch((err) => {
+                        console.log('delete description error');
+                        this.errorRouteAtDetail(err.response.status);
+                    });
             }
         }
 
@@ -151,17 +158,29 @@
                         content: this.inputDescription,
                     };
                     this.isSending = true;
-                    api.description.create(this.bookID, description).then((res) => {
-                        // console.log(res);
-                        this.isOpenTextfield = false;
-                        this.inputDescription = '';
-                        this.load();
-                    }).catch(() => {
-                        console.log('send description error');
-                    }).finally(() => {
-                        this.isSending = false;
-                    });
+                    api.description.create(this.bookID, description)
+                        .then((res) => {
+                            // console.log(res);
+                            this.isOpenTextfield = false;
+                            this.inputDescription = '';
+                            this.load();
+                        })
+                        .catch((err) => {
+                            console.log('send description error');
+                            this.errorRouteAtDetail(err.response.status);
+                        })
+                        .finally(() => {
+                            this.isSending = false;
+                        });
                 }
+            }
+        }
+
+        private errorRouteAtDetail(status: number) {
+            if (this.bookID != null) {
+                errorRoute(status, '/bookshelf/'+this.bookID);
+            } else {
+                errorRoute(status, '/bookshelf');
             }
         }
 

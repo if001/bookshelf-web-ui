@@ -302,7 +302,7 @@
 <script lang="ts">
     import {Component, Prop, Vue} from 'vue-property-decorator';
     import BookDescription from '@/components/BookDescriptionComponent.vue';
-    import api, {Author, Book, Category, Description, Publisher} from '../api';
+    import api, {Author, Book, Category, Description, errorRoute, Publisher} from "../api";
     import moment from 'moment';
 
     interface BookDetail extends Book {
@@ -431,13 +431,14 @@
                         } as BookDetail;
                         this.copyValue();
                         resolve(true);
-                    }).catch(() => {
-                    console.log('load book error');
-                    localStorage.clear();
-                    this.$router.push('/login');
-                }).finally(() => {
-                    this.isLoadingBook = false;
-                });
+                    })
+                    .catch((err) => {
+                        console.log('load book error');
+                        errorRoute(err.response.status, '/bookshelf');
+                    })
+                    .finally(() => {
+                        this.isLoadingBook = false;
+                    });
             });
         }
 
@@ -619,8 +620,6 @@
                 let isDateChange = false;
                 if (this.bookMount.start_at != null && this.bookDetail.start_at != null) {
                     isDateChange = (this.bookMount.start_at.substring(0, 10) !== this.bookDetail.start_at.substring(0, 10));
-                    console.log(this.bookMount.start_at.substring(0, 10));
-                    console.log(this.bookDetail.start_at.substring(0, 10));
                 }
                 if (this.bookMount.start_at === null && this.bookDetail.start_at != null) {
                     isDateChange = true;
@@ -641,11 +640,11 @@
 
                     let startAt: string | null = null;
                     if (this.bookDetail.start_at != null) {
-                        startAt = new Date(this.bookDetail.start_at).toISOString()
+                        startAt = new Date(this.bookDetail.start_at).toISOString();
                     }
                     let endAt: string | null = null;
                     if (this.bookDetail.end_at != null) {
-                        endAt = new Date(this.bookDetail.end_at).toISOString()
+                        endAt = new Date(this.bookDetail.end_at).toISOString();
                     }
 
                     const book = {
@@ -673,8 +672,9 @@
                         .then(() => {
                             return this.loadAuthors();
                         })
-                        .catch(() => {
+                        .catch((err) => {
                             console.log('book create error');
+                            this.errorRouteAtDetail(err.response.status);
                         });
                 }
             }
@@ -756,7 +756,9 @@
                             this.isLoadingBook = false;
                             this.isLoadingBookState = false;
                         })
-                        .catch(() => {});
+                        .catch((err) => {
+                            this.errorRouteAtDetail(err.response.status);
+                        });
                 }
             } else if (endAt == null) {
                 const res = confirm('読み終わった本に設定しますか？');
@@ -770,7 +772,9 @@
                             this.isLoadingBook = false;
                             this.isLoadingBookState = false;
                         })
-                        .catch(() => {});
+                        .catch((err) => {
+                            this.errorRouteAtDetail(err.response.status);
+                        });
                 }
             } else {
                 const res = confirm('読み始めた本に設定しますか？');
@@ -784,7 +788,9 @@
                             this.isLoadingBook = false;
                             this.isLoadingBookState = false;
                         })
-                        .catch(() => {});
+                        .catch((err) => {
+                            this.errorRouteAtDetail(err.response.status);
+                        });
                 }
             }
         }
@@ -809,8 +815,9 @@
                 api.book.delete(this.bookDetail.id).then((res) => {
                     // console.log(res);
                     this.$router.push('/bookshelf');
-                }).catch(() => {
+                }).catch((err) => {
                     console.log('delete book error');
+                    errorRoute(err.response.status, '/bookshelf');
                 });
             }
         }
@@ -823,6 +830,13 @@
                 return '----/--/--';
             } else {
                 return d;
+            }
+        }
+        private errorRouteAtDetail(status: number) {
+            if (this.bookMount != null) {
+                errorRoute(status, '/bookshelf/' + this.bookMount.id);
+            } else {
+                errorRoute(status, '/bookshelf');
             }
         }
 

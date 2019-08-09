@@ -191,6 +191,7 @@
                 .finally(() => {})
                 .catch(() => {
                     console.log('load author error');
+                    this.$router.push('/bookshelf');
                 });
         }
 
@@ -202,6 +203,7 @@
                 .finally(() => {})
                 .catch(() => {
                     console.log('load publisher error');
+                    this.$router.push('/bookshelf');
                 });
         }
 

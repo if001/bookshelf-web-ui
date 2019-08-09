@@ -111,7 +111,7 @@
 
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
-    import api, {Book} from '@/api';
+    import api, {Book, errorRoute} from '@/api';
 
     interface BookShow extends Book {
         isOpen: boolean;
@@ -152,36 +152,36 @@
         private load(page: number | null, perPage: number | null, sortKey: string | null, state: string | null) {
             this.booksShow = [];
             this.loading = true;
-            api.books.list(page, perPage, sortKey, state, null).then((response) => {
-                this.books = response.data.content.books as Book[];
-                this.totalCount = response.data.content.total_count as number;
-            }).then(() => {
-                this.booksShow = this.books.map((book) => {
-                    return {
-                        id: book.id,
-                        title: book.title,
-                        author: book.author,
-                        publishedAt: book.publishedAt,
-                        accountId: book.accountId,
-                        publisher: book.publisher,
-                        start_at: book.start_at,
-                        end_at: book.end_at,
-                        nextBookId: book.nextBookId,
-                        prevBookId: book.prevBookId,
-                        categories: book.categories,
-                        created_at: book.created_at,
-                        updated_at: book.updated_at,
-                        isOpen: false,
-                    } as BookShow;
+            api.books.list(page, perPage, sortKey, state, null)
+                .then((response) => {
+                    this.books = response.data.content.books as Book[];
+                    this.totalCount = response.data.content.total_count as number;
+                })
+                .then(() => {
+                    this.booksShow = this.books.map((book) => {
+                        return {
+                            id: book.id,
+                            title: book.title,
+                            author: book.author,
+                            publishedAt: book.publishedAt,
+                            accountId: book.accountId,
+                            publisher: book.publisher,
+                            start_at: book.start_at,
+                            end_at: book.end_at,
+                            nextBookId: book.nextBookId,
+                            prevBookId: book.prevBookId,
+                            categories: book.categories,
+                            created_at: book.created_at,
+                            updated_at: book.updated_at,
+                            isOpen: false,
+                        } as BookShow;
+                    });
+                    this.loading = false;
+                })
+                .catch((err) => {
+                    this.loading = false;
+                    errorRoute(err.response.status, '/bookshelf');
                 });
-                this.loading = false;
-            }).catch((err) => {
-                console.log('/books api error');
-                // console.log(err);
-                this.loading = false;
-                localStorage.clear();
-                this.$router.push('/login');
-            });
         }
 
         private closeCreate() {

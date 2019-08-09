@@ -154,7 +154,7 @@ export default {
                 `${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&page=${page}&hits=${perPage}&title=${title}`,
                 {
                     headers: {'Content-Type': 'application/json'},
-                }
+                },
             );
         },
         searchByAuthor(author: string, page: number, perPage: number) {
@@ -162,7 +162,7 @@ export default {
                 `${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&page=${page}&hits=${perPage}&author=${author}`,
                 {
                     headers: {'Content-Type': 'application/json'},
-                }
+                },
             );
         },
     },
@@ -260,4 +260,66 @@ export interface Content {
     itemPrice: string;
     itemUrl: string;
     affiliateUrl: string;
+}
+
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import router from '@/router';
+
+interface userData {
+    stsTokenManager: expTime;
+}
+interface expTime {
+    expirationTime: number,
+}
+
+export function isExpireToken(): boolean | null{
+    const user = firebase.auth().currentUser;
+    if (user != null) {
+        const userData = user.toJSON() as userData;
+        const now = new Date();
+        return userData.stsTokenManager.expirationTime < Math.round(now.getTime());
+    }
+    return null;
+}
+
+export function doRefreshToken(): Promise<void> {
+    console.log('refresh token');
+    const user = firebase.auth().currentUser;
+    return new Promise<void>((resolve, reject) => {
+        if (user != null) {
+            user.getIdToken()
+                .then((idToken) => {
+                    localStorage.setItem('token', idToken.toString());
+                    resolve();
+                })
+                .catch(() => {
+                    localStorage.clear();
+                    reject();
+                });
+        } else {
+            reject();
+        }
+    });
+}
+
+export function errorRoute(status: number, nextRoute: string | null) {
+    const isExpTime = isExpireToken();
+    if (status === 401 && isExpTime != null && isExpTime) {
+        doRefreshToken()
+            .then(() => {
+                if (nextRoute === null) {
+                    router.go(-1);
+                } else {
+                    router.push(nextRoute);
+                }
+            })
+            .catch(() => {
+                router.push('/login');
+            });
+    } else {
+        // console.log('/books api error');
+        localStorage.clear();
+        router.push('/login');
+    }
 }
