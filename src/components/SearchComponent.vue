@@ -340,7 +340,7 @@
                     .catch(() => {
                         console.log('create author error');
                         reject();
-                    })
+                    });
             });
         }
 

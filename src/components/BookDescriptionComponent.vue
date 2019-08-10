@@ -82,7 +82,7 @@
 
 <script lang="ts">
     import {Component, Vue, Prop, Emit} from 'vue-property-decorator';
-    import api, {Description, DescriptionForm, errorRoute} from "@/api";
+    import api, {Description, DescriptionForm, errorRoute} from '@/api';
     import moment from 'moment';
 
 
@@ -178,7 +178,7 @@
 
         private errorRouteAtDetail(status: number) {
             if (this.bookID != null) {
-                errorRoute(status, '/bookshelf/'+this.bookID);
+                errorRoute(status, '/bookshelf/' + this.bookID);
             } else {
                 errorRoute(status, '/bookshelf');
             }

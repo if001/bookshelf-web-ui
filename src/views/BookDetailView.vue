@@ -367,7 +367,7 @@
 
                 bookInfo = this.bookDetail.title;
                 if (this.bookDetail.author != null) {
-                    bookInfo += '(' + this.bookDetail.author.name + ')'
+                    bookInfo += '(' + this.bookDetail.author.name + ')';
                 }
 
                 if (this.bookDetail.affiliate_url != null) {
@@ -595,7 +595,7 @@
         }
 
         set startAtDatePicker(date: string) {
-            if (this.bookDetail != null && date != '') {
+            if (this.bookDetail != null && date !== '') {
                 this.bookDetail.start_at = date;
             }
         }
@@ -626,7 +626,7 @@
         }
 
         private updateBookWithDetail() {
-            //if (this.validateInput()  && this.bookMount != null) {
+            // if (this.validateInput()  && this.bookMount != null) {
             if (this.bookMount != null && this.bookDetail != null) {
                 if (this.isBookEdit()) {
                     this.isUpdatingBook = true;
@@ -738,7 +738,6 @@
         }
 
         private changeState(startAt: string | null, endAt: string | null) {
-            let msg = '';
             if (startAt == null && endAt == null) {
                 this.doChangeStateAPI('読み始めた本に設定しますか？', api.book.startRead);
             } else if (startAt != null && endAt == null) {
@@ -750,7 +749,7 @@
             }
         }
 
-        private doChangeStateAPI(msg :string, apiFunc: (id: number) => AxiosPromise<ContentResult<Book>>) {
+        private doChangeStateAPI(msg: string, apiFunc: (id: number) => AxiosPromise<ContentResult<Book>>) {
             const res = confirm(msg);
             if (res && this.bookDetail != null) {
                 this.isLoadingBookState = true;

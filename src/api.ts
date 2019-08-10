@@ -266,17 +266,17 @@ import firebase from 'firebase/app';
 import 'firebase/auth';
 import router from '@/router';
 
-interface userData {
-    stsTokenManager: expTime;
+interface UserData {
+    stsTokenManager: ExpTime;
 }
-interface expTime {
-    expirationTime: number,
+interface ExpTime {
+    expirationTime: number;
 }
 
-export function isExpireToken(): boolean | null{
+export function isExpireToken(): boolean | null {
     const user = firebase.auth().currentUser;
     if (user != null) {
-        const userData = user.toJSON() as userData;
+        const userData = user.toJSON() as UserData;
         const now = new Date();
         return userData.stsTokenManager.expirationTime < Math.round(now.getTime());
     }
