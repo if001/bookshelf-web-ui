@@ -3,20 +3,6 @@ const cacheId = "bookshelf-cache";
 
 
 module.exports = {
-    pages: {
-        index: {
-            // 最初に実行されるファイル名
-            entry: 'src/main.ts',
-            // テンプレートファイル
-            template: 'dist/index.html',
-            // 出力されるファイル名
-            filename: 'index.html',
-            // チャンクの指定
-            //chunks: ['chunk-vendors', 'chunk-common', 'index']
-        },
-    },
-
-
     pwa: {
         workboxPluginMode: 'GenerateSW',
         workboxOptions: {
@@ -62,54 +48,27 @@ module.exports = {
     },
 
 
-     configureWebpack: {
-    //     mode: "production",
-    //     entry: "./src/main.ts",
-        output: {
-            //  出力ファイルのディレクトリ名
-            path: `${__dirname}/dist`,
-            // 出力ファイル名
-            filename: "main.js",
-            chunkFilename: '[name].bundle.js',
-        },
-    //     module: {
-    //         rules: [
-    //             {
-    //                 // 拡張子 .ts の場合
-    //                 test: /\.ts$/,
-    //                 // TypeScript をコンパイルする
-    //                 use: "ts-loader"
-    //             }
-    //         ]
-    //     },
+    configureWebpack: {
         optimization: {
             splitChunks: {
+                chunks: 'all',
+                minSize: 30000,
+                maxSize: 0,
+                minChunks: 1,
                 cacheGroups: {
-                    vendor: {
-                        minChunks: 2
-                    },
-                    app: {
-                        minChunks: 3
-                    },
-                    commons: {
-                        minSize: 10000,
-                        maxSize: 250000,
+                    vendors: {
+                        maxSize: 200,
                         test: /[\\/]node_modules[\\/]/,
-                        name: "vendor",
-                        chunks: "all"
+                        priority: -10
+                    },
+                    default: {
+                        minChunks: 2,
+                        priority: -20,
+                        reuseExistingChunk: true
                     }
                 }
             }
         },
-    //     // import 文で .ts ファイルを解決するため
-    //     resolve: {
-    //         extensions: [".ts"],
-    //         // Webpackで利用するときの設定
-    //         alias: {
-    //             vue: "vue/dist/vue.js"
-    //         }
-    //     }
-    //
-     },
+    },
 
 };
