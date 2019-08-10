@@ -305,6 +305,7 @@ export function doRefreshToken(): Promise<void> {
 
 export function errorRoute(status: number, nextRoute: string | null) {
     const isExpTime = isExpireToken();
+    console.log('exp:', isExpTime);
     if (status === 401 && isExpTime != null && isExpTime) {
         doRefreshToken()
             .then(() => {

@@ -81,7 +81,7 @@
                                        small
                                        @click="isOpen=!isOpen"
                                        style="position:absolute; top: 80px; right: 85px;">
-                                    <v-icon small dark>done</v-icon>
+                                    <v-icon small dark>close</v-icon>
                                 </v-btn>
                                 <v-btn v-if="isOpen && !isLoadingBook && isBookEdit()"
                                        icon
@@ -91,7 +91,7 @@
                                        small
                                        :loading="isUpdatingBook"
                                        @click="updateBookWithDetail"
-                                       style="position:absolute; top: 80px; right: 85px;">
+                                       style="position:absolute; top: 80px; right: 130px;">
                                     <v-icon small dark>done</v-icon>
                                 </v-btn>
                             </v-card-title>
@@ -109,7 +109,7 @@
                         </v-flex>
                     </v-layout>
                     <v-divider light></v-divider>
-<!--                    <v-layout column>-->
+
                     <v-layout nowrap class="pa-2" align-center>
                         <v-flex lg3 md3 sm4 xs4>
                             <v-layout align-center row>
@@ -154,8 +154,8 @@
                         <v-flex lg9 md9 sm8 xs8 v-else style="color: gray;">
                             <v-layout row wrap justify-center>
                                 <v-flex lg5 md5 sm12 xs12>
-                                    <v-icon small @click="isOpenDatePicker=!isOpenDatePicker">event</v-icon>
-                                    <div class="text-center" style="text-align: center; display: inline;">
+                                    <div class="text-center" style="text-align: center;">
+                                        <v-icon small @click="isOpenDatePicker=!isOpenDatePicker">event</v-icon>
                                         {{formatNullDate(startAtDatePicker)}}
                                     </div>
                                 </v-flex>
@@ -198,8 +198,7 @@
 
                     <v-divider light></v-divider>
 
-                    <v-layout column justify-end class="pr-2 pl-2 pt-1 pb-1">
-<!--                        <v-flex lg3 md3 ms3 xs3 offset-lg9 offset-md9 offset-ms9 offset-xs9>-->
+                    <v-layout column justify-end class="pr-2 pl-2 pt-1 pb-1" v-if="!isOpen">
                         <v-flex lg4 md4 ms4 xs4>
                             <div v-if="createTwitterURL() != null" class="twitter-link share-button">
                                 <a :href="createTwitterURL()"
@@ -321,8 +320,8 @@
     })
     export default class BookDetailView extends Vue {
         private book: Book | null = null;
-        private bookMount: BookDetail | null = null;
-        private bookDetail: BookDetail | null = null;
+        private bookForShow: BookDetail | null = null; // 表示する方
+        private bookForEdit: BookDetail | null = null; // 書き換える方
         // private categories: Category[] = [];
         private authors: Author[] = [];
 
@@ -341,46 +340,46 @@
         };
 
         private createTwitterURL(): string | null {
-            if (this.bookDetail == null) {
+            if (this.bookForEdit == null) {
                 return '';
             } else {
                 const base = 'https://twitter.com/intent/tweet';
 
-                const state = this.bookState(this.bookDetail.start_at, this.bookDetail.end_at);
+                const state = this.bookState(this.bookForEdit.start_at, this.bookForEdit.end_at);
                 let url = '';
 
                 let text = '';
                 let bookInfo = '';
                 let bookURL = '';
-                let hashTag = '';
+                let hashTag = '読書';
 
                 if (state.label === '未読') {
-                    text = 'を読み始めた本に登録しました。';
+                    text = 'を読み始めた本に登録しました。%0a';
                 } else if (state.label === '読中') {
-                    text = 'を読書中です。';
+                    text = 'を読書中です。%0a';
                 } else if (state.label === '読了') {
-                    text = 'を読み終わりました。';
-                    hashTag = state.label;
+                    text = 'を読み終わりました。%0a';
+                    hashTag = ',' + state.label;
                 } else {
                     return null;
                 }
 
-                bookInfo = this.bookDetail.title;
-                if (this.bookDetail.author != null) {
-                    bookInfo += '(' + this.bookDetail.author.name + ')';
+                bookInfo = this.bookForEdit.title;
+                if (this.bookForEdit.author != null) {
+                    bookInfo += '(' + this.bookForEdit.author.name + ')';
                 }
 
-                if (this.bookDetail.affiliate_url != null) {
-                    bookURL = this.bookDetail.affiliate_url;
+                if (this.bookForEdit.affiliate_url != null) {
+                    bookURL = this.bookForEdit.affiliate_url;
                 }
 
-                url = base + '?text=' + ' [' + bookInfo + '] ' + text + '&hashtags=' + hashTag + ',読書' + '&url=' + bookURL;
+                url = base + '?text=' + ' [' + bookInfo + '] ' + text + '&hashtags=' + hashTag + '&url=' + bookURL;
                 return url;
             }
         }
 
         private mounted() {
-            this.bookMount = null;
+            this.bookForShow = null;
             // this.categories = [];
             // this.loadAuthors();
             this.loadBookDetail().then(() => this.isLoadingBook = false);
@@ -410,7 +409,7 @@
                         //         this.categories.push(newC);
                         //     }
                         // }
-                        this.bookMount = {
+                        this.bookForShow = {
                             id: this.book.id,
                             title: this.book.title,
                             author: this.book.author,
@@ -463,7 +462,7 @@
 
         private copyValue() {
             let authorCopy: Author | null = null;
-            if (this.bookMount != null) {
+            if (this.bookForShow != null) {
                 // TODO カテゴリは一旦消す
                 // if (this.bookDetailShow.categories != null) {
                 //     for (const category of this.bookDetailShow.categories) {
@@ -477,28 +476,28 @@
                 //     }
                 // }
 
-                this.bookDetail = {...this.bookMount};
+                this.bookForEdit = {...this.bookForShow};
             }
         }
 
         get bookName(): string {
-            if (this.bookDetail != null) {
-                return this.bookDetail.title;
+            if (this.bookForEdit != null) {
+                return this.bookForEdit.title;
             } else {
                 return 'Title not set';
             }
         }
 
         set bookName(v: string) {
-            if (this.bookMount != null) {
-                this.bookMount.title = v;
+            if (this.bookForShow != null) {
+                this.bookForShow.title = v;
             }
         }
 
         get authorNameForShow() {
-            if (this.bookDetail != null) {
-                if (this.bookDetail.author != null) {
-                    return this.bookDetail.author.name;
+            if (this.bookForEdit != null) {
+                if (this.bookForEdit.author != null) {
+                    return this.bookForEdit.author.name;
                 } else {
                     return 'Author not set';
                 }
@@ -511,15 +510,15 @@
                 id: 0,
                 name: v,
             } as Author;
-            if (this.bookDetail != null) {
-                this.bookDetail.author = tmpAuthor;
+            if (this.bookForEdit != null) {
+                this.bookForEdit.author = tmpAuthor;
             }
         }
 
         get authorNameForUpdate() {
-            if (this.bookMount != null) {
-                if (this.bookMount.author != null) {
-                    return this.bookMount.author.name;
+            if (this.bookForShow != null) {
+                if (this.bookForShow.author != null) {
+                    return this.bookForShow.author.name;
                 } else {
                     return 'Author not set';
                 }
@@ -529,9 +528,9 @@
         }
 
         get publisherNameForShow() {
-            if (this.bookDetail != null) {
-                if (this.bookDetail.publisher != null) {
-                    return this.bookDetail.publisher.name;
+            if (this.bookForEdit != null) {
+                if (this.bookForEdit.publisher != null) {
+                    return this.bookForEdit.publisher.name;
                 } else {
                     return 'Publisher not set';
                 }
@@ -545,15 +544,15 @@
                 id: 0,
                 name: v,
             } as Publisher;
-            if (this.bookDetail != null) {
-                this.bookDetail.publisher = tmpPublisher;
+            if (this.bookForEdit != null) {
+                this.bookForEdit.publisher = tmpPublisher;
             }
         }
 
         get publisherNameForUpdate() {
-            if (this.bookMount != null) {
-                if (this.bookMount.publisher != null) {
-                    return this.bookMount.publisher.name;
+            if (this.bookForShow != null) {
+                if (this.bookForShow.publisher != null) {
+                    return this.bookForShow.publisher.name;
                 } else {
                     return 'Publisher not set';
                 }
@@ -563,60 +562,60 @@
         }
 
         get startAtFormatted() {
-            if (this.bookDetail != null) {
-                return formatDate(this.bookDetail.start_at);
+            if (this.bookForEdit != null) {
+                return formatDate(this.bookForEdit.start_at);
             } else {
                 return null;
             }
         }
 
         get endAtFormatted() {
-            if (this.bookDetail != null) {
-                return formatDate(this.bookDetail.end_at);
+            if (this.bookForEdit != null) {
+                return formatDate(this.bookForEdit.end_at);
             } else {
                 return null;
             }
         }
 
         private maxStartAt(): string {
-            if (this.bookDetail != null && this.bookDetail.end_at != null) {
-                return this.bookDetail.end_at.substring(0, 10);
+            if (this.bookForEdit != null && this.bookForEdit.end_at != null) {
+                return this.bookForEdit.end_at.substring(0, 10);
             } else {
                 return new Date().toISOString().substring(0, 10);
             }
         }
 
         get startAtDatePicker() {
-            if (this.bookDetail != null && this.bookDetail.start_at != null) {
-                return this.bookDetail.start_at.substring(0, 10);
+            if (this.bookForEdit != null && this.bookForEdit.start_at != null) {
+                return this.bookForEdit.start_at.substring(0, 10);
             } else {
                 return '';
             }
         }
 
         set startAtDatePicker(date: string) {
-            if (this.bookDetail != null && date !== '') {
-                this.bookDetail.start_at = date;
+            if (this.bookForEdit != null && date !== '') {
+                this.bookForEdit.start_at = date;
             }
         }
 
         get bookImage(): string | null {
-            if (this.bookDetail != null) {
-                    return this.bookDetail.medium_image_url;
+            if (this.bookForEdit != null) {
+                    return this.bookForEdit.medium_image_url;
             } else {
                 return null;
             }
         }
 
         private isBookEdit(): boolean {
-            if (this.bookMount != null && this.bookDetail != null) {
-                const isBookChange = (this.bookMount.title !== this.bookDetail.title);
+            if (this.bookForShow != null && this.bookForEdit != null) {
+                const isBookChange = (this.bookForShow.title !== this.bookForEdit.title);
                 const isAuthorChange = (this.authorNameForShow !== this.authorNameForUpdate);
                 let isDateChange = false;
-                if (this.bookMount.start_at != null && this.bookDetail.start_at != null) {
-                    isDateChange = (this.bookMount.start_at.substring(0, 10) !== this.bookDetail.start_at.substring(0, 10));
+                if (this.bookForShow.start_at != null && this.bookForEdit.start_at != null) {
+                    isDateChange = (this.bookForShow.start_at.substring(0, 10) !== this.bookForEdit.start_at.substring(0, 10));
                 }
-                if (this.bookMount.start_at === null && this.bookDetail.start_at != null) {
+                if (this.bookForShow.start_at === null && this.bookForEdit.start_at != null) {
                     isDateChange = true;
                 }
                 return (isBookChange || isAuthorChange || isDateChange);
@@ -626,25 +625,25 @@
         }
 
         private updateBookWithDetail() {
-            // if (this.validateInput()  && this.bookMount != null) {
-            if (this.bookMount != null && this.bookDetail != null) {
+            // if (this.validateInput()  && this.bookForShow != null) {
+            if (this.bookForShow != null && this.bookForEdit != null) {
                 if (this.isBookEdit()) {
                     this.isUpdatingBook = true;
-                    const authorID: number | null = this.bookMount.author != null ? this.bookMount.author.id : null;
-                    const publisherID: number | null = this.bookMount.publisher != null ? this.bookMount.publisher.id : null;
+                    const authorID: number | null = this.bookForShow.author != null ? this.bookForShow.author.id : null;
+                    const publisherID: number | null = this.bookForShow.publisher != null ? this.bookForShow.publisher.id : null;
 
                     let startAt: string | null = null;
-                    if (this.bookDetail.start_at != null) {
-                        startAt = new Date(this.bookDetail.start_at).toISOString();
+                    if (this.bookForEdit.start_at != null) {
+                        startAt = new Date(this.bookForEdit.start_at).toISOString();
                     }
                     let endAt: string | null = null;
-                    if (this.bookDetail.end_at != null) {
-                        endAt = new Date(this.bookDetail.end_at).toISOString();
+                    if (this.bookForEdit.end_at != null) {
+                        endAt = new Date(this.bookForEdit.end_at).toISOString();
                     }
 
                     const book = {
-                        id: this.bookMount.id,
-                        title: this.bookMount.title,
+                        id: this.bookForShow.id,
+                        title: this.bookForShow.title,
                         author_id: authorID,
                         publisher_id: publisherID,
                         start_at: startAt,
@@ -652,7 +651,7 @@
                     };
                     api.books.update(book)
                         .then((res) => {
-                            this.bookMount = null;
+                            this.bookForShow = null;
                             // this.categories = [];
                         })
                         .then(() => {
@@ -722,18 +721,18 @@
         // }
 
         get startAt() {
-            if (this.bookDetail == null) {
+            if (this.bookForEdit == null) {
                 return null;
             } else {
-                return this.bookDetail.start_at;
+                return this.bookForEdit.start_at;
             }
         }
 
         get endAt() {
-            if (this.bookDetail == null) {
+            if (this.bookForEdit == null) {
                 return null;
             } else {
-                return this.bookDetail.end_at;
+                return this.bookForEdit.end_at;
             }
         }
 
@@ -751,9 +750,9 @@
 
         private doChangeStateAPI(msg: string, apiFunc: (id: number) => AxiosPromise<ContentResult<Book>>) {
             const res = confirm(msg);
-            if (res && this.bookDetail != null) {
+            if (res && this.bookForEdit != null) {
                 this.isLoadingBookState = true;
-                apiFunc(this.bookDetail.id)
+                apiFunc(this.bookForEdit.id)
                     .then(() => {
                         return this.loadBookDetail();
                     })
@@ -783,8 +782,8 @@
 
         private deleteBook() {
             const ans = confirm('関連するコメントも全て削除されます。本を削除しますか?');
-            if (ans && this.bookDetail != null) {
-                api.book.delete(this.bookDetail.id).then((res) => {
+            if (ans && this.bookForEdit != null) {
+                api.book.delete(this.bookForEdit.id).then((res) => {
                     // console.log(res);
                     this.$router.push('/bookshelf');
                 }).catch((err) => {
@@ -805,8 +804,8 @@
             }
         }
         private errorRouteAtDetail(status: number) {
-            if (this.bookMount != null) {
-                errorRoute(status, '/bookshelf/' + this.bookMount.id);
+            if (this.bookForShow != null) {
+                errorRoute(status, '/bookshelf/' + this.bookForShow.id);
             } else {
                 errorRoute(status, '/bookshelf');
             }
