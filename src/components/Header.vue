@@ -30,7 +30,7 @@
         ><div style="margin-right: 5px;">Logout</div>
             <v-icon small style="color: white">exit_to_app</v-icon>
         </v-btn>
-        </v-toolbar>
+    </v-toolbar>
 </template>
 
 <script lang="ts">

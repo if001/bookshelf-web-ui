@@ -15,7 +15,7 @@
         <div style="color: lightgrey;margin: auto">
             <router-link class="policy" to="/policy">privacy policy</router-link>
             <span class="vertical-line">|</span>
-            ver. 1.0.0
+            ver. 0.1.0
             <span class="vertical-line">|</span>
             &copy;2019 <strong>edgwbs.net</strong>
         </div>

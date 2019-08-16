@@ -96,6 +96,7 @@
 </template>
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
+    import {getExpireTimeByFirebase} from '@/api';
     import firebase from 'firebase/app';
     import 'firebase/auth';
     import Footer from '@/components/Footer.vue';
@@ -193,6 +194,12 @@
                 if (res.user === null) {
                     return new Promise<string>((_, reject) => reject('user not found'));
                 }
+
+                const expTime = getExpireTimeByFirebase();
+                if (expTime === null) {
+                    return new Promise<string>((_, reject) => reject('user not found'));
+                }
+                localStorage.setItem('expTime', expTime.toString());
                 return res.user.getIdToken();
             }).then((idToken: string) => {
                 localStorage.setItem('token', idToken.toString());

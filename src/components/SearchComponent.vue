@@ -120,8 +120,8 @@
 
 
 <script lang="ts">
-    import {Component, Emit, Prop, Vue} from 'vue-property-decorator';
-    import api, {SearchResult, Book, Content, Author, Publisher, ContentResult} from '../api';
+    import {Component, Emit, Vue} from 'vue-property-decorator';
+    import api, {SearchResult, Content, Author, Publisher, ContentResult} from '../api';
     import {AxiosPromise} from 'axios';
 
     export interface SearchResultWithCheck {
