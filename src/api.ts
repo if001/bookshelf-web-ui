@@ -165,6 +165,15 @@ export default {
                 },
             );
         },
+        searchByISBN(isbn: string) {
+            return Axios.get(
+                `${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&isbn=${isbn}`,
+                {
+                    headers: {'Content-Type': 'application/json'},
+                },
+            );
+        },
+
     },
 };
 
@@ -256,10 +265,12 @@ export interface Content {
     author: string;
     smallImageUrl: string;
     mediumImageUrl: string;
+    largeImageUrl: string;
     publisherName: string;
     itemPrice: string;
     itemUrl: string;
     affiliateUrl: string;
+    itemCaption: string;
 }
 
 import firebase from 'firebase/app';
@@ -273,12 +284,19 @@ interface ExpTime {
     expirationTime: number;
 }
 
-export function isExpireToken(): boolean | null {
+export function getExpireTimeByFirebase(): number | null {
     const user = firebase.auth().currentUser;
     if (user != null) {
         const userData = user.toJSON() as UserData;
-        const now = new Date();
-        return userData.stsTokenManager.expirationTime < Math.round(now.getTime());
+        return userData.stsTokenManager.expirationTime;
+    }
+    return null;
+}
+
+export function getExpireTimeByStorage(): number | null {
+    const expTimeStr = localStorage.getItem('expTime');
+    if (expTimeStr != null) {
+        return parseInt(expTimeStr, 10);
     }
     return null;
 }
@@ -304,9 +322,10 @@ export function doRefreshToken(): Promise<void> {
 }
 
 export function errorRoute(status: number, nextRoute: string | null) {
-    const isExpTime = isExpireToken();
-    console.log('exp:', isExpTime);
-    if (status === 401 && isExpTime != null && isExpTime) {
+    const expTime = getExpireTimeByStorage();
+    const now = new Date();
+    console.log('exp:', expTime);
+    if (status === 401 && expTime != null && expTime < Math.round(now.getTime())) {
         doRefreshToken()
             .then(() => {
                 if (nextRoute === null) {

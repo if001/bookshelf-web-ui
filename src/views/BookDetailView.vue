@@ -97,8 +97,8 @@
                             </v-card-title>
                         </v-flex>
                         <v-flex xs3 style="height: 128px;">
-                            <div v-if="bookImage != null && bookImage !== ''">
-                                <a :href="bookDetail.affiliate_url" target="_blank">
+                            <div v-if="bookImage != null && bookImage !== '' && bookForShow.affiliate_url !== null">
+                                <a :href="bookForShow.affiliate_url" target="_blank">
                                     <img style="float:right;" :src="bookImage" height="128px" alt="bookImage">
                                 </a>
                             </div>
@@ -346,8 +346,6 @@
                 const base = 'https://twitter.com/intent/tweet';
 
                 const state = this.bookState(this.bookForEdit.start_at, this.bookForEdit.end_at);
-                let url = '';
-
                 let text = '';
                 let bookInfo = '';
                 let bookURL = '';
@@ -368,17 +366,19 @@
                 if (this.bookForEdit.author != null) {
                     bookInfo += '(' + this.bookForEdit.author.name + ')';
                 }
-
                 if (this.bookForEdit.affiliate_url != null) {
                     bookURL = this.bookForEdit.affiliate_url;
                 }
-
-                url = base + '?text=' + ' [' + bookInfo + '] ' + text + '&hashtags=' + hashTag + '&url=' + bookURL;
-                return url;
+                // TODO bookstrageのURLはひとまずおいとく
+                // if (this.bookForEdit.isbn != null) {
+                    // bookURL = 'https://bookstrage.edgwbs.net/' + this.bookForEdit.isbn;
+                // }
+                return base + '?text=' + ' [' + bookInfo + '] ' + text + '&hashtags=' + hashTag + '&url=' + bookURL;
             }
         }
 
         private mounted() {
+            this.bookForEdit = null;
             this.bookForShow = null;
             // this.categories = [];
             // this.loadAuthors();
@@ -409,24 +409,9 @@
                         //         this.categories.push(newC);
                         //     }
                         // }
+
                         this.bookForShow = {
-                            id: this.book.id,
-                            title: this.book.title,
-                            author: this.book.author,
-                            publishedAt: this.book.publishedAt,
-                            accountId: this.book.accountId,
-                            publisher: this.book.publisher,
-                            start_at: this.book.start_at,
-                            end_at: this.book.end_at,
-                            nextBookId: this.book.nextBookId,
-                            prevBookId: this.book.prevBookId,
-                            // categories: this.categories,
-                            medium_image_url: this.book.medium_image_url,
-                            small_image_url: this.book.small_image_url,
-                            item_url: this.book.item_url,
-                            affiliate_url: this.book.affiliate_url,
-                            created_at: this.book.created_at,
-                            updated_at: this.book.updated_at,
+                            ...this.book,
                             isOpen: false,
                         } as BookDetail;
                         this.copyValue();
@@ -481,23 +466,23 @@
         }
 
         get bookName(): string {
-            if (this.bookForEdit != null) {
-                return this.bookForEdit.title;
+            if (this.bookForShow != null) {
+                return this.bookForShow.title;
             } else {
                 return 'Title not set';
             }
         }
 
         set bookName(v: string) {
-            if (this.bookForShow != null) {
-                this.bookForShow.title = v;
+            if (this.bookForEdit != null) {
+                this.bookForEdit.title = v;
             }
         }
 
         get authorNameForShow() {
-            if (this.bookForEdit != null) {
-                if (this.bookForEdit.author != null) {
-                    return this.bookForEdit.author.name;
+            if (this.bookForShow != null) {
+                if (this.bookForShow.author != null) {
+                    return this.bookForShow.author.name;
                 } else {
                     return 'Author not set';
                 }
@@ -516,9 +501,9 @@
         }
 
         get authorNameForUpdate() {
-            if (this.bookForShow != null) {
-                if (this.bookForShow.author != null) {
-                    return this.bookForShow.author.name;
+            if (this.bookForEdit != null) {
+                if (this.bookForEdit.author != null) {
+                    return this.bookForEdit.author.name;
                 } else {
                     return 'Author not set';
                 }
@@ -528,9 +513,9 @@
         }
 
         get publisherNameForShow() {
-            if (this.bookForEdit != null) {
-                if (this.bookForEdit.publisher != null) {
-                    return this.bookForEdit.publisher.name;
+            if (this.bookForShow != null) {
+                if (this.bookForShow.publisher != null) {
+                    return this.bookForShow.publisher.name;
                 } else {
                     return 'Publisher not set';
                 }
@@ -562,16 +547,16 @@
         }
 
         get startAtFormatted() {
-            if (this.bookForEdit != null) {
-                return formatDate(this.bookForEdit.start_at);
+            if (this.bookForShow != null) {
+                return formatDate(this.bookForShow.start_at);
             } else {
                 return null;
             }
         }
 
         get endAtFormatted() {
-            if (this.bookForEdit != null) {
-                return formatDate(this.bookForEdit.end_at);
+            if (this.bookForShow != null) {
+                return formatDate(this.bookForShow.end_at);
             } else {
                 return null;
             }
@@ -601,7 +586,7 @@
 
         get bookImage(): string | null {
             if (this.bookForEdit != null) {
-                    return this.bookForEdit.medium_image_url;
+                return this.bookForEdit.medium_image_url;
             } else {
                 return null;
             }

@@ -324,7 +324,6 @@
                                 }
                             }
                         });
-                        console.log(notCreateAuthors);
                         const createP: Array<AxiosPromise<ContentResult<Author>>> = notCreateAuthors.map((x: string) => {
                             return api.author.create({author_name: x});
                         });

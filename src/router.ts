@@ -19,6 +19,7 @@ const PrivacyPolicy = () => import('@/views/PrivacyPolicyView.vue');
 const BooksViews = () => import('@/views/BooksView.vue');
 const RegisterBookViews = () => import('@/views/RegisterBookView.vue');
 const BookDetailView = () => import('@/views/BookDetailView.vue');
+const SharePageView = () => import('@/views/SharePageView.vue');
 
 Vue.use(Router);
 
@@ -49,6 +50,11 @@ const router = new Router({
             path: '/policy',
             name: 'privacyPolicy',
             component: PrivacyPolicy,
+        },
+        {
+            path: '/share/:isbn',
+            name: 'sharePage',
+            component: SharePageView,
         },
         {
             path: '/bookshelf',
