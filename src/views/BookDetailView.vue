@@ -1,18 +1,17 @@
 <template>
     <v-container style="min-height: 85vh;">
-        <v-layout row wrap justify-space-around class="mb-3">
-            <v-flex lg4 md5 xs12 class="ma-2">
-                <v-card color="white" class="black--text">
-                    <v-layout row>
-                        <v-flex xs9>
-                            <v-card-title primary-title class="">
-                                <div v-if="!isOpen">
-                                    <div style="font-size: 1.5em;">{{ bookName }}</div>
-                                    <div>{{ authorNameForShow }} </div>
-                                    <div>{{ publisherNameForShow }} </div>
-                                    <!-- TODO 出版年はひとまず消す <div>(2013)</div>-->
-                                </div>
-                                <div v-if="isOpen">
+        <v-row class="mb-3" justify="space-around">
+            <v-col lg="4" md="5" xs="12" class="ma-2">
+                <v-card color="white">
+                    <v-row no-gutters>
+                        <v-col lg="9" md="9" sm="9" xs="9" class="pa-3">
+                            <v-row v-if="!isOpen">
+                                <v-col cols="12" class="pa-1 pl-2" style="font-size: 1.2em;">{{ bookName }}</v-col>
+                                <v-col cols="12" class="pa-1 pl-2" style="font-size: 0.8em;">{{ authorNameForShow }} </v-col>
+                                <v-col cols="12" class="pa-1 pl-2" style="font-size: 0.8em;">{{ publisherNameForShow }} </v-col>
+                                <!-- TODO 出版年はひとまず消す <div>(2013)</div>-->
+                            </v-row>
+                            <div v-if="isOpen">
 <!--                                    一旦編集機能はなし-->
 <!--                                    <v-form ref="form"-->
 <!--                                            v-model="validEditBox"-->
@@ -46,45 +45,41 @@
 <!--                                    </div>-->
                                     <div class="pt-1" style="width: 100%">
                                         <v-btn class="ma-0"
-                                               outline
+                                               outlined
                                                small
                                                color="error"
                                                @click="deleteBook()">
-                                            本の削除<v-icon small color="red darken-2">delete</v-icon>
+                                            本の削除<v-icon small color="red darken-2">mdi-delete</v-icon>
                                         </v-btn>
                                     </div>
                                 </div>
-                                <v-btn v-if="!isOpen && !isLoadingBook"
-                                       icon
+                            <v-btn v-if="!isOpen && !isLoadingBook"
+                                   dark
+                                   fab
+                                   color="blue"
+                                   small
+                                   @click="isOpen=!isOpen"
+                                   style="position:absolute; top: 80px; right: 90px;">
+                                <v-icon small dark>mdi-border-color</v-icon>
+                            </v-btn>
+                            <v-btn v-if="!isOpen && isLoadingBook"
+                                   fab
+                                   color="blue"
+                                   small
+                                   disabled
+                                   style="position:absolute; top: 80px; right: 90px;">
+                                <v-icon small dark>mdi-border-color</v-icon>
+                            </v-btn>
+                            <v-btn v-if="isOpen && !isLoadingBook"
                                        fab
                                        dark
                                        color="blue"
                                        small
                                        @click="isOpen=!isOpen"
-                                       style="position:absolute; top: 80px; right: 85px;">
-                                    <v-icon small dark>edit</v-icon>
+                                       style="position:absolute; top: 80px; right: 90px;">
+                                    <v-icon small dark>mdi-close</v-icon>
                                 </v-btn>
-                                <v-btn v-if="!isOpen && isLoadingBook"
-                                       icon
-                                       fab
-                                       color="blue"
-                                       small
-                                       disabled
-                                       style="position:absolute; top: 80px; right: 85px;">
-                                    <v-icon small dark>edit</v-icon>
-                                </v-btn>
-                                <v-btn v-if="isOpen && !isLoadingBook"
-                                       icon
-                                       fab
-                                       dark
-                                       color="blue"
-                                       small
-                                       @click="isOpen=!isOpen"
-                                       style="position:absolute; top: 80px; right: 85px;">
-                                    <v-icon small dark>close</v-icon>
-                                </v-btn>
-                                <v-btn v-if="isOpen && !isLoadingBook && isBookEdit()"
-                                       icon
+                            <v-btn v-if="isOpen && !isLoadingBook && isBookEdit()"
                                        fab
                                        dark
                                        color="green"
@@ -92,29 +87,30 @@
                                        :loading="isUpdatingBook"
                                        @click="updateBookWithDetail"
                                        style="position:absolute; top: 80px; right: 130px;">
-                                    <v-icon small dark>done</v-icon>
+                                    <v-icon small dark>mdi-check</v-icon>
                                 </v-btn>
-                            </v-card-title>
-                        </v-flex>
-                        <v-flex xs3 style="height: 128px;">
+                        </v-col>
+                        <v-col lg="3" md="3" sm="3" xs="3" style="height: 128px;">
                             <div v-if="bookImage != null && bookImage !== '' && bookForShow.affiliate_url !== null">
                                 <a :href="bookForShow.affiliate_url" target="_blank">
-                                    <img style="float:right;" :src="bookImage" height="128px" alt="bookImage">
+<!--                                    <img style="float:right;" :src="bookImage" height="128px" alt="bookImage">-->
+                                    <img :src="bookImage" style="float:right;" height="128px" alt="bookImage">
                                 </a>
                             </div>
                             <div v-else>
-                                <img src="@/assets/not_found.png" alt="not_found" height="128px">
+                                <img src="@/assets/not_found.png" alt="not_found" height="128px" style="float:right;">
                             </div>
 
-                        </v-flex>
-                    </v-layout>
+                        </v-col>
+                    </v-row>
+
                     <v-divider light></v-divider>
 
-                    <v-layout nowrap class="pa-2" align-center>
-                        <v-flex lg3 md3 sm4 xs4>
-                            <v-layout align-center row>
-                                <v-flex lg4 md4 sm4 xs4>
-                                    <v-btn flat
+                    <v-row class="ma-0 pr-2 pl-2" justify="center">
+                        <v-col lg="3" md="3" sm="4" xs="4" class="ma-0">
+                            <v-row justify="center">
+                                <v-col lg="4" md="4" sm="4" xs="4" class="pa-1">
+                                    <v-btn text
                                            icon
                                            color="dark"
                                            class="ma-0"
@@ -124,53 +120,40 @@
                                                 color="blue-grey darken-1"> {{ bookState(startAt, endAt).icon }}
                                         </v-icon>
                                     </v-btn>
-                                </v-flex>
-                                <v-flex lg8 md8 sm8 xs8>
-                                    <div class="pl-3" style="display: inline;">{{ bookState(startAt, endAt).label }} </div>
-                                </v-flex>
-                            </v-layout>
-                        </v-flex>
+                                </v-col>
+                                <v-col lg="8" md="8" sm="8" xs="8" class="pa-1" align-self="center">
+                                    {{ bookState(startAt, endAt).label }}
+<!--                                    <div class="" style="display: inline;">{{ bookState(startAt, endAt).label }} </div>-->
+                                </v-col>
+                            </v-row>
+                        </v-col>
 
-                        <v-flex lg9 md9 sm8 xs8 v-if="!isOpen" style="color: gray;">
-                            <v-layout row wrap justify-center>
-                                <v-flex lg5 md5 sm12 xs12>
-                                    <div style="text-align: center;">
-                                        {{formatNullDate(startAtFormatted)}}
-                                    </div>
-                                </v-flex>
-                                <v-flex lg2 md2 sm12 xs12>
-                                    <div style="text-align: center;">
-                                        〜
-                                    </div>
-                                </v-flex>
-                                <v-flex lg5 md5 sm12 xs12>
-                                    <div style="text-align: center;">
-                                        {{formatNullDate(endAtFormatted)}}
-                                    </div>
-                                </v-flex>
-                            </v-layout>
-                        </v-flex>
+                        <v-col lg="9" md="9" sm="8" xs="8" class="pa-0" style="color: gray;" align-self="center">
+                            <v-row v-if="!isOpen" justify="center" class="pa-0" style="text-align: center;">
+                                <v-col lg="5" md="5" sm="12" xs="12" align-self="center" class="pa-0">
+                                    {{formatNullDate(startAtFormatted)}}
+                                </v-col>
+                                <v-col lg="2" md="2" sm="12" xs="12" align-self="center" class="pa-0">
+                                    〜
+                                </v-col>
+                                <v-col lg="5" md="5" sm="12" xs="12" align-self="center" class="pa-0">
+                                    {{formatNullDate(endAtFormatted)}}
+                                </v-col>
+                            </v-row>
 
-                        <v-flex lg9 md9 sm8 xs8 v-else style="color: gray;">
-                            <v-layout row wrap justify-center>
-                                <v-flex lg5 md5 sm12 xs12>
-                                    <div class="text-center" style="text-align: center;">
-                                        <v-icon small @click="isOpenDatePicker=!isOpenDatePicker">event</v-icon>
-                                        {{formatNullDate(startAtDatePicker)}}
-                                    </div>
-                                </v-flex>
-                                <v-flex lg2 md2 sm12 xs12>
-                                    <div style="text-align: center;">
-                                        〜
-                                    </div>
-                                </v-flex>
-                                <v-flex lg5 md5 sm12 xs12>
-                                    <div style="text-align: center;">
-                                        {{formatNullDate(endAtFormatted)}}
-                                    </div>
-                                </v-flex>
-                            </v-layout>
-                        </v-flex>
+                            <v-row v-else justify="center" class="pa-0" style="text-align: center;">
+                                <v-col lg="5" md="5" sm="12" xs="12" align-self="center" class="pa-0">
+                                    <v-icon small @click="isOpenDatePicker=!isOpenDatePicker">mdi-calendar</v-icon>
+                                    {{formatNullDate(startAtDatePicker)}}
+                                </v-col>
+                                <v-col lg="2" md="2" sm="12" xs="12" align-self="center" class="pa-0">
+                                    〜
+                                </v-col>
+                                <v-col lg="5" md="5" sm="12" xs="12" align-self="center" class="pa-0">
+                                    {{formatNullDate(endAtFormatted)}}
+                                </v-col>
+                            </v-row>
+                        </v-col>
                         <div v-if="isOpen && isOpenDatePicker">
                             <v-menu
                                     ref="menu"
@@ -194,12 +177,12 @@
                             </v-menu>
                         </div>
 
-                    </v-layout>
+                    </v-row>
 
                     <v-divider light></v-divider>
 
-                    <v-layout column justify-end class="pr-2 pl-2 pt-1 pb-1" v-if="!isOpen">
-                        <v-flex lg4 md4 ms4 xs4>
+                    <v-row column justify-end class="ma-0 pr-2 pl-2 pt-1 pb-1" v-if="!isOpen">
+                        <v-col class="pa-0">
                             <div v-if="createTwitterURL() != null" class="twitter-link share-button">
                                 <a :href="createTwitterURL()"
                                    onClick="window.open(encodeURI(decodeURI(this.href)), 'tweetwindow', 'width=650, height=470, personalbar=0, toolbar=0, scrollbars=1, sizable=1'); return false;"
@@ -213,8 +196,8 @@
                                 <img src="@/assets/twitter-icon-96-disable.png" alt="twittericon" height="24px" style="vertical-align: middle; padding: 2px">
                                 Share
                             </div>
-                        </v-flex>
-                    </v-layout>
+                        </v-col>
+                    </v-row>
 
                         <!-- TODO Ratingはひとまずつけない -->
                         <!--<v-divider light></v-divider>-->
@@ -280,11 +263,11 @@
                         <!--</v-flex>-->
 
                 </v-card>
-            </v-flex>
+            </v-col>
             <BookDescription
                     :bookID="bookID"
             ></BookDescription>
-        </v-layout>
+        </v-row>
         <v-btn
                 fab
                 bottom
@@ -293,7 +276,7 @@
                 dark
                 fixed
                 @click="toListPage()">
-            <v-icon>arrow_back</v-icon>
+            <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
     </v-container>
 </template>
@@ -755,9 +738,9 @@
             if (endAt == null && startAt == null) {
                 return { icon : 'fa-book', label : '未読' };
             } else if (endAt == null) {
-                return  { icon : 'bookmark', label : '読中' };
+                return  { icon : 'mdi-bookmark', label : '読中' };
             } else {
-                return  { icon : 'done', label : '読了' };
+                return  { icon : 'mdi-check', label : '読了' };
             }
         }
 
@@ -853,7 +836,7 @@
     }
 
     .share-button {
-        width: 80px;
+        width: 100px;
     }
     @-moz-keyframes loader {
         from {

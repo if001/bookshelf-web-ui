@@ -1,44 +1,44 @@
 <template>
     <v-container class="pr-0 pl-0" style="min-height: 600px;">
-        <v-layout row wrap align-center>
-            <v-flex lg8 md8 sm12 xs12 offset-lg2 offset-md2 class="pa-2">
-            <v-form
-                    id="title_box"
-                    ref="titleForm"
-                    v-model="validTitleSearchBox"
-                    lazy-validation>
-                <v-text-field
-                        flat
-                        label="Search From Title"
-                        v-model="inputTitleForSearch"
-                        :roles="searchFormRules"
-                        required
-                        append-outer-icon="search"
-                        @click="scrollBox('title_box')"
-                        @click:append-outer="searchTitle()"
-                ></v-text-field>
-            </v-form>
+        <v-row align="center" justify="center">
+            <v-col lg="8" md="8" sm="12" xs="12" class="pa-2 ma-2">
+                <v-form
+                        id="title_box"
+                        ref="titleForm"
+                        v-model="validTitleSearchBox"
+                        lazy-validation>
+                    <v-text-field
+                            flat
+                            label="Search From Title"
+                            v-model="inputTitleForSearch"
+                            :roles="searchFormRules"
+                            required
+                            append-outer-icon="mdi-book-search"
+                            @click="scrollBox('title_box')"
+                            @click:append-outer="searchTitle()"
+                    ></v-text-field>
+                </v-form>
 
-            <v-form
-                    id="author_box"
-                    ref="authorForm"
-                    v-model="validAuthorSearchBox"
-                    lazy-validation>
-                <v-text-field
-                        flat
-                        label="Search From Author"
-                        v-model="inputAuthorForSearch"
-                        :roles="searchFormRules"
-                        required
-                        append-outer-icon="search"
-                        @click="scrollBox('author_box')"
-                        @click:append-outer="searchAuthor()"
-                ></v-text-field>
-            </v-form>
-        </v-flex>
-        </v-layout>
+                <v-form
+                        id="author_box"
+                        ref="authorForm"
+                        v-model="validAuthorSearchBox"
+                        lazy-validation>
+                    <v-text-field
+                            flat
+                            label="Search From Author"
+                            v-model="inputAuthorForSearch"
+                            :roles="searchFormRules"
+                            required
+                            append-outer-icon="mdi-book-search"
+                            @click="scrollBox('author_box')"
+                            @click:append-outer="searchAuthor()"
+                    ></v-text-field>
+                </v-form>
+            </v-col>
+        </v-row>
 
-        <v-layout row wrap justify-start>
+        <v-row justify="start">
             <div v-if="isSearchLoading" style="margin: auto;">
                 <div style="display:inline-block; padding-right: 15px;">loading...</div>
                 <div class="loading loading-content">
@@ -77,7 +77,7 @@
                     </v-layout>
                 </v-card>
             </v-flex>
-        </v-layout>
+        </v-row>
         <v-flex lg6 md6 sm6 xs12 offset-lg3 offset-md3 offset-sm3>
             <v-alert
                     v-if="alert"

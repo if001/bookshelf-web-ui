@@ -1,27 +1,31 @@
 <template>
     <v-app light>
-        <v-container text-xs-center>
-            <v-layout row wrap>
-                <v-flex lg8 md8 sm8 xs8 offset-lg2 offset-md2 offset-sm2 offset-xs2>
+        <v-container>
+            <v-row justify="center">
+                <v-col lg="8" md="8" sm="8" xs="8">
                     <div class="login-title">
                         Manage Your Book!
                     </div>
-                </v-flex>
+                </v-col>
+            </v-row>
 
-                <v-flex lg6 md6 sm6 xs12 offset-lg3 offset-md3 offset-sm3>
+            <v-row justify="center">
+                <v-col lg="6" md="6" sm="6" xs="12">
                     <v-alert
                             v-if="alert"
                             v-model="alert"
                             dismissible
                             color="error"
-                            icon="warning"
+                            icon="mdi-warning"
                             outline
                             @click="alert = false">
                         {{message}}
                     </v-alert>
-                </v-flex>
+                </v-col>
+            </v-row>
 
-                <v-flex lg4 md4 sm4 xs10 offset-lg4 offset-md4 offset-sm4 offset-xs1>
+            <v-row justify="center">
+                <v-col lg="4" md="4" sm="4" xs="10">
                     <v-form ref="form"
                             lazy-validation
                             v-model="valid">
@@ -29,7 +33,7 @@
                                 v-model="email"
                                 label="Email"
                                 :rules="emailRules"
-                                prepend-icon="email"
+                                prepend-icon="mdi-email"
                                 required
                         ></v-text-field>
                         <v-text-field
@@ -37,59 +41,58 @@
                                 label="Password"
                                 :type="showPassword ? 'text' : 'password'"
                                 :rules="passRules"
-                                :append-icon="showPassword ? 'visibility' : 'visibility_off'"
+                                :append-icon="showPassword ? 'mdi-visibility' : 'mdi-visibility_off'"
                                 @click:append="showPassword = !showPassword"
-                                prepend-icon="lock"
+                                prepend-icon="mdi-lock"
                                 required
                         ></v-text-field>
                     </v-form>
 
-
                     <v-btn @click="login" :loading="isLoading" block color="#1E90FF" dark>
                         Login
                     </v-btn>
-                    <!--                    <div class="warning-font">{{ message }}</div>-->
-                </v-flex>
+                </v-col>
+            </v-row>
 
-                <v-flex lg12 md12 sm12 xs12>
+
+            <v-row justify="center">
+                <v-col>
                     <div class="create-account-link pa-2">
                         <router-link to="/reset_password">Forgot Password?</router-link>
                     </div>
-                </v-flex>
+                </v-col>
+            </v-row>
 
-                <v-flex lg12 md12 sm12 xs12>
+            <v-row justify="center">
+                <v-col>
                     <div class="create-account-link pa-2">
                         Don't have an account?
                         <router-link to="/signup">Create account</router-link>
                     </div>
-                </v-flex>
+                </v-col>
+            </v-row>
 
-                <v-flex lg8 md8 sm8 sm8 xs10 offset-lg2 offset-md2 offset-sm2 offset-xs1>
+            <v-row justify="center">
+                <v-col lg="8" md="8" sm="8" xs="8" style="text-align: center">
                     <v-btn
                             fab
                             color="gray"
                             disabled>
                         or
                     </v-btn>
-                </v-flex>
+                </v-col>
+            </v-row>
 
-                <!--<v-flex lg4 md4 sm4 offset-md4>-->
-                <!--<hr class="divide" style="display: inline-block;width: 40%;">-->
-                <!--<div style="display: inline-block; margin: 10px;">OR</div>-->
-                <!--<hr class="divide" style="display: inline-block;width: 40%;">-->
-                <!--</v-flex>-->
-                <v-flex lg8 md8 sm8 xs10 offset-lg2 offset-md2 offset-sm2 offset-xs1>
-                    <div class="pa-3" v-if="isMobile()">
-                        <img class="google-login" src="@/assets/btn_google.png" @click="loginWithGoogleAsMobile">
-                        <p style="font-size: 0.8em; color:dimgray">※ログインにのみ使われます</p>
-                    </div>
-                    <div class="pa-3" v-else>
-                        <img class="google-login" src="@/assets/btn_google.png" @click="loginWithGoogle">
-                        <p style="font-size: 0.8em; color:dimgray">※ログインにのみ使われます</p>
-                    </div>
-                </v-flex>
-
-            </v-layout>
+            <v-row justify="center">
+                <v-col lg=8 md=8 sm=8 xs=10 class="pa-3" v-if="isMobile()" style="text-align: center">
+                    <img class="google-login" src="@/assets/btn_google.png" @click="loginWithGoogleAsMobile">
+                    <p style="font-size: 0.8em; color:dimgray">※ログインにのみ使われます</p>
+                </v-col>
+                <v-col v-else lg=8 md=8 sm=8 xs=10 class="pa-3" style="text-align: center">
+                    <img class="google-login" src="@/assets/btn_google.png" @click="loginWithGoogle">
+                    <p style="font-size: 0.8em; color:dimgray">※ログインにのみ使われます</p>
+                </v-col>
+            </v-row>
         </v-container>
         <v-footer></v-footer>
     </v-app>

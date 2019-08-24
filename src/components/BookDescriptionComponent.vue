@@ -1,11 +1,11 @@
 <template>
-    <v-flex class="ma-3" xs12 md6>
+    <v-col class="ma-3" xs="12" md="6">
         <h3>
             コメント
-            <v-btn flat
+            <v-btn text
                    icon
                    v-on:click="isOpenTextfield  = !isOpenTextfield">
-                <v-icon color="blue-grey darken-3">add_comment</v-icon>
+                <v-icon color="blue-grey darken-3">mdi-comment-plus</v-icon>
             </v-btn>
         </h3>
 
@@ -16,7 +16,7 @@
                     lazy-validation>
 
                 <v-textarea
-                        outline
+                        outlined
                         rows="3"
                         label="comment"
                         auto-grow
@@ -31,13 +31,13 @@
                 <div style="display: flex">
                     <v-spacer></v-spacer>
                     <v-btn class="ma-0"
-                           outline
+                           outlined
                            small
                            color="info"
                            :loading="isSending"
                            :disabled="isSending"
                            @click="send()">SEND
-                        <v-icon small color="blue" class="ml-2">send</v-icon>
+                        <v-icon small color="blue" class="ml-2">mdi-send</v-icon>
                     </v-btn>
                 </div>
             </v-form>
@@ -61,11 +61,11 @@
                         <div class="ma-2 mr-5" style="color:dimgray; font-size: 0.8em;">{{createdAtFormatted(description.created_at)}}</div>
                         <v-spacer></v-spacer>
                         <v-btn color="dark"
-                               flat
+                               text
                                icon
                                small
                                @click="deleteDescription(description.id)">
-                            <v-icon small color="red darken-2">delete</v-icon>
+                            <v-icon small color="red darken-2">mdi-delete</v-icon>
                         </v-btn>
                         <!--TODO シェアボタン-->
                         <!--<v-btn color="info" small>share</v-btn>-->
@@ -76,7 +76,7 @@
             </div>
         </div>
 
-    </v-flex>
+    </v-col>
 </template>
 
 

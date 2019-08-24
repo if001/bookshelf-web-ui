@@ -1,44 +1,47 @@
 <template>
     <!--<v-container  style="height: 1000px;">-->
-    <div>
+<!--    <div>-->
         <v-container v-bind:class="{ xs_height: $vuetify.breakpoint.xs}">
-            <v-layout row nowrap justify-center>
-                <v-flex md12>
-                    <v-tabs fixed-tabs color="#fafafa">
-                        <v-tab
-                                v-for="f in filterObject"
-                                :key="f.displayName"
-                                @change="changeFilter(f.filterKey)"
-                        >
-                            {{ f.displayName }}
-                        </v-tab>
-                    </v-tabs>
-                </v-flex>
-            </v-layout>
+<!--            <v-tabs fixed-tabs color="#fafafa">-->
+            <v-tabs class="pa-3"
+                    background-color="grey lighten-5"
+                    :centered="true"
+                    :grow="true"
+                    bark
+                    >
+                <v-tab
+                        color="grey lighten-5"
+                        v-for="f in filterObject"
+                        :key="f.displayName"
+                        @change="changeFilter(f.filterKey)"
+                >
+                    {{ f.displayName }}
+                </v-tab>
+            </v-tabs>
 
-            <v-layout row nowrap justify-center>
-                <v-flex lg8 md8 sm8 xs8 class="ma-3">
+            <v-row justify="center" cols="12" class="pa-3">
+                <v-col lg="8" md="8" sm="8" xs="8">
                     <v-text-field
-                            flat
+                            text
                             label="Search"
-                            append-icon=search
+                            append-icon="mdi-search"
                             @click:append="search"
                     ></v-text-field>
-                </v-flex>
-                <v-flex lg4 md4 sm4 xs4 class="ma-3">
+                </v-col>
+                <v-col lg="4" md="4" sm="4" xs="4">
                     <v-select
-                        v-model="selectSortKey"
-                        :items="sortObject"
-                        item-text="displayName"
-                        item-value="sortKey"
-                        append-icon="sort"
-                        label="Sort"
-                        @change="changeSort()"
-                ></v-select>
-                </v-flex>
-            </v-layout>
+                            v-model="selectSortKey"
+                            :items="sortObject"
+                            item-text="displayName"
+                            item-value="sortKey"
+                            append-icon="mdi-sort"
+                            label="Sort"
+                            @change="changeSort()"
+                    ></v-select>
+                </v-col>
+            </v-row>
 
-            <v-layout row wrap justify-start>
+            <v-row justify="center">
                 <div v-if="loading" style="margin: auto;">
                     <div style="display:inline-block; padding-right: 15px;">loading...</div>
                     <div class="loading loading-content">
@@ -48,44 +51,43 @@
                 <div v-if="!loading && booksShow.length === 0 && selectFilter === null" style="margin: auto;padding: 20px;">
                     読みたい本を登録しましょう。
                 </div>
-                <v-flex v-else class="pa-2" v-for="book in booksShow" :key="book.id" lg4 md6 sm12
-                        xs12>
+
+                <v-col v-else
+                       class="pa-2"
+                       v-for="book in booksShow"
+                       :key="book.id"
+                       lg="4" md="6" sm="12" xs="12">
                     <v-hover>
                         <v-card
                                 slot-scope="{ hover }"
                                 :class="`elevation-${hover ? 12 : 2}`"
                                 :to="{ name: 'bookDetail', params: { bookId: book.id }}"
                         >
-                            <v-layout class="font-weight-light font title pt-2 pl-3 pr-2 pb-0" row>
-                                <v-flex align-self-center>{{book.title}}</v-flex>
-                                <v-btn flat
-                                       icon
-                                       color="dark"
-                                       class="ma-0">
+                            <v-card-title style="font-size: 1.2em;">
+                                <v-col align-self="center" class="ma-0 pa-0 bot-char">{{book.title}}</v-col>
+                                <v-btn
+                                        text
+                                        icon
+                                        color="dark">
                                     <v-icon large
                                             color="blue-grey darken-1"
                                     >{{ bookState(book.start_at, book.end_at).icon }}
                                     </v-icon>
                                 </v-btn>
-                            </v-layout>
-
-                            <!--<v-icon large right v-if="book.status==1">bookmark</v-icon>-->
-                            <!--<v-icon large right v-if="book.status==2">done</v-icon>-->
-                            <!--<v-icon large right v-if="book.status==3">close</v-icon>-->
-                            <v-layout class="pt-0 pl-4 pr-2 pb-2" row>
-                                <v-flex align-self-center :class="{ noset_font: (book.author == null)}">
+                            </v-card-title>
+                            <v-card-text style="font-size: 1.0em;">
+                                <v-col align-self="center" :class="{ noset_font: (book.author == null)}" class="ma-0 pa-0">
                                     {{ (book.author != null) ? book.author.name : "not set" }}
                                     ({{ (book.publisher != null) ? book.publisher.name : "not set" }})
-                                </v-flex>
-                            </v-layout>
+                                </v-col>
+                            </v-card-text>
                         </v-card>
                     </v-hover>
-                    <!--<v-divider></v-divider>-->
-                </v-flex>
-            </v-layout>
+                </v-col>
+            </v-row>
 
-            <v-layout row nowrap justify-center>
-                <v-flex md12 class="mt-2 mb-5 text-xs-center">
+            <v-row>
+                <v-col md="12" class="mt-2 mb-5 text-xs-center">
                     <v-pagination
                             v-model="page"
                             :length=totalPageNumber
@@ -93,8 +95,9 @@
                             @input="pagenaite()"
                             color="#1e90ff"
                     ></v-pagination>
-                </v-flex>
-            </v-layout>
+                </v-col>
+            </v-row>
+
             <v-btn
                     fab
                     bottom
@@ -103,10 +106,10 @@
                     dark
                     fixed
                     @click="toRegister()">
-                <v-icon>add</v-icon>
+                <v-icon>mdi-plus</v-icon>
             </v-btn>
         </v-container>
-    </div>
+<!--    </div>-->
 </template>
 
 <script lang="ts">
@@ -196,9 +199,9 @@
             if (endAt == null && startAt == null) {
                 return { icon : 'fa-book', label : '未読' };
             } else if (endAt == null) {
-                return { icon : 'bookmark', label : '読中' };
+                return { icon : 'mdi-bookmark', label : '読中' };
             } else {
-                return { icon : 'done', label : '了読' };
+                return { icon : 'mdi-check', label : '了読' };
             }
         }
 
@@ -235,6 +238,12 @@
 </script>
 
 <style scoped>
+    .bot-char {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
     .reverse{
         transform: scale(-1, 1);
     }

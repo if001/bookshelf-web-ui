@@ -1,5 +1,5 @@
 <template>
-    <v-toolbar
+    <v-app-bar
             fixed
             color="blue accent-2"
             dark
@@ -14,23 +14,22 @@
         <v-btn v-if="$vuetify.breakpoint.xs"
                style="color: white"
                icon
-               flat
                color="dark"
                right
                v-on:click="logout">
-            <v-icon>exit_to_app</v-icon>
+            <v-icon right>mdi-logout</v-icon>
         </v-btn>
         <v-btn v-else
                style="color: white"
-               flat
+               text
                color="dark"
                small
                right
                v-on:click="logout"
         ><div style="margin-right: 5px;">Logout</div>
-            <v-icon small style="color: white">exit_to_app</v-icon>
+            <v-icon small style="color: white">mdi-logout</v-icon>
         </v-btn>
-    </v-toolbar>
+    </v-app-bar>
 </template>
 
 <script lang="ts">

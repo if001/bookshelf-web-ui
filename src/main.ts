@@ -2,21 +2,18 @@ import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
 import store from './store';
+import vuetify from './plugins/vuetify';
 import './registerServiceWorker';
 
 
-import {library} from '@fortawesome/fontawesome-svg-core';
-import {fas} from '@fortawesome/free-solid-svg-icons';
-import {far} from '@fortawesome/free-regular-svg-icons';
-import {fab} from '@fortawesome/free-brands-svg-icons';
-import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
+// import {library} from '@fortawesome/fontawesome-svg-core';
+// import {fas} from '@fortawesome/free-solid-svg-icons';
+// import {far} from '@fortawesome/free-regular-svg-icons';
+// import {fab} from '@fortawesome/free-brands-svg-icons';
+// import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
 
-library.add(fas, far, fab);
-Vue.component('v-fa', FontAwesomeIcon);
-
-import Vuetify from 'vuetify';
-
-Vue.use(Vuetify);
+// library.add(fas, far, fab);
+// Vue.component('v-fa', FontAwesomeIcon);
 
 import firebase from 'firebase/app';
 import {fireBaseConfig} from '@/firebase_config';
@@ -29,5 +26,6 @@ Vue.config.productionTip = false;
 new Vue({
     router,
     store,
+    vuetify,
     render: (h) => h(App),
 }).$mount('#app');

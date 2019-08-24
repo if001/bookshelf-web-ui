@@ -1,38 +1,46 @@
 <template>
     <v-app light>
         <v-container text-xs-center>
-
-            <v-layout row wrap>
-                <v-flex lg8 md8 sm8 xs8 offset-lg2 offset-md2 offset-sm2 offset-xs2>
+            <v-row justify="center">
+                <v-col lg="8" md="8" sm="8" xs="8">
                     <slot name="header">
-                        <h2>本の登録</h2>
+                        <div style="text-align: center;color: dimgray;font-size:1.2em;">本の登録</div>
                     </slot>
-                </v-flex>
-            </v-layout>
-                <v-layout row nowrap justify-center>
-                    <v-flex md12>
-                        <v-tabs
-                                v-model="selectTab"
-                                fixed-tabs
-                                color="#fafafa">
-                            <v-tab
-                                    v-for="f in tabObject"
-                                    :key="f.displayName"
-                                    @change="changeTab(f.tag)">
-                                {{ f.displayName }}
-                            </v-tab>
-                        </v-tabs>
-                    </v-flex>
-                </v-layout>
+                </v-col>
+            </v-row>
 
+            <v-row cols="12" justify="center">
+                <v-col lg="8" md="8" sm="8" xs="8">
+                    <v-tabs
+                            v-model="selectTab"
+                            background-color="grey lighten-5"
+                            fixed-tabs
+                            bark
+                    >
+                        <v-tab
+                                color="grey lighten-5"
+                                v-for="f in tabObject"
+                                :key="f.displayName"
+                                @change="changeTab(f.tag)">
+                            {{ f.displayName }}
+                        </v-tab>
+                    </v-tabs>
+                </v-col>
+            </v-row>
 
-            <v-layout row wrap v-if="isSearchWeb">
-                <SearchComponent
-                        @select="searchSelect"></SearchComponent>
-            </v-layout>
-            <v-layout row wrap v-else>
-                <v-flex lg8 md8 sm8 xs8 offset-lg2 offset-md2 offset-sm2 offset-xs2 class="pa-2">
-                    <v-form
+            <v-row justify="center" cols="12"  v-if="isSearchWeb" >
+                <v-col justify="center">
+                    <SearchComponent
+                            @select="searchSelect"></SearchComponent>
+                </v-col>
+            </v-row>
+
+            <v-row cols="12" v-else>
+                <v-col cols="12">
+
+                    <v-row justify="center">
+                        <v-col lg="8" md="8" sm="12" xs="12" class="pa-2">
+                            <v-form
                             ref="form"
                             v-model="validInputForm"
                             lazy-validation
@@ -101,29 +109,37 @@
                         <!--</div>-->
 
                     </v-form>
-                    <div class="pl-2 pb-2">
-                        <img style="float:right;" :src="mediumBookImage" :height="(mediumBookImage != null && mediumBookImage !=='')? '120px;':'0'">
-                    </div>
-                </v-flex>
-                <v-flex lg6 md6 sm6 xs6>
-                    <v-btn small
-                           outline
-                           color="black"
-                           right
-                           @click="closeRegister()">CLOSE
-                    </v-btn>
-                </v-flex>
-                <v-flex lg6 md6 sm6 xs6>
-                    <v-btn small
-                           color="success"
-                           outline
-                           left
-                           :loading="isSaving"
-                           @click="createBookWithDetail()">SAVE
-                        <v-icon small color="green" class="ml-2">done</v-icon>
-                    </v-btn>
-                </v-flex>
-            </v-layout>
+                            <div class="pl-2 pb-2">
+                                <img style="float:right;" :src="mediumBookImage" :height="(mediumBookImage != null && mediumBookImage !=='')? '120px;':'0'">
+                            </div>
+                        </v-col>
+                    </v-row>
+
+
+
+                    <v-row justify="center">
+                        <v-col cols="12" align="center">
+                            <v-btn class="ma-2"
+                                   small
+                                   outlined
+                                   color="black"
+                                   @click="closeRegister()">CLOSE
+                            </v-btn>
+
+                            <v-btn class="ma-2"
+                                   small
+                                   color="success"
+                                   outlined
+                                   :loading="isSaving"
+                                   @click="createBookWithDetail()">SAVE
+                                <v-icon small color="green" class="ml-2">mdi-check</v-icon>
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+
+                </v-col>
+            </v-row>
+
         </v-container>
     </v-app>
 </template>

@@ -64,7 +64,7 @@ export default {
                 p.status = state;
             }
             if (isbn != null) {
-                p.isbn = isbn
+                p.isbn = isbn;
             }
             return axios.request<ContentResult<PaginateBooks>>({
                 method: 'GET',
@@ -304,6 +304,7 @@ export function getExpireTimeByStorage(): number | null {
 export function doRefreshToken(): Promise<void> {
     console.log('refresh token');
     const user = firebase.auth().currentUser;
+    console.log('user',user);
     return new Promise<void>((resolve, reject) => {
         if (user != null) {
             user.getIdToken()
@@ -325,16 +326,24 @@ export function errorRoute(status: number, nextRoute: string | null) {
     const expTime = getExpireTimeByStorage();
     const now = new Date();
     console.log('exp:', expTime);
+    console.log(Math.round(now.getTime()));
+    if (expTime != null) {
+        console.log(expTime < Math.round(now.getTime()));
+    }
+
     if (status === 401 && expTime != null && expTime < Math.round(now.getTime())) {
+        console.log('refresh');
         doRefreshToken()
             .then(() => {
                 if (nextRoute === null) {
                     router.go(-1);
                 } else {
+                    console.log('next',nextRoute);
                     router.push(nextRoute);
                 }
             })
             .catch(() => {
+                console.log('refresh error');
                 router.push('/login');
             });
     } else {

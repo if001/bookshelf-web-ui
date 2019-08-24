@@ -80,7 +80,7 @@ const router = new Router({
         },
         {
             path: '*',
-            redirect: {name: '/loginViews'},
+            redirect: {name: 'loginViews'},
         },
     ],
 });
