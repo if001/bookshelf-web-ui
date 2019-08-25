@@ -69,7 +69,7 @@
             </div>
 
             <v-col v-else
-                   class="pa-2"
+                   class="pa-3 pt-2 pb-2"
                    v-for="book in booksShow"
                    :key="book.id"
                    cols="12" lg="4" md="6" sm="12">

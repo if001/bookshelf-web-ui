@@ -2,7 +2,7 @@
     <v-content>
     <v-container style="min-height: 85vh;">
         <v-row class="ma-2 mb-3" justify="space-around">
-            <v-col cols=12 lg=4 md=5 class="ma-2">
+            <v-col cols=12 lg=4 md=5 class="ma-0 pa-0">
                 <v-card color="white">
                     <v-row no-gutters>
                         <v-col cols=8 class="pa-3">
