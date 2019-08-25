@@ -25,9 +25,9 @@
         </v-row>
 
         <v-row justify="center" class="pa-0">
-            <v-col cols="12" lg="8" md="8" sm="8" class="pa-0">
-                <v-row>
-                    <v-col cols="8" lg="8" md="8" sm="8">
+            <v-col cols="12" lg="8" md="8" sm="8" class="ma-0 pa-2">
+                <v-row class="ma-0">
+                    <v-col cols="12" lg="8" md="8" sm="8"  class="pl-3 pr-3 pa-0">
                         <v-text-field
                                 text
                                 v-model="searchKeyForBook"
@@ -39,7 +39,7 @@
                                 @click:clear="searchKeyRemove()"
                         ></v-text-field>
                     </v-col>
-                    <v-col cols=4>
+                    <v-col cols=12 lg="4" md="4" sm="4" class="pl-3 pr-3 pa-0">
                         <v-select
                                 v-model="selectSortKey"
                                 :items="sortObject"
