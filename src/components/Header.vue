@@ -6,6 +6,7 @@
             :scroll-off-screen="$vuetify.breakpoint.xs"
             :scroll-threshold="40"
             height="50"
+            hide-on-scroll
     >
         <div style="font-weight: 400;">
             <router-link :to="{name:'booksView'}" class="title">{{title}}</router-link>
