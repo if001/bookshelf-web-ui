@@ -1,10 +1,13 @@
 <template>
     <v-app light color="#fafafa">
         <v-header></v-header>
+        <!--        <div style="padding-top: 50px;">-->
+        <!--<books-view></books-view>-->
         <div style="padding-top: 50px;">
-            <!--<books-view></books-view>-->
             <router-view/>
         </div>
+
+        <!--        </div>-->
 
         <v-footer></v-footer>
     </v-app>

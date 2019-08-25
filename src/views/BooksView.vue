@@ -1,115 +1,131 @@
 <template>
     <!--<v-container  style="height: 1000px;">-->
 <!--    <div>-->
-        <v-container v-bind:class="{ xs_height: $vuetify.breakpoint.xs}">
+    <v-container v-bind:class="{ xs_height: $vuetify.breakpoint.xs}">
 <!--            <v-tabs fixed-tabs color="#fafafa">-->
-            <v-tabs class="pa-3"
-                    background-color="grey lighten-5"
-                    :centered="true"
-                    :grow="true"
-                    bark
-                    >
-                <v-tab
-                        color="grey lighten-5"
-                        v-for="f in filterObject"
-                        :key="f.displayName"
-                        @change="changeFilter(f.filterKey)"
+        <v-row justify="center" class="pa3">
+            <v-col cols="12" lg="8" md="8" sm="8" class="ma-0 pa-0">
+                <v-tabs class="pa-3"
+                        background-color="grey lighten-5"
+                        bark
+                        centered
+                        grow
+                        show-arrows
                 >
-                    {{ f.displayName }}
-                </v-tab>
-            </v-tabs>
+                    <v-tab
+                            color="grey lighten-5"
+                            v-for="f in filterObject"
+                            :key="f.displayName"
+                            @change="changeFilter(f.filterKey)"
+                            class="ma-0 pa-0">
+                        {{ f.displayName }}
+                    </v-tab>
+                </v-tabs>
+            </v-col>
+        </v-row>
 
-            <v-row justify="center" cols="12" class="pa-3">
-                <v-col lg="8" md="8" sm="8" xs="8">
-                    <v-text-field
-                            text
-                            label="Search"
-                            append-icon="mdi-search"
-                            @click:append="search"
-                    ></v-text-field>
-                </v-col>
-                <v-col lg="4" md="4" sm="4" xs="4">
-                    <v-select
-                            v-model="selectSortKey"
-                            :items="sortObject"
-                            item-text="displayName"
-                            item-value="sortKey"
-                            append-icon="mdi-sort"
-                            label="Sort"
-                            @change="changeSort()"
-                    ></v-select>
-                </v-col>
-            </v-row>
+        <v-row justify="center" class="pa-0">
+            <v-col cols="12" lg="8" md="8" sm="8" class="pa-0">
+                <v-row>
+                    <v-col cols="8" lg="8" md="8" sm="8">
+                        <v-text-field
+                                text
+                                v-model="searchKeyForBook"
+                                label="Title or Author or Publisher"
+                                append-outer-icon="mdi-book-search"
+                                @click:append-outer="searchBook()"
+                                clear-icon="mdi-close-circle"
+                                clearable
+                                @click:clear="searchKeyRemove()"
+                        ></v-text-field>
+                    </v-col>
+                    <v-col cols=4>
+                        <v-select
+                                v-model="selectSortKey"
+                                :items="sortObject"
+                                item-text="displayName"
+                                item-value="sortKey"
+                                append-icon="mdi-sort"
+                                label="Sort"
+                                @change="changeSort()"
+                                clear-icon="mdi-close-circle"
+                                clearable
+                                @click:clear="sortKeyRemove()"
+                        ></v-select>
+                    </v-col>
+                </v-row>
+            </v-col>
+        </v-row>
 
-            <v-row justify="center">
-                <div v-if="loading" style="margin: auto;">
-                    <div style="display:inline-block; padding-right: 15px;">loading...</div>
-                    <div class="loading loading-content">
-                        <v-icon large>fa-book</v-icon>
-                    </div>
+        <v-row justify="center">
+            <div v-if="loading" style="margin: auto;">
+                <div style="display:inline-block; padding-right: 15px;">loading...</div>
+                <div class="loading loading-content">
+                    <v-icon large>fa-book</v-icon>
                 </div>
-                <div v-if="!loading && booksShow.length === 0 && selectFilter === null" style="margin: auto;padding: 20px;">
-                    読みたい本を登録しましょう。
-                </div>
+            </div>
+            <div v-if="!loading && booksShow.length === 0 && selectStateFilter === null" style="margin: auto;padding: 20px;">
+                読みたい本を登録しましょう。
+            </div>
 
-                <v-col v-else
-                       class="pa-2"
-                       v-for="book in booksShow"
-                       :key="book.id"
-                       lg="4" md="6" sm="12" xs="12">
-                    <v-hover>
-                        <v-card
-                                slot-scope="{ hover }"
-                                :class="`elevation-${hover ? 12 : 2}`"
-                                :to="{ name: 'bookDetail', params: { bookId: book.id }}"
-                        >
-                            <v-card-title style="font-size: 1.2em;">
-                                <v-col align-self="center" class="ma-0 pa-0 bot-char">{{book.title}}</v-col>
-                                <v-btn
-                                        text
-                                        icon
-                                        color="dark">
-                                    <v-icon large
-                                            color="blue-grey darken-1"
+            <v-col v-else
+                   class="pa-2"
+                   v-for="book in booksShow"
+                   :key="book.id"
+                   cols="12" lg="4" md="6" sm="12">
+                <v-hover>
+                    <v-card
+                            slot-scope="{ hover }"
+                            :class="`elevation-${hover ? 12 : 2}`"
+                            :to="{ name: 'bookDetail', params: { bookId: book.id }}"
+                    >
+                        <v-card-title style="font-size: 1.2em;padding-bottom: 0px;">
+                            <v-col align-self="center" class="ma-0 pa-0 bot-char">{{book.title}}</v-col>
+                            <v-btn
+                                    text
+                                    icon
+                                    color="dark">
+                                <v-icon large
+                                        color="blue-grey darken-1"
                                     >{{ bookState(book.start_at, book.end_at).icon }}
-                                    </v-icon>
-                                </v-btn>
-                            </v-card-title>
-                            <v-card-text style="font-size: 1.0em;">
-                                <v-col align-self="center" :class="{ noset_font: (book.author == null)}" class="ma-0 pa-0">
-                                    {{ (book.author != null) ? book.author.name : "not set" }}
-                                    ({{ (book.publisher != null) ? book.publisher.name : "not set" }})
-                                </v-col>
-                            </v-card-text>
-                        </v-card>
-                    </v-hover>
-                </v-col>
-            </v-row>
+                                </v-icon>
+                            </v-btn>
+                        </v-card-title>
+                        <v-card-text style="font-size: 1.0em;">
+                            <v-col align-self="center" :class="{ noset_font: (book.author == null)}" class="ma-0 pa-0">
+                                {{ (book.author != null) ? book.author.name : "not set" }}
+                                ({{ (book.publisher != null) ? book.publisher.name : "not set" }})
+                            </v-col>
+                        </v-card-text>
+                    </v-card>
+                </v-hover>
+            </v-col>
+        </v-row>
 
-            <v-row>
-                <v-col md="12" class="mt-2 mb-5 text-xs-center">
-                    <v-pagination
-                            v-model="page"
-                            :length=totalPageNumber
-                            :total-visible="7"
-                            @input="pagenaite()"
-                            color="#1e90ff"
-                    ></v-pagination>
-                </v-col>
-            </v-row>
+        <v-row>
+            <v-col cols=12 md="12" class="mt-2 mb-5 text-xs-center">
+                <v-pagination
+                        v-model="page"
+                        :length=totalPageNumber
+                        :total-visible="7"
+                        @input="pagenaite()"
+                        color="#1e90ff"
+                ></v-pagination>
+            </v-col>
+        </v-row>
 
-            <v-btn
-                    fab
-                    bottom
-                    right
-                    color="pink"
-                    dark
-                    fixed
-                    @click="toRegister()">
-                <v-icon>mdi-plus</v-icon>
-            </v-btn>
-        </v-container>
-<!--    </div>-->
+        <v-btn
+                fab
+                bottom
+                right
+                color="pink"
+                dark
+                fixed
+                @click="toRegister()">
+            <v-icon>mdi-plus</v-icon>
+        </v-btn>
+    </v-container>
+    <!--    </div>-->
 </template>
 
 <script lang="ts">
@@ -145,17 +161,19 @@
             {filterKey: 'reading', displayName: '読中'},
             {filterKey: 'read', displayName: '読了'},
         ];
-        private selectFilter: string | null = null;
+        private selectStateFilter: string | null = null;
+        private searchKeyForBook: string | null = null;
 
         public mounted() {
-            this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);
+            this.load(this.page, this.perPage, this.selectSortKey, this.selectStateFilter, this.searchKeyForBook);
             toTop();
         }
 
-        private load(page: number | null, perPage: number | null, sortKey: string | null, state: string | null) {
+        private load(page: number | null, perPage: number | null, sortKey: string | null,
+                     state: string | null, searchKeyForBook: string | null) {
             this.booksShow = [];
             this.loading = true;
-            api.books.list(page, perPage, sortKey, state, null)
+            api.books.list(page, perPage, sortKey, state, null, searchKeyForBook)
                 .then((response) => {
                     this.books = response.data.content.books as Book[];
                     this.totalCount = response.data.content.total_count as number;
@@ -190,11 +208,19 @@
         private closeCreate() {
             this.createModalIsOpen = false;
             this.selectSortKey = 'created_at';
-            this.load(this.page, this.perPage, this.selectSortKey, null);
+            this.load(this.page, this.perPage, this.selectSortKey, null, null);
         }
-        private search() {
-            console.log('search');
+
+        private searchBook() {
+            this.page = 1;
+            this.load(this.page, this.perPage, this.selectSortKey, null, this.searchKeyForBook);
         }
+
+        private searchKeyRemove() {
+            this.searchKeyForBook = null;
+            this.load(this.page, this.perPage, this.selectSortKey, this.selectStateFilter, this.searchKeyForBook);
+        }
+
         private bookState(startAt: string | null, endAt: string | null) {
             if (endAt == null && startAt == null) {
                 return { icon : 'fa-book', label : '未読' };
@@ -207,18 +233,24 @@
 
         private changeSort() {
             this.page = 1;
-            this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);
+            this.load(this.page, this.perPage, this.selectSortKey, this.selectStateFilter, this.searchKeyForBook);
+        }
+
+        private sortKeyRemove() {
+            this.page = 1;
+            this.selectSortKey = '';
+            this.load(this.page, this.perPage, this.selectSortKey, this.selectStateFilter, this.searchKeyForBook);
         }
 
         private changeFilter(filter: string) {
-            this.selectFilter = filter;
+            this.selectStateFilter = filter;
             this.page = 1;
-            this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);
+            this.load(this.page, this.perPage, this.selectSortKey, this.selectStateFilter, this.searchKeyForBook);
             toTop();
         }
 
         private pagenaite() {
-            this.load(this.page, this.perPage, this.selectSortKey, this.selectFilter);
+            this.load(this.page, this.perPage, this.selectSortKey, this.selectStateFilter, this.searchKeyForBook);
             toTop();
         }
 

@@ -1,7 +1,7 @@
 <template>
     <v-container class="pr-0 pl-0" style="min-height: 600px;">
         <v-row align="center" justify="center">
-            <v-col lg="8" md="8" sm="12" xs="12" class="pa-2 ma-2">
+            <v-col cols=12 lg="8" md="8" class="pa-2 ma-2">
                 <v-form
                         id="title_box"
                         ref="titleForm"
@@ -13,9 +13,7 @@
                             v-model="inputTitleForSearch"
                             :roles="searchFormRules"
                             required
-                            append-outer-icon="mdi-book-search"
                             @click="scrollBox('title_box')"
-                            @click:append-outer="searchTitle()"
                     ></v-text-field>
                 </v-form>
 
@@ -30,11 +28,25 @@
                             v-model="inputAuthorForSearch"
                             :roles="searchFormRules"
                             required
-                            append-outer-icon="mdi-book-search"
                             @click="scrollBox('author_box')"
-                            @click:append-outer="searchAuthor()"
                     ></v-text-field>
                 </v-form>
+            </v-col>
+
+            <v-col cols="12" lg="8" md="12" align="center">
+                <v-btn v-if="inputTitleForSearch.length !== 0 || inputAuthorForSearch.length !== 0"
+                       outlined
+                       :loading="isSearchLoading"
+                       @click="searchBook()">
+                    search
+                    <v-icon>mdi-search-web</v-icon>
+                </v-btn>
+                <v-btn v-else
+                       outlined
+                       disabled>
+                    search
+                    <v-icon>mdi-search-web</v-icon>
+                </v-btn>
             </v-col>
         </v-row>
 
@@ -45,53 +57,56 @@
                     <v-icon large>fa-book</v-icon>
                 </div>
             </div>
-            <v-flex v-else class="pa-2" v-for="result in getSearchResult" lg4 md6 sm12 xs12>
+
+            <v-col cols="12" lg="4" md="6" v-else class="pa-2" v-for="result in getSearchResult" >
                 <v-card color="white" class="black--text" @click="selectBook(result)" style="cursor:pointer">
-                    <v-layout row>
-                        <v-flex xs8>
+                    <v-row no-gutters>
+                        <v-col cols="8" class="ma-0 pa-2">
                             <div class="ma-1" style="width: 100%; float:left; font-size: 1.2em">{{result.title}}</div>
                             <div class="ma-1" style="width: 100%; float:left;">{{result.author}}</div>
                             <div class="ma-1" style="width: 100%; float:left;">{{result.publisherName}} /  {{result.itemPrice}}</div>
                             <v-btn v-if="result.isChecked"
-                                   icon
                                    fab
                                    dark
                                    color="blue"
                                    small
                                    style="position:absolute; top: 0; right: 0;">
-                                <v-icon small dark>done</v-icon>
+                                <v-icon small dark>mdi-check</v-icon>
                             </v-btn>
                             <v-btn v-if="result.isAlreadyRegister"
-                                   icon
                                    fab
                                    dark
                                    color="green"
                                    small
                                    style="position:absolute; top: 0; right: 0;">
-                                <v-icon small dark>done</v-icon>
+                                <v-icon small dark>mdi-check</v-icon>
                             </v-btn>
-                        </v-flex>
-                        <v-flex xs4 style="max-height: 128px;">
+                        </v-col>
+                        <v-col cols="4" class="ma-0 pa-0" style="max-height: 128px;">
                             <img style="float:right;" :src="result.mediumImageUrl" height="128px;">
-                        </v-flex>
-                    </v-layout>
+                        </v-col>
+                    </v-row>
                 </v-card>
-            </v-flex>
+            </v-col>
         </v-row>
-        <v-flex lg6 md6 sm6 xs12 offset-lg3 offset-md3 offset-sm3>
-            <v-alert
-                    v-if="alert"
-                    v-model="alert"
-                    dismissible
-                    color="error"
-                    icon="warning"
-                    outline
-                    @click="alert = false">
-                {{message}}
-            </v-alert>
-        </v-flex>
-        <v-layout row nowrap justify-center v-if="getSearchResult.length !== 0">
-            <v-flex md12 class="mt-2 mb-4 text-xs-center">
+
+        <v-row justify="center">
+            <v-col cols="12" lg="6" md="6" sm="6">
+                <v-alert
+                        v-if="alert"
+                        v-model="alert"
+                        dismissible
+                        color="error"
+                        icon="warning"
+                        outlined
+                        @click="alert = false">
+                    {{message}}
+                </v-alert>
+            </v-col>
+        </v-row>
+
+        <v-row justify="center" v-if="getSearchResult.length !== 0">
+            <v-col cols="12" class="mt-2 mb-4 text-xs-center">
                 <v-pagination
                         v-model="page"
                         :length=totalCount
@@ -99,9 +114,10 @@
                         total-visible="5"
                         color="#1e90ff"
                 ></v-pagination>
-            </v-flex>
-        </v-layout>
-        <v-layout>
+            </v-col>
+        </v-row>
+
+        <v-row>
             <v-btn v-if="getSearchResult.length !== 0 && selectMultiBooks.length !==0"
                    fab
                    bottom
@@ -112,9 +128,9 @@
                    :loading="isSaving"
                    @click="createBookMultiple">
                 <!--@click="createModalIsOpen = !createModalIsOpen">-->
-                <v-icon>add</v-icon>
+                <v-icon>mdi-plus</v-icon>
             </v-btn>
-        </v-layout>
+        </v-row>
     </v-container>
 </template>
 
@@ -170,6 +186,39 @@
 
         private mounted() {
             toTop();
+        }
+
+        private searchBook() {
+            console.log(this.inputTitleForSearch.length, this.inputAuthorForSearch.length);
+            if (this.inputTitleForSearch.length !== 0 && this.inputAuthorForSearch.length !== 0) {
+                this.searchTitleAndAuthor();
+            } else if (this.inputTitleForSearch.length !== 0 && this.inputAuthorForSearch.length === 0) {
+                this.searchTitle();
+            } else if (this.inputTitleForSearch.length === 0 && this.inputAuthorForSearch.length !== 0) {
+                this.searchAuthor();
+            } else {
+                this.setAlertMessage('入力してください');
+            }
+        }
+
+        private searchTitleAndAuthor() {
+            toTop();
+            this.isSearchLoading = true;
+            this.alert = false;
+            this.searchType = 'title';
+            api.rakuten.search(this.inputTitleForSearch, this.inputAuthorForSearch, this.page, this.perPage).then((res) => {
+                this.searchResult = res.data as SearchResult;
+                this.totalCount = this.searchResult.pageCount;
+                this.searchResultWithCheck = this.searchResult.Items.map((x) => {
+                    return this.itemToResultWithCheck(x.Item);
+                });
+            }).catch((err) => {
+                console.log(err);
+                this.setAlertMessage('検索エラー');
+                // console.log('search api error');
+            }).finally(() => {
+                this.isSearchLoading = false;
+            });
         }
 
         private searchTitle() {
@@ -259,7 +308,7 @@
                 if (this.selectMultiBooks.length < maxRegisterNum) {
                     book.isChecked = true;
                     this.selectMultiBooks.push(book);
-                    api.books.list(null, null, null, null, book.isbn)
+                    api.books.list(null, null, null, null, book.isbn, null)
                         .then((res) => {
                             if (res.data.content.total_count > 0) {
                                 book.isAlreadyRegister = true;

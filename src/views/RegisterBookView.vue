@@ -9,19 +9,19 @@
                 </v-col>
             </v-row>
 
-            <v-row cols="12" justify="center">
+            <v-row cols="8" justify="center">
                 <v-col lg="8" md="8" sm="8" xs="8">
-                    <v-tabs
-                            v-model="selectTab"
+                    <v-tabs v-model="selectTab"
                             background-color="grey lighten-5"
-                            fixed-tabs
                             bark
-                    >
+                            :centered="true"
+                            :grow="true">
                         <v-tab
                                 color="grey lighten-5"
                                 v-for="f in tabObject"
                                 :key="f.displayName"
-                                @change="changeTab(f.tag)">
+                                @click="changeTab(f.tag)"
+                                class="ma-0">
                             {{ f.displayName }}
                         </v-tab>
                     </v-tabs>

@@ -51,7 +51,8 @@ export default {
         },
     },
     books: {
-        list(page: number | null, perPage: number | null, sortKey: string | null, state: string | null, isbn: string | null) {
+        list(page: number | null, perPage: number | null, sortKey: string | null,
+             state: string | null, isbn: string | null, book: string | null) {
             const p: { [key: string]: any; } = {};
             if (page != null && perPage != null) {
                 p.page = page;
@@ -65,6 +66,9 @@ export default {
             }
             if (isbn != null) {
                 p.isbn = isbn;
+            }
+            if (book != null) {
+                p.book = book;
             }
             return axios.request<ContentResult<PaginateBooks>>({
                 method: 'GET',
@@ -149,6 +153,14 @@ export default {
         },
     },
     rakuten: {
+        search(title: string, author: string, page: number, perPage: number) {
+            return Axios.get(
+                `${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&page=${page}&hits=${perPage}&title=${title}&author=${author}`,
+                {
+                    headers: {'Content-Type': 'application/json'},
+                },
+            );
+        },
         searchByTitle(title: string, page: number, perPage: number) {
             return Axios.get(
                 `${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&page=${page}&hits=${perPage}&title=${title}`,
@@ -304,7 +316,7 @@ export function getExpireTimeByStorage(): number | null {
 export function doRefreshToken(): Promise<void> {
     console.log('refresh token');
     const user = firebase.auth().currentUser;
-    console.log('user',user);
+    console.log('user', user);
     return new Promise<void>((resolve, reject) => {
         if (user != null) {
             user.getIdToken()
@@ -338,7 +350,7 @@ export function errorRoute(status: number, nextRoute: string | null) {
                 if (nextRoute === null) {
                     router.go(-1);
                 } else {
-                    console.log('next',nextRoute);
+                    console.log('next', nextRoute);
                     router.push(nextRoute);
                 }
             })

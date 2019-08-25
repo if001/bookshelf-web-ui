@@ -1,10 +1,11 @@
 <template>
+    <v-content>
     <v-container style="min-height: 85vh;">
-        <v-row class="mb-3" justify="space-around">
-            <v-col lg="4" md="5" xs="12" class="ma-2">
+        <v-row class="ma-2 mb-3" justify="space-around">
+            <v-col cols=12 lg=4 md=5 class="ma-2">
                 <v-card color="white">
                     <v-row no-gutters>
-                        <v-col lg="9" md="9" sm="9" xs="9" class="pa-3">
+                        <v-col cols=8 class="pa-3">
                             <v-row v-if="!isOpen">
                                 <v-col cols="12" class="pa-1 pl-2" style="font-size: 1.2em;">{{ bookName }}</v-col>
                                 <v-col cols="12" class="pa-1 pl-2" style="font-size: 0.8em;">{{ authorNameForShow }} </v-col>
@@ -90,7 +91,7 @@
                                     <v-icon small dark>mdi-check</v-icon>
                                 </v-btn>
                         </v-col>
-                        <v-col lg="3" md="3" sm="3" xs="3" style="height: 128px;">
+                        <v-col cols=4 style="height: 128px;">
                             <div v-if="bookImage != null && bookImage !== '' && bookForShow.affiliate_url !== null">
                                 <a :href="bookForShow.affiliate_url" target="_blank">
 <!--                                    <img style="float:right;" :src="bookImage" height="128px" alt="bookImage">-->
@@ -106,10 +107,11 @@
 
                     <v-divider light></v-divider>
 
-                    <v-row class="ma-0 pr-2 pl-2" justify="center">
-                        <v-col lg="3" md="3" sm="4" xs="4" class="ma-0">
-                            <v-row justify="center">
-                                <v-col lg="4" md="4" sm="4" xs="4" class="pa-1">
+                    <v-row class="ma-0 pa-2" justify="center" no-gutters>
+
+                        <v-col cols=4 class="ma-0 pa-2" align-self="center">
+                            <v-row no-gutters>
+                                <v-col cols=3 class="ma-0 pa-0" align-self="center">
                                     <v-btn text
                                            icon
                                            color="dark"
@@ -121,39 +123,38 @@
                                         </v-icon>
                                     </v-btn>
                                 </v-col>
-                                <v-col lg="8" md="8" sm="8" xs="8" class="pa-1" align-self="center">
+                                <v-col cols=9 class="ma-0 pl-3" align-self="center">
                                     {{ bookState(startAt, endAt).label }}
-<!--                                    <div class="" style="display: inline;">{{ bookState(startAt, endAt).label }} </div>-->
                                 </v-col>
                             </v-row>
                         </v-col>
 
-                        <v-col lg="9" md="9" sm="8" xs="8" class="pa-0" style="color: gray;" align-self="center">
-                            <v-row v-if="!isOpen" justify="center" class="pa-0" style="text-align: center;">
-                                <v-col lg="5" md="5" sm="12" xs="12" align-self="center" class="pa-0">
+                        <v-col cols=8 class="ma-0 pa-0" style="color: gray;" align-self="center">
+                            <v-row v-if="!isOpen" no-gutters justify="center" class="pa-0" style="text-align: center;">
+                                <v-col cols=12 lg="5" md="5" align-self="center" class="ma-0 pa-1">
                                     {{formatNullDate(startAtFormatted)}}
                                 </v-col>
-                                <v-col lg="2" md="2" sm="12" xs="12" align-self="center" class="pa-0">
+                                <v-col cols=12 lg="2" md="2" align-self="center" class="ma-0 pa-1">
                                     〜
                                 </v-col>
-                                <v-col lg="5" md="5" sm="12" xs="12" align-self="center" class="pa-0">
+                                <v-col cols=12 lg="5" md="5" align-self="center" class="ma-0 pa-1">
                                     {{formatNullDate(endAtFormatted)}}
                                 </v-col>
                             </v-row>
-
-                            <v-row v-else justify="center" class="pa-0" style="text-align: center;">
-                                <v-col lg="5" md="5" sm="12" xs="12" align-self="center" class="pa-0">
+                            <v-row v-else no-gutters justify="center" class="pa-0" style="text-align: center;">
+                                <v-col cols=12 lg="5" md="5" align-self="center" class="ma-0 pa-1">
                                     <v-icon small @click="isOpenDatePicker=!isOpenDatePicker">mdi-calendar</v-icon>
                                     {{formatNullDate(startAtDatePicker)}}
                                 </v-col>
-                                <v-col lg="2" md="2" sm="12" xs="12" align-self="center" class="pa-0">
+                                <v-col cols=12 lg="2" md="2" align-self="center" class="ma-0 pa-1">
                                     〜
                                 </v-col>
-                                <v-col lg="5" md="5" sm="12" xs="12" align-self="center" class="pa-0">
+                                <v-col cols=12 lg="5" md="5" align-self="center" class="ma-0 pa-1">
                                     {{formatNullDate(endAtFormatted)}}
                                 </v-col>
                             </v-row>
                         </v-col>
+
                         <div v-if="isOpen && isOpenDatePicker">
                             <v-menu
                                     ref="menu"
@@ -279,6 +280,7 @@
             <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
     </v-container>
+    </v-content>
 </template>
 
 <script lang="ts">
@@ -429,7 +431,7 @@
         }
 
         private copyValue() {
-            let authorCopy: Author | null = null;
+            // let authorCopy: Author | null = null;
             if (this.bookForShow != null) {
                 // TODO カテゴリは一旦消す
                 // if (this.bookDetailShow.categories != null) {

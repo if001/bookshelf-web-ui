@@ -50,7 +50,7 @@
                     <v-icon>fa-book</v-icon>
                 </div>
             </div>
-            <div v-if="!isLoading && getDescriptions.length === 0" style="margin: auto;padding: 20px;">
+            <div v-if="!isLoading && getDescriptions.length === 0" style="margin: auto;">
                 本のコメントを追加しましょう
             </div>
 

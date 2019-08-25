@@ -15,7 +15,7 @@
         <div style="color: lightgrey;margin: auto">
             <router-link class="policy" to="/policy">privacy policy</router-link>
             <span class="vertical-line">|</span>
-            ver. 0.1.0
+            ver. {{version}}
             <span class="vertical-line">|</span>
             &copy;2019 <strong>edgwbs.net</strong>
         </div>
@@ -28,6 +28,7 @@
 
     @Component
     export default class Footer extends Vue {
+        version: string = '0.2.0';
     }
 
 </script>
@@ -52,6 +53,7 @@
         bottom:0;
         background-color: gray;
         justify-content:space-around;
+        font-size: 0.8em;
     }
 
     .policy {

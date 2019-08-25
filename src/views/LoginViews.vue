@@ -9,15 +9,15 @@
                 </v-col>
             </v-row>
 
-            <v-row justify="center">
-                <v-col lg="6" md="6" sm="6" xs="12">
+            <v-row justify="center" v-if="alert">
+                <v-col lg="6" md="6" sm="6" xs="12" class="pa-1" >
                     <v-alert
                             v-if="alert"
                             v-model="alert"
                             dismissible
                             color="error"
                             icon="mdi-warning"
-                            outline
+                            outlined
                             @click="alert = false">
                         {{message}}
                     </v-alert>
@@ -118,7 +118,7 @@
         private isLoading: boolean = false;
         private alert: boolean = false;
         private isRedirectLogin = 'isRedirectLogin';
-
+        private loginErrorMessage = 'メールアドレスまたはパスワードが間違っています';
         private passRules = [
             (v: any) => !!v || 'Name is required',
         ];
@@ -156,7 +156,7 @@
                     // console.log(err);
                     // this.message = err.toString();
                     localStorage.clear();
-                    this.setAlertMessage('ログインエラー');
+                    this.setAlertMessage(this.loginErrorMessage);
                     console.log('firebase sign in error');
                 })
                 .finally(() => {
@@ -181,10 +181,10 @@
                     }
                 })
                 .catch((err) => {
-                    //console.log(err);
+                    // console.log(err);
                     // this.message = err.toString();
                     localStorage.clear();
-                    this.setAlertMessage('ログインエラー');
+                    this.setAlertMessage(this.loginErrorMessage);
                 })
                 .finally(() => {
                     this.isLoading = false;
@@ -208,7 +208,7 @@
                 localStorage.setItem('token', idToken.toString());
                 this.$router.push('/bookshelf');
             }).catch((err) => {
-                this.setAlertMessage('ログインエラー');
+                this.setAlertMessage(this.loginErrorMessage);
                 // this.message = err.toString();
                 // console.log("firebase get token error");
             }).finally(() => {
