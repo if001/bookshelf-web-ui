@@ -137,7 +137,7 @@
 
 <script lang="ts">
     import {Component, Emit, Vue} from 'vue-property-decorator';
-    import api, {SearchResult, Content, Author, Publisher, ContentResult} from '../api';
+    import api, {SearchResult, Content, Author, Publisher, ContentResult, getToken, errorRoute} from '../api';
     import {AxiosPromise} from 'axios';
 
     export interface SearchResultWithCheck {
@@ -308,7 +308,10 @@
                 if (this.selectMultiBooks.length < maxRegisterNum) {
                     book.isChecked = true;
                     this.selectMultiBooks.push(book);
-                    api.books.list(null, null, null, null, book.isbn, null)
+                    getToken()
+                        .then((token) => {
+                            return api.books.list(token, null, null, null, null, book.isbn, null);
+                        })
                         .then((res) => {
                             if (res.data.content.total_count > 0) {
                                 book.isAlreadyRegister = true;
@@ -356,9 +359,13 @@
         private createAuthorP() {
             const authorIds: number[] = [];
             const notCreateAuthors: string[] = [];
-
+            let tmpToken = '';
             return new Promise<number[]>((resolve, reject) => {
-                api.author.getCounted()
+                getToken()
+                    .then((token) => {
+                        tmpToken = token;
+                        return api.author.getCounted(token);
+                    })
                     .then((res1) => {
                         this.authors = res1.data.content as Author[];
                         this.selectMultiBooks.forEach((x) => {
@@ -373,8 +380,9 @@
                                 }
                             }
                         });
+                        // TODO tmpTokenでは、thenの中の処理中にtokenが失効した場合に死ぬ
                         const createP: Array<AxiosPromise<ContentResult<Author>>> = notCreateAuthors.map((x: string) => {
-                            return api.author.create({author_name: x});
+                            return api.author.create(tmpToken, {author_name: x});
                         });
                         return Promise.all(createP);
                     })
@@ -396,9 +404,14 @@
         private createPublisherP() {
             const publisherIds: number[] = [];
             const notCreatePublishers: string[] = [];
+            let tmpToken = '';
 
             return new Promise<number[]>((resolve, reject) => {
-                api.publisher.getCounted()
+                getToken()
+                    .then((token) => {
+                        tmpToken = token;
+                        return api.publisher.getCounted(token);
+                    })
                     .then((res1) => {
                         this.publishers = res1.data.content as Publisher[];
                         this.selectMultiBooks.forEach((x) => {
@@ -414,7 +427,7 @@
                             }
                         });
                         const createP: Array<AxiosPromise<ContentResult<Publisher>>> = notCreatePublishers.map((x: string) => {
-                            return api.publisher.create({publisher_name: x});
+                            return api.publisher.create(tmpToken, {publisher_name: x});
                         });
                         return Promise.all(createP);
                     })
@@ -445,14 +458,20 @@
                 item_url: x.itemUrl,
                 affiliate_url: x.affiliateUrl,
             };
-            return api.books.create(book);
+            return getToken()
+                .then((token) => {
+                    return api.books.create(token, book);
+                });
         }
 
         private createBookMultiple() {
             this.isSaving = true;
             Promise.all([this.createAuthorP(), this.createPublisherP()])
                 .then(() => {
-                    return Promise.all([api.author.getCounted(), api.publisher.getCounted()]);
+                    return getToken();
+                })
+                .then((token) => {
+                    return Promise.all([api.author.getCounted(token), api.publisher.getCounted(token)]);
                 })
                 .then((value) => {
                     this.authors = value[0].data.content as Author[];
@@ -466,10 +485,8 @@
                     this.isSaving = false;
                     this.$router.push('/bookshelf');
                 })
-                .catch(() => {
-                    console.log('create error');
-                    localStorage.clear();
-                    this.$router.push('/login');
+                .catch((err) => {
+                    errorRoute('search component: ' + err.toString());
                 })
                 .finally(() => {});
         }

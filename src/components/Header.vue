@@ -45,7 +45,6 @@
         private logout() {
             firebase.auth().signOut()
                 .then(() => {
-                    localStorage.clear();
                     this.$router.push('/login');
                 })
                 .catch(() => {

@@ -1,15 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-
-// import BooksViews from './views/BooksView.vue';
-// import MainViews from '@/views/MainViews.vue';
-// import LoginViews from '@/views/LoginViews.vue';
-// import SignUpViews from '@/views/SignUpView.vue';
-// import ResetPasswordViews from '@/views/ResetPasswordView.vue';
-// import RegisterBookViews from '@/views/RegisterBookView.vue';
-// import BookDetailView from '@/views/BookDetailView.vue';
-// import NotFoundViews from '@/views/NotFoundViews.vue';
-// import PrivacyPolicy from '@/views/PrivacyPolicyView.vue';
+import firebase from 'firebase/app';
+import 'firebase/auth';
 
 const MainViews = () => import('@/views/MainViews.vue');
 const LoginViews = () => import('@/views/LoginViews.vue');
@@ -87,14 +79,15 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
     const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-    // const token = store.getters.getToken;
-    const token = localStorage.getItem('token');
-    if (requiresAuth && token == null) {
-        console.log('token not hold');
-        localStorage.clear();
-        next({path: '/login'});
+    if (requiresAuth) {
+        firebase.auth().onAuthStateChanged(function (user) {
+            if (user) {
+                next()
+            } else {
+                next('/login')
+            }
+        });
     } else {
-        console.log('success');
         next();
     }
 });

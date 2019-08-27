@@ -4,7 +4,7 @@ const axios = Axios.create({
     baseURL: process.env.VUE_APP_API_URL_BASE,
 });
 
-function getToken(): string {
+function getTokenByStorage(): string {
     const token = localStorage.getItem('token');
     if (token !== null) {
         return token;
@@ -13,45 +13,58 @@ function getToken(): string {
     }
 }
 
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import router from '@/router';
+
+export function getToken(): Promise<string> {
+    const user = firebase.auth().currentUser;
+    if (user != null) {
+        return user.getIdToken();
+    } else {
+        return new Promise((resolve, reject) => reject('user not found'));
+    }
+}
+
 export default {
     book: {
-        get(id: number) {
+        get(token: string, id: number) {
             return axios.request<ContentResult<Book>>({
                 method: 'GET',
                 url: `/book/${id}`,
-                headers: {'Authorization': `Bearer ${getToken()}`},
+                headers: {Authorization: `Bearer ${token}`},
             });
         },
-        startRead(id: number) {
+        startRead(token: string,  id: number) {
             return axios.request<ContentResult<Book>>({
                 method: 'PUT',
                 url: `/book/${id}/state/start`,
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${getToken()}`,
+                    'Authorization': `Bearer ${token}`,
                 },
             });
         },
-        endRead(id: number) {
+        endRead(token: string, id: number) {
             return axios.request<ContentResult<Book>>({
                 method: 'PUT',
                 url: `/book/${id}/state/end`,
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${getToken()}`,
+                    'Authorization': `Bearer ${token}`,
                 },
             });
         },
-        delete(id: number) {
+        delete(token: string, id: number) {
             return axios.request<{}>({
                 method: 'DELETE',
                 url: `/book/${id}`,
-                headers: {'Authorization': `Bearer ${getToken()}`},
+                headers: {Authorization: `Bearer ${token}`},
             });
         },
     },
     books: {
-        list(page: number | null, perPage: number | null, sortKey: string | null,
+        list(token: string, page: number | null, perPage: number | null, sortKey: string | null,
              state: string | null, isbn: string | null, book: string | null) {
             const p: { [key: string]: any; } = {};
             if (page != null && perPage != null) {
@@ -72,82 +85,82 @@ export default {
             }
             return axios.request<ContentResult<PaginateBooks>>({
                 method: 'GET',
-                headers: {'Authorization': `Bearer ${getToken()}`},
+                headers: {Authorization: `Bearer ${token}`},
                 url: '/books',
                 params: p,
             });
         },
-        create(data: any) {
+        create(token: string, data: any) {
             return axios({
                 method: 'POST',
-                headers: {'Authorization': `Bearer ${getToken()}`},
+                headers: {Authorization: `Bearer ${token}`},
                 url: '/books',
                 data,
             });
         },
-        update(data: any) {
+        update(token: string, data: any) {
             return axios({
                 method: 'PUT',
-                headers: {'Authorization': `Bearer ${getToken()}`},
+                headers: {Authorization: `Bearer ${token}`},
                 url: '/books',
                 data,
             });
         },
     },
     description: {
-        get(id: number) {
+        get(token: string, id: number) {
             return axios.request<MultiContentResult<Description>>({
                 method: 'GET',
                 url: `/book/${id}/description`,
-                headers: {'Authorization': `Bearer ${getToken()}`},
+                headers: {Authorization: `Bearer ${token}`},
             });
         },
-        create(id: number, data: any) {
+        create(token: string, id: number, data: any) {
             return axios.request<ContentResult<Description>>({
                 method: 'POST',
                 url: `/book/${id}/description`,
-                headers: {'Authorization': `Bearer ${getToken()}`},
+                headers: {Authorization: `Bearer ${token}`},
                 data,
             });
         },
-        delete(id: number) {
+        delete(token: string, id: number) {
             return axios.request<{}>({
                 method: 'DELETE',
                 url: `/description/${id}`,
-                headers: {'Authorization': `Bearer ${getToken()}`},
+                headers: {Authorization: `Bearer ${token}`},
             });
         },
     },
     author: {
-        getCounted() {
+        getCounted(token: string) {
             return axios.request<MultiContentResult<Author>>({
                 method: 'GET',
                 url: `/counted_authors`,
-                headers: {'Authorization': `Bearer ${getToken()}`},
+                headers: {Authorization: `Bearer ${token}`},
             });
         },
-        create(data: any) {
+        create(token: string, data: any) {
             return axios.request<ContentResult<Author>>({
                 method: 'POST',
                 url: `/author`,
-                headers: {'Authorization': `Bearer ${getToken()}`},
+                headers: {Authorization: `Bearer ${token}`},
                 data,
             });
         },
     },
     publisher: {
-        getCounted() {
+        getCounted(token: string) {
             return axios.request<MultiContentResult<Publisher>>({
                 method: 'GET',
                 url: `/counted_publisher`,
-                headers: {'Authorization': `Bearer ${getToken()}`},
+                headers: {Authorization: `Bearer ${token}`},
             });
         },
-        create(data: any) {
+        create(token: string, data: any) {
             return axios.request<ContentResult<Publisher>>({
                 method: 'POST',
                 url: `/publisher`,
-                headers: {'Authorization': `Bearer ${getToken()}`},
+                headers: {Authorization: `Bearer ${token}`},
                 data,
             });
         },
@@ -185,7 +198,6 @@ export default {
                 },
             );
         },
-
     },
 };
 
@@ -285,82 +297,7 @@ export interface Content {
     itemCaption: string;
 }
 
-import firebase from 'firebase/app';
-import 'firebase/auth';
-import router from '@/router';
-
-interface UserData {
-    stsTokenManager: ExpTime;
-}
-interface ExpTime {
-    expirationTime: number;
-}
-
-export function getExpireTimeByFirebase(): number | null {
-    const user = firebase.auth().currentUser;
-    if (user != null) {
-        const userData = user.toJSON() as UserData;
-        return userData.stsTokenManager.expirationTime;
-    }
-    return null;
-}
-
-export function getExpireTimeByStorage(): number | null {
-    const expTimeStr = localStorage.getItem('expTime');
-    if (expTimeStr != null) {
-        return parseInt(expTimeStr, 10);
-    }
-    return null;
-}
-
-export function doRefreshToken(): Promise<void> {
-    console.log('refresh token');
-    const user = firebase.auth().currentUser;
-    console.log('user', user);
-    return new Promise<void>((resolve, reject) => {
-        if (user != null) {
-            user.getIdToken()
-                .then((idToken) => {
-                    localStorage.setItem('token', idToken.toString());
-                    resolve();
-                })
-                .catch(() => {
-                    localStorage.clear();
-                    reject();
-                });
-        } else {
-            reject();
-        }
-    });
-}
-
-export function errorRoute(status: number, nextRoute: string | null) {
-    const expTime = getExpireTimeByStorage();
-    const now = new Date();
-    console.log('exp:', expTime);
-    console.log(Math.round(now.getTime()));
-    if (expTime != null) {
-        console.log(expTime < Math.round(now.getTime()));
-    }
-
-    if (status === 401 && expTime != null && expTime < Math.round(now.getTime())) {
-        console.log('refresh');
-        doRefreshToken()
-            .then(() => {
-                if (nextRoute === null) {
-                    router.go(-1);
-                } else {
-                    console.log('next', nextRoute);
-                    router.push(nextRoute);
-                }
-            })
-            .catch(() => {
-                console.log('refresh error');
-                router.push('/login');
-            });
-    } else {
-        // console.log('/books api error');
-        localStorage.clear();
-        router.push('/login');
-    }
+export function errorRoute(err: string) {
+    console.log(err);
+    router.push('/');
 }

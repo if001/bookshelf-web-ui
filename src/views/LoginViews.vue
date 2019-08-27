@@ -99,7 +99,6 @@
 </template>
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
-    import {getExpireTimeByFirebase} from '@/api';
     import firebase from 'firebase/app';
     import 'firebase/auth';
     import Footer from '@/components/Footer.vue';
@@ -151,7 +150,10 @@
         public loginWithGoogleAsMobile() {
             localStorage.setItem('isRedirectLogin', 'true');
             const provider = new firebase.auth.GoogleAuthProvider();
-            firebase.auth().signInWithRedirect(provider)
+            firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+                .then(() => {
+                    return firebase.auth().signInWithRedirect(provider)
+                })
                 .catch((err) => {
                     // console.log(err);
                     // this.message = err.toString();
@@ -176,14 +178,12 @@
                 })
                 .then((idToken: string) => {
                     if (idToken !== '') {
-                        localStorage.setItem('token', idToken.toString());
                         this.$router.push('/bookshelf');
                     }
                 })
                 .catch((err) => {
                     // console.log(err);
                     // this.message = err.toString();
-                    localStorage.clear();
                     this.setAlertMessage(this.loginErrorMessage);
                 })
                 .finally(() => {
@@ -193,27 +193,27 @@
 
         private loginOps(p: Promise<firebase.auth.UserCredential>) {
             this.isLoading = true;
-            p.then((res: firebase.auth.UserCredential) => {
-                if (res.user === null) {
-                    return new Promise<string>((_, reject) => reject('user not found'));
-                }
-
-                const expTime = getExpireTimeByFirebase();
-                if (expTime === null) {
-                    return new Promise<string>((_, reject) => reject('user not found'));
-                }
-                localStorage.setItem('expTime', expTime.toString());
-                return res.user.getIdToken();
-            }).then((idToken: string) => {
-                localStorage.setItem('token', idToken.toString());
-                this.$router.push('/bookshelf');
-            }).catch((err) => {
-                this.setAlertMessage(this.loginErrorMessage);
-                // this.message = err.toString();
-                // console.log("firebase get token error");
-            }).finally(() => {
-                this.isLoading = false;
-            });
+            firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+                .then(() => {
+                    return p
+                })
+                .then((res: firebase.auth.UserCredential) => {
+                    if (res.user === null) {
+                        return new Promise<string>((_, reject) => reject('user not found'));
+                    }
+                    return res.user.getIdToken();
+                })
+                .then((idToken: string) => {
+                    this.$router.push('/bookshelf');
+                })
+                .catch((err) => {
+                    this.setAlertMessage(this.loginErrorMessage);
+                    // this.message = err.toString();
+                    // console.log("firebase get token error");
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
         }
 
         private validateInput(): boolean {

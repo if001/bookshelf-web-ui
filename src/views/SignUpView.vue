@@ -94,7 +94,6 @@
                 }
                 res.user.getIdToken()
                     .then((idToken) => {
-                        localStorage.setItem('token', idToken.toString());
                         this.$router.push('/bookshelf');
                     }).catch((err) => {
                     // console.log(err);

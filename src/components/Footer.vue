@@ -28,7 +28,7 @@
 
     @Component
     export default class Footer extends Vue {
-        version: string = '0.2.0';
+        private version: string = '0.2.0';
     }
 
 </script>

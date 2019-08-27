@@ -147,7 +147,7 @@
 <script lang="ts">
     import {Component, Prop, Vue} from 'vue-property-decorator';
     import SearchComponent from '@/components/SearchComponent.vue';
-    import api, {Author, Category, Content, Publisher} from '../api';
+    import api, {Author, Category, Content, errorRoute, getToken, Publisher} from '../api';
     import Footer from '@/components/Footer.vue';
 
     interface CategoryWithChip extends Category {
@@ -170,16 +170,14 @@
         private mediumBookImage: string = '';
         private publisherName: string = '';
 
-        // private inputCategory: string = '';
-        // private categories: CategoryWithChip[] = [];
-        private validInputForm: boolean = true;
+        private validInputForm: boolean = true; // use template
 
         private authors: Author[] = [];
         private publishers: Publisher[] = [];
 
         private isFirstFocusTitle: boolean = false;
         private isFirstFocusCategory: boolean = false;
-        private isSaving: boolean = false;
+        private isSaving: boolean = false; // use template
 
         private tabObject = [
             {tag: searchType.web, displayName: 'Web検索から登録'},
@@ -200,26 +198,30 @@
         }
 
         private loadAuthors() {
-            api.author.getCounted()
+            getToken()
+                .then((token) => {
+                    return api.author.getCounted(token);
+                })
                 .then((res) => {
                     this.authors = res.data.content as Author[];
                 })
                 .finally(() => {})
-                .catch(() => {
-                    console.log('load author error');
-                    this.$router.push('/bookshelf');
+                .catch((err) => {
+                    errorRoute('book detail view:' + err.toString());
                 });
         }
 
         private loadPublishers() {
-            api.publisher.getCounted()
+            getToken()
+                .then((token) => {
+                    return api.publisher.getCounted(token);
+                })
                 .then((res) => {
                     this.publishers = res.data.content as Publisher[];
                 })
                 .finally(() => {})
-                .catch(() => {
-                    console.log('load publisher error');
-                    this.$router.push('/bookshelf');
+                .catch((err) => {
+                    errorRoute('register book view: ' + err.toString());
                 });
         }
 
@@ -289,37 +291,49 @@
         // }
 
         private getAuthorIdP(authorName: string): Promise<number | null> {
-            return api.author.getCounted().then((res) => {
-                return new Promise<Author[]>((resolve) => {
-                    resolve(res.data.content as Author[]);
+            return getToken()
+                .then((token) => {
+                    return api.author.getCounted(token);
+                })
+                .then((res) => {
+                    return new Promise<Author[]>((resolve) => {
+                        resolve(res.data.content as Author[]);
+                    });
+                }).then((authors) => {
+                    return new Promise<number | null>((resolve) => {
+                        resolve(this.getAuthorIDByName(authors, authorName));
+                    });
+                }).then((authorId: number | null) => {
+                    return new Promise<number | null>((resolve, reject) => {
+                        if (this.authorName.length === 0) {
+                            resolve(null);
+                        } else if (authorId === null) {
+                            const author = {
+                                author_name: authorName,
+                            };
+                            getToken()
+                                .then((token) => {
+                                    return api.author.create(token, author);
+                                })
+                                .then((res) => {
+                                    const newAuthor = res.data.content as Author;
+                                    resolve(newAuthor.id);
+                                })
+                                .catch((err) => {
+                                    reject(err.toString());
+                                });
+                        } else {
+                            resolve(authorId);
+                        }
+                    });
                 });
-            }).then((authors) => {
-                return new Promise<number | null>((resolve) => {
-                    resolve(this.getAuthorIDByName(authors, authorName));
-                });
-            }).then((authorId: number | null) => {
-                return new Promise<number | null>((resolve, reject) => {
-                    if (this.authorName.length === 0) {
-                        resolve(null);
-                    } else if (authorId === null) {
-                        const author = {
-                            author_name: authorName,
-                        };
-                        api.author.create(author).then((res) => {
-                            const newAuthor = res.data.content as Author;
-                            resolve(newAuthor.id);
-                        }).catch((err) => {
-                            reject(err.toString());
-                        });
-                    } else {
-                        resolve(authorId);
-                    }
-                });
-            });
         }
 
         private getPublisherIdP(publisherName: string): Promise<number | null> {
-            return api.publisher.getCounted()
+            return getToken()
+                .then((token) => {
+                    return api.publisher.getCounted(token);
+                })
                 .then((res) => {
                     return new Promise<Publisher[]>((resolve) => {
                         resolve(res.data.content as Publisher[]);
@@ -338,12 +352,17 @@
                             const publisher = {
                                 publisher_name: publisherName,
                             };
-                            api.publisher.create(publisher).then((res) => {
-                                const newPublisher = res.data.content as Publisher;
-                                resolve(newPublisher.id);
-                            }).catch((err) => {
-                                reject(err.toString());
-                            });
+                            getToken()
+                                .then((token) => {
+                                    return api.publisher.create(token, publisher);
+                                })
+                                .then((res) => {
+                                    const newPublisher = res.data.content as Publisher;
+                                    resolve(newPublisher.id);
+                                })
+                                .catch((err) => {
+                                    reject(err.toString());
+                                });
                         } else {
                             resolve(publisherId);
                         }
@@ -362,9 +381,8 @@
                         const publisherId: number | null = value[1];
                         this.createBook(authorId, publisherId);
                     })
-                    .catch(() => {
-                        console.log('create author/publisher error');
-                        this.$router.push('/bookshelf');
+                    .catch((err) => {
+                        errorRoute('register book view: ' + err.toString());
                     });
             }
         }
@@ -378,12 +396,17 @@
                 medium_image_url: this.mediumBookImage,
                 small_image_url: this.smallBookImage,
             };
-            api.books.create(book).then((res) => {
-                // this.$emit("closeCreate");
-                this.$router.push('/bookshelf');
-            }).catch(() => {
-                console.log('book create error');
-            });
+            getToken()
+                .then((token) => {
+                    return api.books.create(token, book);
+                })
+                .then((res) => {
+                    // this.$emit("closeCreate");
+                    this.$router.push('/bookshelf');
+                })
+                .catch((err) => {
+                    errorRoute('register book view: ' + err.toString());
+                });
         }
 
         private closeRegister() {

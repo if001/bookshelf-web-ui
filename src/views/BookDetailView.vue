@@ -286,7 +286,7 @@
 <script lang="ts">
     import {Component, Prop, Vue} from 'vue-property-decorator';
     import BookDescription from '@/components/BookDescriptionComponent.vue';
-    import api, {Author, Book, Category, ContentResult, Description, errorRoute, Publisher} from '../api';
+    import api, {Author, Book, Category, ContentResult, getToken, errorRoute, Publisher} from '../api';
     import moment from 'moment';
     import {AxiosPromise} from 'axios';
 
@@ -373,7 +373,10 @@
         private loadBookDetail(): Promise<boolean> {
             return new Promise((resolve, reject) => {
                 this.isLoadingBook = true;
-                api.book.get(this.bookID)
+                getToken()
+                    .then((token) => {
+                        return api.book.get(token, this.bookID);
+                    })
                     .then((response) => {
                         this.book = response.data.content as Book;
                     })
@@ -403,8 +406,7 @@
                         resolve(true);
                     })
                     .catch((err) => {
-                        console.log('load book error');
-                        errorRoute(err.response.status, '/bookshelf');
+                        errorRoute('book detail view: ' + err.toString());
                     })
                     .finally(() => {
                         this.isLoadingBook = false;
@@ -414,15 +416,18 @@
 
         private loadAuthors(): Promise<boolean> {
             return new Promise((resolve, reject) => {
-            api.author.getCounted()
-                .then((res) => {
-                    this.authors = res.data.content as Author[];
-                    resolve(true);
-                })
-                .catch(() => {
-                    console.log('load author error');
-                    reject(false);
-                });
+                getToken()
+                    .then((token) => {
+                        return api.author.getCounted(token);
+                    })
+                    .then((res) => {
+                        this.authors = res.data.content as Author[];
+                        resolve(true);
+                    })
+                    .catch(() => {
+                        console.log('load author error');
+                        reject(false);
+                    });
             });
         }
 
@@ -619,7 +624,10 @@
                         start_at: startAt,
                         end_at: endAt,
                     };
-                    api.books.update(book)
+                    getToken()
+                        .then((token) => {
+                            return api.books.update(token, book);
+                        })
                         .then((res) => {
                             this.bookForShow = null;
                             // this.categories = [];
@@ -636,8 +644,7 @@
                         //     return this.loadAuthors();
                         // })
                         .catch((err) => {
-                            console.log('book create error');
-                            this.errorRouteAtDetail(err.response.status);
+                            errorRoute('book detail view:' + err.toString());
                         });
                 }
             }
@@ -718,11 +725,15 @@
             }
         }
 
-        private doChangeStateAPI(msg: string, apiFunc: (id: number) => AxiosPromise<ContentResult<Book>>) {
+        private doChangeStateAPI(msg: string, apiFunc: (token: string, id: number) => AxiosPromise<ContentResult<Book>>) {
             const res = confirm(msg);
             if (res && this.bookForEdit != null) {
                 this.isLoadingBookState = true;
-                apiFunc(this.bookForEdit.id)
+                const tmp = this.bookForEdit;
+                getToken()
+                    .then((token) => {
+                        return apiFunc(token, tmp.id);
+                    })
                     .then(() => {
                         return this.loadBookDetail();
                     })
@@ -731,7 +742,7 @@
                         this.isLoadingBookState = false;
                     })
                     .catch((err) => {
-                        this.errorRouteAtDetail(err.response.status);
+                        errorRoute('book detail view:' + err.toString());
                     });
             }
         }
@@ -753,12 +764,17 @@
         private deleteBook() {
             const ans = confirm('関連するコメントも全て削除されます。本を削除しますか?');
             if (ans && this.bookForEdit != null) {
-                api.book.delete(this.bookForEdit.id).then((res) => {
-                    // console.log(res);
-                    this.$router.push('/bookshelf');
-                }).catch((err) => {
-                    console.log('delete book error');
-                    errorRoute(err.response.status, '/bookshelf');
+                const tmp = this.bookForEdit;
+                getToken()
+                    .then((token) => {
+                        return api.book.delete(token, tmp.id);
+                    })
+                    .then((res) => {
+                        // console.log(res);
+                        this.$router.push('/bookshelf');
+                    })
+                    .catch((err) => {
+                        errorRoute('book detail view:' + err.toString());
                 });
             }
         }
@@ -773,14 +789,6 @@
                 return d;
             }
         }
-        private errorRouteAtDetail(status: number) {
-            if (this.bookForShow != null) {
-                errorRoute(status, '/bookshelf/' + this.bookForShow.id);
-            } else {
-                errorRoute(status, '/bookshelf');
-            }
-        }
-
     }
     function formatDate(d: string | null): string | null {
         if (d != null) {
