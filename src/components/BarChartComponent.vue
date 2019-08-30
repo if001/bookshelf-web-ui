@@ -19,7 +19,7 @@
             tooltips: {
                 callbacks: {
                     label: (tooltipItem: any, data: any) => {
-                        return data.datasets[0].data[tooltipItem.index] + ' 冊';
+                        return data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] + ' 冊';
                     },
                 },
             },
@@ -39,6 +39,12 @@
                 ],
                 xAxes: [
                     {
+                        ticks: {
+                            display: true,
+                            callback(value: any, index: any, values: any): string | number {
+                                return value.toString() + '日';
+                            },
+                        },
                         gridLines: {
                             display: false,
                         },
