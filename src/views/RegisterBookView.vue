@@ -291,8 +291,10 @@
         // }
 
         private getAuthorIdP(authorName: string): Promise<number | null> {
+            let tmpToken = '';
             return getToken()
                 .then((token) => {
+                    tmpToken = token;
                     return api.author.getCounted(token);
                 })
                 .then((res) => {
@@ -305,23 +307,17 @@
                     });
                 }).then((authorId: number | null) => {
                     return new Promise<number | null>((resolve, reject) => {
-                        if (this.authorName.length === 0) {
+                        if (authorName.length === 0 || this.authorName.length === 0) {
                             resolve(null);
                         } else if (authorId === null) {
                             const author = {
                                 author_name: authorName,
                             };
-                            getToken()
-                                .then((token) => {
-                                    return api.author.create(token, author);
-                                })
+                            api.author.create(tmpToken, author)
                                 .then((res) => {
                                     const newAuthor = res.data.content as Author;
                                     resolve(newAuthor.id);
                                 })
-                                .catch((err) => {
-                                    reject(err.toString());
-                                });
                         } else {
                             resolve(authorId);
                         }
@@ -330,8 +326,10 @@
         }
 
         private getPublisherIdP(publisherName: string): Promise<number | null> {
+            let tmpToken = '';
             return getToken()
                 .then((token) => {
+                    tmpToken = token;
                     return api.publisher.getCounted(token);
                 })
                 .then((res) => {
@@ -346,16 +344,13 @@
                 })
                 .then((publisherId: number | null) => {
                     return new Promise<number | null>((resolve, reject) => {
-                        if (publisherName.length === 0) {
+                        if (publisherName.length === 0 || this.publisherName.length === 0) {
                             resolve(null);
                         } else if (publisherId === null) {
                             const publisher = {
                                 publisher_name: publisherName,
                             };
-                            getToken()
-                                .then((token) => {
-                                    return api.publisher.create(token, publisher);
-                                })
+                            api.publisher.create(tmpToken, publisher)
                                 .then((res) => {
                                     const newPublisher = res.data.content as Publisher;
                                     resolve(newPublisher.id);
@@ -382,7 +377,8 @@
                         this.createBook(authorId, publisherId);
                     })
                     .catch((err) => {
-                        errorRoute('register book view: ' + err.toString());
+                        console.log(err);
+                        // errorRoute('register book view: ' + err.toString());
                     });
             }
         }
