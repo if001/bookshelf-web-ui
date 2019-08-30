@@ -8,6 +8,7 @@
             height="50"
             hide-on-scroll
     >
+        <v-app-bar-nav-icon @click.stop="closeDrawer()"></v-app-bar-nav-icon>
         <div style="font-weight: 400;">
             <router-link :to="{name:'booksView'}" class="title">{{title}}</router-link>
         </div>
@@ -34,13 +35,21 @@
 </template>
 
 <script lang="ts">
-    import {Component, Vue} from 'vue-property-decorator';
+    import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
     import store from '@/store';
     import firebase from 'firebase/app';
 
     @Component
     export default class Header extends Vue {
         private title: string = 'BookStorage';
+
+        @Prop() private propIsOpen!: boolean;
+        private isOpen: boolean = this.propIsOpen;
+
+        @Watch('propIsOpen')
+        private onValueChange(newValue: boolean, oldValue: boolean): void {
+            this.isOpen = newValue;
+        }
 
         private logout() {
             firebase.auth().signOut()
@@ -54,6 +63,11 @@
 
         private search() {
             console.log('search!!');
+        }
+
+        private closeDrawer() {
+            this.isOpen = !this.isOpen;
+            this.$emit('closeDrawer', this.isOpen);
         }
     }
 

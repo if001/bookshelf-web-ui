@@ -106,6 +106,48 @@ export default {
                 data,
             });
         },
+        countedAuthorName(token: string) {
+            return axios.request<ContentResult<CountedName[]>>({
+                method: 'GET',
+                url: `/books/counted/author`,
+                headers: {Authorization: `Bearer ${token}`},
+            });
+        },
+        countedPublisherName(token: string) {
+            return axios.request<ContentResult<CountedName[]>>({
+                method: 'GET',
+                url: `/books/counted/publisher`,
+                headers: {Authorization: `Bearer ${token}`},
+            });
+        },
+        countedMonthly(token: string) {
+            return axios.request<ContentResult<CountedTime[]>>({
+                method: 'GET',
+                url: `/books/counted/monthly`,
+                headers: {Authorization: `Bearer ${token}`},
+            });
+        },
+        countedRegisterDaily(token: string) {
+            return axios.request<ContentResult<CountedTime[]>>({
+                method: 'GET',
+                url: `/books/counted/daily/register`,
+                headers: {Authorization: `Bearer ${token}`},
+            });
+        },
+        countedStartDaily(token: string) {
+            return axios.request<ContentResult<CountedTime[]>>({
+                method: 'GET',
+                url: `/books/counted/daily/start`,
+                headers: {Authorization: `Bearer ${token}`},
+            });
+        },
+        countedEndDaily(token: string) {
+            return axios.request<ContentResult<CountedTime[]>>({
+                method: 'GET',
+                url: `/books/counted/daily/end`,
+                headers: {Authorization: `Bearer ${token}`},
+            });
+        },
     },
     description: {
         get(token: string, id: number) {
@@ -295,6 +337,16 @@ export interface Content {
     itemUrl: string;
     affiliateUrl: string;
     itemCaption: string;
+}
+
+export interface CountedName {
+    name: string;
+    count: number;
+}
+
+export interface CountedTime {
+    time: string;
+    count: number;
 }
 
 export function errorRoute(err: string) {

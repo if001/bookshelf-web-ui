@@ -12,6 +12,7 @@ const BooksViews = () => import('@/views/BooksView.vue');
 const RegisterBookViews = () => import('@/views/RegisterBookView.vue');
 const BookDetailView = () => import('@/views/BookDetailView.vue');
 const SharePageView = () => import('@/views/SharePageView.vue');
+const AnalyticsView = () => import('@/views/AnalyticsView.vue');
 
 Vue.use(Router);
 
@@ -68,6 +69,11 @@ const router = new Router({
                     name: 'register',
                     component: RegisterBookViews,
                 },
+                {
+                    path: '/analytics',
+                    name: 'analytics',
+                    component: AnalyticsView,
+                },
             ],
         },
         {
@@ -80,11 +86,11 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
     const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
     if (requiresAuth) {
-        firebase.auth().onAuthStateChanged(function (user) {
+        firebase.auth().onAuthStateChanged( (user) => {
             if (user) {
-                next()
+                next();
             } else {
-                next('/login')
+                next('/login');
             }
         });
     } else {

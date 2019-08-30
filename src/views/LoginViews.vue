@@ -41,7 +41,7 @@
                                 label="Password"
                                 :type="showPassword ? 'text' : 'password'"
                                 :rules="passRules"
-                                :append-icon="showPassword ? 'mdi-visibility' : 'mdi-visibility_off'"
+                                :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                                 @click:append="showPassword = !showPassword"
                                 prepend-icon="mdi-lock"
                                 required
@@ -152,7 +152,7 @@
             const provider = new firebase.auth.GoogleAuthProvider();
             firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
                 .then(() => {
-                    return firebase.auth().signInWithRedirect(provider)
+                    return firebase.auth().signInWithRedirect(provider);
                 })
                 .catch((err) => {
                     // console.log(err);
@@ -195,7 +195,7 @@
             this.isLoading = true;
             firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
                 .then(() => {
-                    return p
+                    return p;
                 })
                 .then((res: firebase.auth.UserCredential) => {
                     if (res.user === null) {

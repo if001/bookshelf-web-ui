@@ -5,11 +5,11 @@
             <v-col cols=12 lg=4 md=5 class="ma-0 pa-0">
                 <v-card color="white">
                     <v-row no-gutters>
-                        <v-col cols=8 class="pa-3">
+                        <v-col cols=8 class="pa-3 ma-0">
                             <v-row v-if="!isOpen">
-                                <v-col cols="12" class="pa-1 pl-2" style="font-size: 1.2em;">{{ bookName }}</v-col>
-                                <v-col cols="12" class="pa-1 pl-2" style="font-size: 0.8em;">{{ authorNameForShow }} </v-col>
-                                <v-col cols="12" class="pa-1 pl-2" style="font-size: 0.8em;">{{ publisherNameForShow }} </v-col>
+                                <v-col cols="12" class="pa-1 pl-3" style="font-size: 1.2em;">{{ bookName }}</v-col>
+                                <v-col cols="12" class="pa-1 pl-3" style="font-size: 0.8em;">{{ authorNameForShow }} </v-col>
+                                <v-col cols="12" class="pa-1 pl-3" style="font-size: 0.8em;">{{ publisherNameForShow }} </v-col>
                                 <!-- TODO 出版年はひとまず消す <div>(2013)</div>-->
                             </v-row>
                             <div v-if="isOpen">
