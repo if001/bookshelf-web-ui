@@ -57,14 +57,21 @@
                         </div>
 
                         <div class="pl-2 pb-2">
-                            <v-combobox
-                                    v-model="authorName"
-                                    :items="getAuthors"
-                                    maxlength="40"
+                            <v-text-field
                                     :counter="40"
-                                    height="40px;"
+                                    maxlength="40"
                                     label="author"
-                            ></v-combobox>
+                                    v-model="authorName"
+                                    @blur="setFirstFocus"
+                            ></v-text-field>
+<!--                            <v-combobox-->
+<!--                                    v-model="authorName"-->
+<!--                                    :items="getAuthors"-->
+<!--                                    maxlength="40"-->
+<!--                                    :counter="40"-->
+<!--                                    height="40px;"-->
+<!--                                    label="author"-->
+<!--                            ></v-combobox>-->
                         </div>
 
                         <div class="pl-2 pb-2">

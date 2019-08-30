@@ -9,7 +9,7 @@
             <v-col cols="6" lg="3" md="3" sm="3">
                 <v-card class="pt-5 pb-5 pr-3 pl-3">
                     <div style="font-size: 0.8em;color: dimgrey">
-                        {{formatMonth(now.toISOString())}}月に読み終わった本
+                        {{formatMonth(dailyDate.toISOString())}}月に読み終わった本
                     </div>
                     <div style="font-size:1.2em;font-weight: 600;color: dimgrey">
                         {{monthEndSum}} 冊
@@ -20,7 +20,7 @@
             <v-col cols="6" lg="3" md="3" sm="3">
                 <v-card class="pt-5 pb-5 pr-3 pl-3">
                     <div style="font-size: 0.8em;color: dimgrey">
-                        {{formatMonth(now.toISOString())}}月に登録した本
+                        {{formatMonth(dailyDate.toISOString())}}月に登録した本
                     </div>
                     <div style="font-size:1.2em;font-weight: 600;color: dimgrey">
                         {{monthRegisterSum}} 冊
@@ -31,7 +31,7 @@
             <v-col cols="6" lg="3" md="3" sm="3">
                 <v-card class="pt-5 pb-5 pr-3 pl-3">
                     <div style="font-size: 0.8em;color: dimgrey">
-                        {{formatMonth(now.toISOString())}}月に読み始めた本
+                        {{formatMonth(dailyDate.toISOString())}}月に読み始めた本
                     </div>
                     <div style="font-size:1.2em;font-weight: 600;color: dimgrey">
                         {{monthStartSum}} 冊

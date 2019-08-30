@@ -34,6 +34,7 @@
                             callback(value: any, index: any, values: any): string | number {
                                 return value.toString() + '冊';
                             },
+                            stepSize: 2,
                         },
                     },
                 ],
