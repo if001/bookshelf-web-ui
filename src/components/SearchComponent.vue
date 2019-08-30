@@ -57,6 +57,11 @@
                     <v-icon large>fa-book</v-icon>
                 </div>
             </div>
+            <div v-if="searchResult != null && searchResult.Items.length === 0"
+                 class="pa-5"
+                 style="margin: auto;">
+                検索結果はありません。
+            </div>
 
             <v-col cols="12" lg="4" md="6" v-else class="pa-2" v-for="result in getSearchResult" >
                 <v-card color="white" class="black--text" @click="selectBook(result)" style="cursor:pointer">
@@ -189,7 +194,6 @@
         }
 
         private searchBook() {
-            console.log(this.inputTitleForSearch.length, this.inputAuthorForSearch.length);
             if (this.inputTitleForSearch.length !== 0 && this.inputAuthorForSearch.length !== 0) {
                 this.searchTitleAndAuthor();
             } else if (this.inputTitleForSearch.length !== 0 && this.inputAuthorForSearch.length === 0) {
@@ -206,19 +210,22 @@
             this.isSearchLoading = true;
             this.alert = false;
             this.searchType = 'title';
-            api.rakuten.search(this.inputTitleForSearch, this.inputAuthorForSearch, this.page, this.perPage).then((res) => {
-                this.searchResult = res.data as SearchResult;
-                this.totalCount = this.searchResult.pageCount;
-                this.searchResultWithCheck = this.searchResult.Items.map((x) => {
-                    return this.itemToResultWithCheck(x.Item);
+            api.rakuten.search(this.inputTitleForSearch, this.inputAuthorForSearch, this.page, this.perPage)
+                .then((res) => {
+                    this.searchResult = res.data as SearchResult;
+                    this.totalCount = this.searchResult.pageCount;
+                    this.searchResultWithCheck = this.searchResult.Items.map((x) => {
+                        return this.itemToResultWithCheck(x.Item);
+                    });
+                })
+                .catch((err) => {
+                    console.log(err);
+                    this.setAlertMessage('検索エラー');
+                    // console.log('search api error');
+                })
+                .finally(() => {
+                    this.isSearchLoading = false;
                 });
-            }).catch((err) => {
-                console.log(err);
-                this.setAlertMessage('検索エラー');
-                // console.log('search api error');
-            }).finally(() => {
-                this.isSearchLoading = false;
-            });
         }
 
         private searchTitle() {
@@ -227,18 +234,21 @@
                 this.isSearchLoading = true;
                 this.alert = false;
                 this.searchType = 'title';
-                api.rakuten.searchByTitle(this.inputTitleForSearch, this.page, this.perPage).then((res) => {
-                    this.searchResult = res.data as SearchResult;
-                    this.totalCount = this.searchResult.pageCount;
-                    this.searchResultWithCheck = this.searchResult.Items.map((x) => {
-                        return this.itemToResultWithCheck(x.Item);
+                api.rakuten.searchByTitle(this.inputTitleForSearch, this.page, this.perPage)
+                    .then((res) => {
+                        this.searchResult = res.data as SearchResult;
+                        this.totalCount = this.searchResult.pageCount;
+                        this.searchResultWithCheck = this.searchResult.Items.map((x) => {
+                            return this.itemToResultWithCheck(x.Item);
+                        });
+                    })
+                    .catch(() => {
+                        this.setAlertMessage('検索エラー');
+                        // console.log('search api error');
+                    })
+                    .finally(() => {
+                        this.isSearchLoading = false;
                     });
-                }).catch(() => {
-                    this.setAlertMessage('検索エラー');
-                    // console.log('search api error');
-                }).finally(() => {
-                    this.isSearchLoading = false;
-                });
             }
         }
 
@@ -248,18 +258,21 @@
                 this.isSearchLoading = true;
                 this.alert = false;
                 this.searchType = 'author';
-                api.rakuten.searchByAuthor(this.inputAuthorForSearch, this.page, this.perPage).then((res) => {
-                    this.searchResult = res.data as SearchResult;
-                    this.totalCount = this.searchResult.pageCount;
-                    this.searchResultWithCheck = this.searchResult.Items.map((x) => {
-                        return this.itemToResultWithCheck(x.Item);
+                api.rakuten.searchByAuthor(this.inputAuthorForSearch, this.page, this.perPage)
+                    .then((res) => {
+                        this.searchResult = res.data as SearchResult;
+                        this.totalCount = this.searchResult.pageCount;
+                        this.searchResultWithCheck = this.searchResult.Items.map((x) => {
+                            return this.itemToResultWithCheck(x.Item);
+                        });
+                    })
+                    .catch(() => {
+                        this.setAlertMessage('検索エラー');
+                        // console.log('search api error');
+                    })
+                    .finally(() => {
+                        this.isSearchLoading = false;
                     });
-                }).catch(() => {
-                    this.setAlertMessage('検索エラー');
-                    // console.log('search api error');
-                }).finally(() => {
-                    this.isSearchLoading = false;
-                });
             }
         }
         private itemToResultWithCheck(item: Content): SearchResultWithCheck {
