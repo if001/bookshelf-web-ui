@@ -324,7 +324,7 @@
                                 .then((res) => {
                                     const newAuthor = res.data.content as Author;
                                     resolve(newAuthor.id);
-                                })
+                                });
                         } else {
                             resolve(authorId);
                         }
