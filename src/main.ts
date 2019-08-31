@@ -4,24 +4,17 @@ import router from './router';
 import store from './store';
 import vuetify from './plugins/vuetify';
 import './registerServiceWorker';
-
-
-// import {library} from '@fortawesome/fontawesome-svg-core';
-// import {fas} from '@fortawesome/free-solid-svg-icons';
-// import {far} from '@fortawesome/free-regular-svg-icons';
-// import {fab} from '@fortawesome/free-brands-svg-icons';
-// import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
-
-// library.add(fas, far, fab);
-// Vue.component('v-fa', FontAwesomeIcon);
-
 import firebase from 'firebase/app';
 import {fireBaseConfig} from '@/firebase_config';
+import { init, captureMessage } from '@sentry/browser';
+
+init({
+    dsn: 'https://3b925210340f49229e88590846ec45d7@sentry.io/1547538',
+});
 
 firebase.initializeApp(fireBaseConfig);
 
 Vue.config.productionTip = false;
-
 
 new Vue({
     router,

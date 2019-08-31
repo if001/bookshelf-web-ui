@@ -349,7 +349,10 @@ export interface CountedTime {
     count: number;
 }
 
+import {captureMessage, Severity} from '@sentry/browser';
 export function errorRoute(err: string) {
-    console.log(err);
+    if (process.env.NODE_ENV === 'production') {
+        captureMessage(err, Severity.Error);
+    }
     router.push('/');
 }
