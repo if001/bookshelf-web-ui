@@ -13,30 +13,43 @@
                 <p>本プライバシーポリシーは、BookStorage（以下、「本アプリ」とします。)の各種サービスにおいて、
                     本アプリの訪問者（以下、「訪問者」とします。）の個人情報もしくはそれに準ずる情報を取り扱う際に、
                     本アプリが遵守する方針を示したものです。</p>
+            </div>
 
+            <div style="margin: 10px;">
                 <h3>基本方針</h3>
                 <p>本アプリは、個人情報の重要性を認識し、個人情報を保護することが社会的責務であると考え、
                     個人情報に関する法令を遵守し、本アプリで取扱う個人情報の取得、利用、管理を適正に行います。
                     本アプリで収集した情報は、利用目的の範囲内で適切に取り扱います。</p>
+            </div>
 
+            <div style="margin: 10px;">
                 <h3>適用範囲</h3>
                 <p>本プライバシーポリシーは、本アプリにおいてのみ適用されます。</p>
+            </div>
 
+            <div style="margin: 10px;">
                 <h3>個人情報の利用目的</h3>
                 <p>本アプリ利用には、メールアドレス等の個人情報をご登録いただく必要があります。
                     これらの個人情報は、本アプリのサービス提供・運用のために利用され、それ以外の目的では利用しません。</p>
+            </div>
 
+            <div style="margin: 10px;">
                 <h3>個人情報の第三者への開示</h3>
                 <p>個人情報は適切に管理し、以下に該当する場合を除いて第三者に開示することはありません。</p>
-                <ul><li>本人のご了解がある場合</li>
+                <ul style="margin-left: 50px;">
+                    <li>本人のご了解がある場合</li>
                     <li>法令等への協力のため、開示が必要となる場合</li>
                 </ul>
                 <p></p>
+            </div>
 
+            <div style="margin: 10px;">
                 <h3>個人情報の開示・訂正・追加・削除・利用停止</h3>
                 <p>個人情報の開示・訂正・追加・削除・利用停止をご希望の場合には、
                     ご本人であることを確認したうえで、速やかに対応致します。</p>
+            </div>
 
+            <div style="margin: 10px;">
                 <h3>アクセス解析ツールについて</h3>
                 <p>本アプリでは、Googleによるアクセス解析ツール「Googleアナリティクス」を利用しています。
                     このGoogleアナリティクスはトラフィックデータの収集のためにCookieを使用しています。
@@ -48,18 +61,23 @@
                         ここをクリック
                     </a>
                     してください。</p>
+            </div>
 
+            <div style="margin: 10px;">
                 <h3>免責事項</h3>
                 <p>上記の提携サービスおよびシステム障害により生じる損害について、
                     本アプリ管理者は責任を負わないものとします。
                     当サイトで掲載している画像や動画の著作権・肖像権等は各権利所有者に帰属致します。</p>
+            </div>
 
+            <div style="margin: 10px;">
                 <h3>プライバシーポリシーの改定について</h3>
                 <p>本アプリでは、プライバシーポリシーの全部または一部を告知なく改定することがあります。</p>
+            </div>
 
+            <div style="margin: 10px;">
                 <h3>問い合わせ</h3>
-                <p>連絡先: ------@gamil.com</p>
-
+                <p>連絡先: {{address}}</p>
                 <div>最終更新日: 2019年7月11日</div>
             </div>
         </div>
@@ -70,11 +88,14 @@
     import { Component, Vue } from 'vue-property-decorator';
 
     @Component
-    export default class PrivalcyPolicyView extends Vue {
+    export default class PrivacyPolicyView extends Vue {
         private title: string = 'BookStorage';
-        public mounted() {
+        private address: string = 'bookstorage.edgwbs@gmail.com';
+
+        private mounted() {
             window.scrollTo(0, 0);
         }
+
     }
 
 </script>
