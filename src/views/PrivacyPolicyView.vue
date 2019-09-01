@@ -78,7 +78,7 @@
             <div style="margin: 10px;">
                 <h3>問い合わせ</h3>
                 <p>連絡先: {{address}}</p>
-                <div>最終更新日: 2019年7月11日</div>
+                <div>最終更新日: 2019年9月01日</div>
             </div>
         </div>
     </div>
