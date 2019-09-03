@@ -6,17 +6,16 @@
 
         <v-navigation-drawer
                 v-model="drawer"
-                clipped
                 app
+                clipped
+                mobile-break-point="0"
         >
-            <navi :propIsOpen="drawer" @closeDrawer="handleClose"></navi>
+            <navi></navi>
         </v-navigation-drawer>
 
         <div style="padding-top: 50px;">
             <router-view/>
         </div>
-
-        <!--        </div>-->
 
         <v-footer></v-footer>
     </v-app>

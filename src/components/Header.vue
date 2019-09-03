@@ -1,12 +1,13 @@
 <template>
     <v-app-bar
-            fixed
+            app
             color="blue accent-2"
             dark
             :scroll-off-screen="$vuetify.breakpoint.xs"
             :scroll-threshold="40"
             height="50"
             hide-on-scroll
+            clipped-left
     >
         <v-app-bar-nav-icon @click.stop="closeDrawer()"></v-app-bar-nav-icon>
         <div style="font-weight: 400;">
