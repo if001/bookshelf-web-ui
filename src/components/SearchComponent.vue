@@ -1,7 +1,7 @@
 <template>
-    <v-container class="pr-0 pl-0" style="min-height: 600px;">
+    <v-container class="pr-0 pl-0 pt-0" style="min-height: 600px;">
         <v-row align="center" justify="center">
-            <v-col cols=12 lg="8" md="8" class="pa-2 ma-2">
+            <v-col cols=12 lg="8" md="8" class="pa-2 ma-0">
                 <v-form
                         id="title_box"
                         ref="titleForm"
@@ -63,13 +63,13 @@
                 検索結果はありません。
             </div>
 
-            <v-col cols="12" lg="4" md="6" v-else class="pa-2" v-for="result in getSearchResult" >
-                <v-card color="white" class="black--text" @click="selectBook(result)" style="cursor:pointer">
+            <v-col cols="12" lg="4" md="4" sm="6" v-else class="pa-2" v-for="result in getSearchResult" >
+                <v-card raised color="white" class="black--text" @click="selectBook(result)" style="cursor:pointer">
                     <v-row no-gutters>
                         <v-col cols="8" class="ma-0 pa-2">
-                            <div class="ma-1" style="width: 100%; float:left; font-size: 1.2em">{{result.title}}</div>
-                            <div class="ma-1" style="width: 100%; float:left;">{{result.author}}</div>
-                            <div class="ma-1" style="width: 100%; float:left;">{{result.publisherName}} /  {{result.itemPrice}}</div>
+                            <div class="ma-1" style="width: 100%; float:left; font-size: 0.9em; font-weight: 600;">{{reshapeString(result.title)}}</div>
+                            <div class="ma-1" style="width: 100%; float:left; font-size: 0.8em">{{result.author}}</div>
+                            <div class="ma-1" style="width: 100%; float:left; font-size: 0.7em; color: dimgrey;">{{result.publisherName}} /  {{result.itemPrice}} 円</div>
                             <v-btn v-if="result.isChecked"
                                    fab
                                    dark
@@ -171,7 +171,7 @@
         private inputAuthorForSearch: string = '';
         private searchType = 'title';
         private page: number = 1;
-        private perPage: number = 16;
+        private perPage: number = 18;
         private totalCount: number = 1;
         private isSaving: boolean = false;
         private selectMultiBooks: SearchResultWithCheck[] = [];
@@ -515,6 +515,16 @@
             this.alert = true;
             this.message = msg;
         }
+
+        private reshapeString(st: string): string {
+            if (st.length > 20) {
+                return st.slice(0, 20) + '....'
+            } else {
+                return st
+            }
+
+        }
+
     }
 
     function toTop() {
@@ -530,6 +540,9 @@
 
     .loading-content {
         animation: r1 1s linear infinite;
+    }
+    .booklist {
+        font-size: 0.8em;
     }
 
     @keyframes r1 {
