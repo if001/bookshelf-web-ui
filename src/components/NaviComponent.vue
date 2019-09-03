@@ -38,11 +38,18 @@
                 <v-list-item-title>分析</v-list-item-title>
             </v-list-item-content>
         </v-list-item>
+
+        <div class="pa-3" style="position: absolute; bottom: 0;">
+            <p class="ma-2" style="color: dimgrey; font-size: 1.0em;">login user</p>
+            <p class="ma-2" style="color: dimgrey; font-size: 0.8em;">{{getUser()}}</p>
+        </div>
     </v-list>
 </template>
 
 <script lang="ts">
     import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
+    import firebase from 'firebase/app';
+    import 'firebase/auth';
 
     @Component
     export default class NaviComponent extends Vue {
@@ -58,6 +65,17 @@
             this.isOpen = !this.isOpen;
             this.$emit('closeDrawer', this.isOpen);
         }
+
+        private getUser(): string {
+            const user = firebase.auth().currentUser;
+            if (user != null && user.email) {
+                return user.email;
+            } else {
+                return '';
+            }
+        }
+
+
     }
 
 </script>

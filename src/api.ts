@@ -4,15 +4,6 @@ const axios = Axios.create({
     baseURL: process.env.VUE_APP_API_URL_BASE,
 });
 
-function getTokenByStorage(): string {
-    const token = localStorage.getItem('token');
-    if (token !== null) {
-        return token;
-    } else {
-        return '';
-    }
-}
-
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import router from '@/router';

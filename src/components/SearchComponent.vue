@@ -518,9 +518,9 @@
 
         private reshapeString(st: string): string {
             if (st.length > 20) {
-                return st.slice(0, 20) + '....'
+                return st.slice(0, 20) + '....';
             } else {
-                return st
+                return st;
             }
 
         }

@@ -335,6 +335,10 @@
 
                     if (this.bookMonthlyChartOptions.title != null) {
                         this.bookMonthlyChartOptions.title.text = '読み終わった本の数（月別）';
+                        this.bookMonthlyChartOptions.legend = {
+                            display: false,
+                            position: 'bottom',
+                        };
                     }
                 })
                 .catch((err) => {
