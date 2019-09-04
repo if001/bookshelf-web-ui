@@ -8,6 +8,7 @@
             height="50"
             hide-on-scroll
             clipped-left
+            fixed
     >
         <v-app-bar-nav-icon @click.stop="closeDrawer()"></v-app-bar-nav-icon>
         <div style="font-weight: 400;">

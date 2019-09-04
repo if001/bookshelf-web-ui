@@ -1,5 +1,4 @@
 <template>
-    <v-content>
     <v-container style="min-height: 85vh;">
         <v-row class="ma-2 mb-3" justify="space-around">
             <v-col cols=12 lg=4 md=5 class="ma-0 pa-0">
@@ -280,7 +279,6 @@
             <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
     </v-container>
-    </v-content>
 </template>
 
 <script lang="ts">
