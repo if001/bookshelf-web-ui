@@ -10,7 +10,7 @@
                 clipped
                 mobile-break-point="0"
         >
-            <navi></navi>
+            <navi :propIsOpen="drawer" @closeDrawer="handleClose"></navi>
         </v-navigation-drawer>
 
         <div style="padding-top: 50px;">

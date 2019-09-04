@@ -2,7 +2,7 @@
 
 
     <v-list>
-        <v-list-item :to="{ name: 'booksView'}">
+        <v-list-item :to="{ name: 'booksView'}" @click="closeDrawer()">
             <v-list-item-icon>
                 <v-icon>mdi-book-multiple</v-icon>
             </v-list-item-icon>
@@ -12,7 +12,7 @@
             </v-list-item-content>
         </v-list-item>
 
-        <v-list-item :to="{ name: 'analytics'}">
+        <v-list-item :to="{ name: 'analytics'}" @click="closeDrawer()">
             <v-list-item-icon>
                 <v-icon>mdi-google-analytics</v-icon>
             </v-list-item-icon>
@@ -30,12 +30,25 @@
 </template>
 
 <script lang="ts">
-    import { Component, Vue } from 'vue-property-decorator';
+    import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
     import firebase from 'firebase/app';
     import 'firebase/auth';
 
     @Component
     export default class NaviComponent extends Vue {
+        @Prop() private propIsOpen!: boolean;
+        private isOpen: boolean = this.propIsOpen;
+
+        @Watch('propIsOpen')
+        private onValueChange(newValue: boolean, oldValue: boolean): void {
+            this.isOpen = newValue;
+        }
+
+        private closeDrawer() {
+            this.isOpen = !this.isOpen;
+            this.$emit('closeDrawer', this.isOpen);
+        }
+
         private getUser(): string {
             const user = firebase.auth().currentUser;
             if (user != null && user.email) {
