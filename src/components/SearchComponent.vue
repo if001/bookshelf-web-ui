@@ -6,7 +6,9 @@
                         id="title_box"
                         ref="titleForm"
                         v-model="validTitleSearchBox"
-                        lazy-validation>
+                        lazy-validation
+                        @submit.prevent
+                        >
                     <v-text-field
                             flat
                             label="Search From Title"
@@ -15,13 +17,7 @@
                             required
                             @click="scrollBox('title_box')"
                     ></v-text-field>
-                </v-form>
 
-                <v-form
-                        id="author_box"
-                        ref="authorForm"
-                        v-model="validAuthorSearchBox"
-                        lazy-validation>
                     <v-text-field
                             flat
                             label="Search From Author"
@@ -30,23 +26,25 @@
                             required
                             @click="scrollBox('author_box')"
                     ></v-text-field>
+                    <div align="center">
+                    <v-btn v-if="inputTitleForSearch.length !== 0 || inputAuthorForSearch.length !== 0"
+                        outlined
+                        :loading="isSearchLoading"
+                        @click="searchBook()">
+                        search
+                        <v-icon>mdi-search-web</v-icon>
+                    </v-btn>
+                    <v-btn v-else
+                        outlined
+                        disabled>
+                        search
+                    <v-icon>mdi-search-web</v-icon>
+                    </v-btn>
+                    </div>
                 </v-form>
             </v-col>
 
             <v-col cols="12" lg="8" md="12" align="center">
-                <v-btn v-if="inputTitleForSearch.length !== 0 || inputAuthorForSearch.length !== 0"
-                       outlined
-                       :loading="isSearchLoading"
-                       @click="searchBook()">
-                    search
-                    <v-icon>mdi-search-web</v-icon>
-                </v-btn>
-                <v-btn v-else
-                       outlined
-                       disabled>
-                    search
-                    <v-icon>mdi-search-web</v-icon>
-                </v-btn>
             </v-col>
         </v-row>
 
@@ -229,7 +227,7 @@
         }
 
         private searchTitle() {
-            if (this.validateTitleInput() && this.inputTitleForSearch.length !== 0) {
+            if (this.inputTitleForSearch.length !== 0) {
                 toTop();
                 this.isSearchLoading = true;
                 this.alert = false;
@@ -253,7 +251,7 @@
         }
 
         private searchAuthor() {
-            if (this.validateAuthorInput() && this.inputAuthorForSearch.length !== 0) {
+            if (this.inputAuthorForSearch.length !== 0) {
                 toTop();
                 this.isSearchLoading = true;
                 this.alert = false;
@@ -289,12 +287,6 @@
                 isChecked: this.isSelect(item.isbn),
                 isAlreadyRegister: false,
             } as SearchResultWithCheck;
-        }
-        private validateTitleInput(): boolean {
-            return (this.$refs.authorForm as Vue & { validate: () => boolean }).validate();
-        }
-        private validateAuthorInput(): boolean {
-            return (this.$refs.titleForm as Vue & { validate: () => boolean }).validate();
         }
 
         get getSearchResult() {
