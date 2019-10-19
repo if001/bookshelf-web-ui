@@ -384,5 +384,6 @@ export function errorRoute(err: string) {
     if (process.env.NODE_ENV === 'production') {
         captureMessage(err, Severity.Error);
     }
+    localStorage.clear();
     router.push('/');
 }
