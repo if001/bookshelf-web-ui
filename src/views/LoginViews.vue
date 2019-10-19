@@ -84,17 +84,42 @@
             </v-row>
 
             <v-row justify="center">
-                <v-col lg=8 md=8 sm=8 xs=10 class="pa-3" v-if="isMobile()" style="text-align: center">
+                <v-col lg=8 md=8 sm=8 xs=10 class="pa-3" style="text-align: center">
+                    <img class="google-login" src="@/assets/btn_google.png" @click="loginWithGoogleAsMobile">
+                    <p style="font-size: 0.8em; color:dimgray">※ログインにのみ使われます</p>
+                </v-col>
+<!--                 ログイン処理は常にリダイレクトにする -->
+<!--                 <v-col lg=8 md=8 sm=8 xs=10 class="pa-3" v-if="isMobile()" style="text-align: center">
                     <img class="google-login" src="@/assets/btn_google.png" @click="loginWithGoogleAsMobile">
                     <p style="font-size: 0.8em; color:dimgray">※ログインにのみ使われます</p>
                 </v-col>
                 <v-col v-else lg=8 md=8 sm=8 xs=10 class="pa-3" style="text-align: center">
                     <img class="google-login" src="@/assets/btn_google.png" @click="loginWithGoogle">
                     <p style="font-size: 0.8em; color:dimgray">※ログインにのみ使われます</p>
-                </v-col>
+                </v-col> -->
             </v-row>
         </v-container>
         <v-footer></v-footer>
+        <v-dialog
+            v-model="isLoading"
+            hide-overlay
+            persistent
+            width="300"
+        >
+            <v-card
+                color="primary"
+                dark
+            >
+                <v-card-text>
+                    Login ...
+                <v-progress-linear
+                    indeterminate
+                    color="white"
+                    class="mb-0"
+                ></v-progress-linear>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
     </v-app>
 </template>
 <script lang="ts">
@@ -130,11 +155,10 @@
         public mounted() {
             window.scrollTo(0, 0);
             const isRedirectAfter = localStorage.getItem(this.isRedirectLogin);
-            if (this.isMobile() && isRedirectAfter != null && isRedirectAfter === 'true') {
+            if (isRedirectAfter != null && isRedirectAfter === 'true') {
                 this.afterRedirect();
             }
         }
-
 
         public login() {
             if (this.validateInput()) {
