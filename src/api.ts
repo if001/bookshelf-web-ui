@@ -200,46 +200,73 @@ export default {
     },
     rakuten: {
         search(title: string, author: string, page: number, perPage: number) {
-            return Axios.get(
-                `${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&page=${page}&hits=${perPage}&title=${title}&author=${author}`,
+            const p: { [key: string]: any; } = {
+                applicationId: appID,
+                affiliateId,
+                page,
+                hits: perPage,
+                title,
+                author,
+            };
+
+            return Axios.get(rakutenBaseURL,
                 {
                     headers: {
                         'Content-Type': 'application/json',
-                        'Set-Cookie': 'SameSite=Strict',
                     },
+                    params: p,
                 },
             );
         },
         searchByTitle(title: string, page: number, perPage: number) {
-            return Axios.get(
-                `${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&page=${page}&hits=${perPage}&title=${title}`,
+            const p: { [key: string]: any; } = {
+                applicationId: appID,
+                affiliateId,
+                page,
+                hits: perPage,
+                title,
+            };
+
+            return Axios.get(rakutenBaseURL,
                 {
                     headers: {
                         'Content-Type': 'application/json',
-                        'Set-Cookie': 'SameSite=Strict',
                     },
+                    params: p,
                 },
             );
         },
         searchByAuthor(author: string, page: number, perPage: number) {
-            return Axios.get(
-                `${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&page=${page}&hits=${perPage}&author=${author}`,
+            const p: { [key: string]: any; } = {
+                applicationId: appID,
+                affiliateId,
+                page,
+                hits: perPage,
+                author,
+            };
+
+            return Axios.get(rakutenBaseURL,
                 {
                     headers: {
                         'Content-Type': 'application/json',
-                        'Set-Cookie': 'SameSite=Strict',
                     },
+                    params: p,
                 },
             );
         },
         searchByISBN(isbn: string) {
-            return Axios.get(
-                `${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&isbn=${isbn}`,
+            const p: { [key: string]: any; } = {
+                applicationId: appID,
+                affiliateId,
+                isbn,
+            };
+
+            return Axios.get(rakutenBaseURL,
                 {
                     headers: {
                         'Content-Type': 'application/json',
-                        'Set-Cookie': 'SameSite=Strict',
                     },
+                    params: p,
                 },
             );
         },
