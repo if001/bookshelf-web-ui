@@ -18,7 +18,7 @@
                             :key="f.displayName"
                             @change="changeFilter(f.filterKey)"
                             class="ma-0 pa-0">
-                        {{ f.displayName }}
+                        <span class="mr-2">{{ f.displayName }}</span><v-icon small>{{f.icon}}</v-icon>
                     </v-tab>
                 </v-tabs>
             </v-col>
@@ -156,10 +156,10 @@
         ];
         private selectSortKey = '';
         private filterObject = [
-            {filterKey: null, displayName: 'ALL'},
-            {filterKey: 'not_read', displayName: '未読'},
-            {filterKey: 'reading', displayName: '読中'},
-            {filterKey: 'read', displayName: '読了'},
+            {filterKey: null, displayName: 'ALL', icon: ''},
+            {filterKey: 'not_read', displayName: '未読', icon: 'fa-book'},
+            {filterKey: 'reading', displayName: '読中', icon: 'mdi-bookmark'},
+            {filterKey: 'read', displayName: '読了', icon: 'mdi-check'},
         ];
         private selectStateFilter: string | null = null;
         private searchKeyForBook: string | null = null;

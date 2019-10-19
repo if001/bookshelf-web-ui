@@ -94,7 +94,14 @@
                             <div v-if="bookImage != null && bookImage !== '' && bookForShow.affiliate_url !== null">
                                 <a :href="bookForShow.affiliate_url" target="_blank">
 <!--                                    <img style="float:right;" :src="bookImage" height="128px" alt="bookImage">-->
-                                    <img :src="bookImage" style="float:right;" height="128px" alt="bookImage">
+                                    <v-tooltip bottom>
+                                              <template v-slot:activator="{ on }">                                                  
+                                                <img :src="bookImage" 
+                                                    v-on="on"
+                                                    style="float:right;" height="128px" alt="bookImage">
+                                                </template>
+                                              <span style="font-size: 0.9em">詳細を見る</span>
+                                    </v-tooltip>
                                 </a>
                             </div>
                             <div v-else>
@@ -111,16 +118,24 @@
                         <v-col cols=4 class="ma-0 pa-2" align-self="center">
                             <v-row no-gutters>
                                 <v-col cols=3 class="ma-0 pa-0" align-self="center">
-                                    <v-btn text
-                                           icon
-                                           color="dark"
-                                           class="ma-0"
-                                           :loading="isLoadingBookState"
-                                           @click="changeState(startAt, endAt)">
-                                        <v-icon large
-                                                color="blue-grey darken-1"> {{ bookState(startAt, endAt).icon }}
-                                        </v-icon>
-                                    </v-btn>
+
+                                    <v-tooltip top>
+                                              <template v-slot:activator="{ on }">                                                  
+                                                    <v-btn text
+                                                            icon
+                                                            color="dark"
+                                                            class="ma-0"
+                                                            v-on="on"
+                                                            :loading="isLoadingBookState"
+                                                            @click="changeState(startAt, endAt)">
+                                                    <v-icon large
+                                                        color="blue-grey darken-1"> {{ bookState(startAt, endAt).icon }}
+                                                    </v-icon>
+                                                    </v-btn>
+                                              </template>
+                                             <span style="font-size: 0.9em">状態を変更する</span>
+                                    </v-tooltip>
+
                                 </v-col>
                                 <v-col cols=9 class="ma-0 pl-3" align-self="center">
                                     {{ bookState(startAt, endAt).label }}
