@@ -3,6 +3,9 @@
         <v-container>
             <v-row justify="center">
                 <v-col lg="8" md="8" sm="8" xs="8">
+                    <div  style="text-align: center;">
+                        <img src="@/assets/logo.png" width="30%">
+                    </div>
                     <div class="login-title">
                         Manage Your Book!
                     </div>
