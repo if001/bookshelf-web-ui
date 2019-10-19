@@ -203,7 +203,10 @@ export default {
             return Axios.get(
                 `${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&page=${page}&hits=${perPage}&title=${title}&author=${author}`,
                 {
-                    headers: {'Content-Type': 'application/json'},
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Set-Cookie': 'SameSite=Strict',
+                    },
                 },
             );
         },
@@ -211,7 +214,10 @@ export default {
             return Axios.get(
                 `${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&page=${page}&hits=${perPage}&title=${title}`,
                 {
-                    headers: {'Content-Type': 'application/json'},
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Set-Cookie': 'SameSite=Strict',
+                    },
                 },
             );
         },
@@ -219,7 +225,10 @@ export default {
             return Axios.get(
                 `${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&page=${page}&hits=${perPage}&author=${author}`,
                 {
-                    headers: {'Content-Type': 'application/json'},
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Set-Cookie': 'SameSite=Strict',
+                    },
                 },
             );
         },
@@ -227,7 +236,10 @@ export default {
             return Axios.get(
                 `${rakutenBaseURL}?applicationId=${appID}&affiliateId=${affiliateId}&isbn=${isbn}`,
                 {
-                    headers: {'Content-Type': 'application/json'},
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Set-Cookie': 'SameSite=Strict',
+                    },
                 },
             );
         },
