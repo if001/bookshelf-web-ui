@@ -12,6 +12,16 @@
             </v-list-item-content>
         </v-list-item>
 
+        <v-list-item :to="{ name: 'register'}" @click="closeDrawer()">
+            <v-list-item-icon>
+                <v-icon>mdi-book-open-variant</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+                <v-list-item-title>本の登録</v-list-item-title>
+            </v-list-item-content>
+        </v-list-item>
+
         <v-list-item :to="{ name: 'analytics'}" @click="closeDrawer()">
             <v-list-item-icon>
                 <v-icon>mdi-google-analytics</v-icon>
