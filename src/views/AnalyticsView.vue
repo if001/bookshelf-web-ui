@@ -416,7 +416,7 @@
             const chartData = {
                 labels: monthArr,
                 datasets: [{
-                    data: data,
+                    data,
                     backgroundColor: this.charBG,
                 }],
             } as Chart.ChartData;

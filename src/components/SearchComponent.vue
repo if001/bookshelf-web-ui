@@ -475,7 +475,7 @@
             return getToken()
                 .then((token) => {
                     return api.books.create(token, book);
-                })
+                });
         }
 
         private createBookMultiple() {
