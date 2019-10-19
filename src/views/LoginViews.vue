@@ -7,7 +7,7 @@
                         <img src="@/assets/logo.png" width="30%">
                     </div>
                     <div class="login-title">
-                        Manage Your Book!
+                        Simple Manage Your Books!
                     </div>
                 </v-col>
             </v-row>
@@ -274,7 +274,7 @@
 
     .login-title {
         color: dimgray;
-        font-size: 1.8em;
+        font-size: 1.5em;
         font-weight: 600;
         font-family: Roboto, sans-serif;
         padding: 15px;
