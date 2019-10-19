@@ -48,6 +48,22 @@
             </v-col>
         </v-row>
 
+        <v-row justify="center">
+            <v-col cols="12" lg="6" md="6" sm="6">
+                <v-alert
+                        v-if="alert"
+                        v-model="alert"
+                        dismissible
+                        color="error"
+                        icon="mdi-alert"
+                        outlined
+                        @click="alert = false">
+                    <div>{{ message }}</div>
+                    <div>{{ message2 }}</div>
+                </v-alert>
+            </v-col>
+        </v-row>
+
         <v-row justify="start">
             <div v-if="isSearchLoading" style="margin: auto;">
                 <div style="display:inline-block; padding-right: 15px;">loading...</div>
@@ -90,21 +106,6 @@
                         </v-col>
                     </v-row>
                 </v-card>
-            </v-col>
-        </v-row>
-
-        <v-row justify="center">
-            <v-col cols="12" lg="6" md="6" sm="6">
-                <v-alert
-                        v-if="alert"
-                        v-model="alert"
-                        dismissible
-                        color="error"
-                        icon="warning"
-                        outlined
-                        @click="alert = false">
-                    {{message}}
-                </v-alert>
             </v-col>
         </v-row>
 
@@ -179,6 +180,7 @@
 
         private alert: boolean = false;
         private message: string = '';
+        private message2: string = '';
 
         private searchFormRules = [
             (v: any) => !!v || 'required',
@@ -192,6 +194,7 @@
         }
 
         private searchBook() {
+            this.resetAlertMessage();
             if (this.inputTitleForSearch.length !== 0 && this.inputAuthorForSearch.length !== 0) {
                 this.searchTitleAndAuthor();
             } else if (this.inputTitleForSearch.length !== 0 && this.inputAuthorForSearch.length === 0) {
@@ -331,6 +334,12 @@
             }
         }
 
+        private resetSelectBook() {
+            this.selectMultiBooks.forEach((x) => {
+                x.isChecked = false;
+            });
+        }
+
         private isSelect(isbn: string): boolean {
             let res = false;
             this.selectMultiBooks.forEach((x) => {
@@ -466,7 +475,7 @@
             return getToken()
                 .then((token) => {
                     return api.books.create(token, book);
-                });
+                })
         }
 
         private createBookMultiple() {
@@ -491,7 +500,14 @@
                     this.$router.push('/bookshelf');
                 })
                 .catch((err) => {
-                    errorRoute('search component: ' + err.toString());
+                    if (err.response.data && err.response.data.content) {
+                        this.setAlertMessage( '登録に失敗しました。');
+                        this.message2 = err.response.data.content.title;
+                        this.isSaving = false;
+                        this.resetSelectBook();
+                    } else {
+                        errorRoute('search component: ' + err.toString());
+                    }
                 })
                 .finally(() => {});
         }
@@ -501,6 +517,11 @@
             // const top: number = element.getBoundingClientRect().top;
             // console.log(top, element.scrollTop);
             // window.scrollTo(0, top);
+        }
+
+        private resetAlertMessage() {
+            this.message = '';
+            this.message2 = '';
         }
 
         private setAlertMessage(msg: string) {
