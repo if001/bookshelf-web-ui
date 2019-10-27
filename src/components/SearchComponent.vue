@@ -7,7 +7,7 @@
                         ref="titleForm"
                         v-model="validTitleSearchBox"
                         lazy-validation
-                        @submit.prevent
+                        @submit.prevent="searchBook()"
                         >
                     <v-text-field
                             flat
@@ -27,19 +27,26 @@
                             @click="scrollBox('author_box')"
                     ></v-text-field>
                     <div align="center">
-                    <v-btn v-if="inputTitleForSearch.length !== 0 || inputAuthorForSearch.length !== 0"
+                        <v-btn v-if="inputTitleForSearch.length !== 0 || inputAuthorForSearch.length !== 0"
+                            type="submit"
+                            outlined
+                            :loading="isSearchLoading">                    
+                            search
+                            <v-icon>mdi-search-web</v-icon>
+                        </v-btn>
+                        <v-btn v-else
+                            outlined
+                            disabled>
+                            search
+                        <v-icon>mdi-search-web</v-icon>
+                        </v-btn>
+<!--                     <v-btn
                         outlined
                         :loading="isSearchLoading"
-                        @click="searchBook()">
-                        search
+                        @click="searchBookByGoogle()">
+                        search google
                         <v-icon>mdi-search-web</v-icon>
-                    </v-btn>
-                    <v-btn v-else
-                        outlined
-                        disabled>
-                        search
-                    <v-icon>mdi-search-web</v-icon>
-                    </v-btn>
+                    </v-btn> -->
                     </div>
                 </v-form>
             </v-col>
@@ -77,7 +84,7 @@
                 検索結果はありません。
             </div>
 
-            <v-col cols="12" lg="4" md="4" sm="6" v-else class="pa-2" v-for="result in getSearchResult" >
+            <v-col cols="12" lg="4" md="4" sm="6" v-else class="pa-2" v-for="result in getSearchResult" v-bind:key="result.isbn">
                 <v-card raised color="white" class="black--text" @click="selectBook(result)" style="cursor:pointer">
                     <v-row no-gutters>
                         <v-col cols="8" class="ma-0 pa-2">
@@ -98,7 +105,7 @@
                                    color="green"
                                    small
                                    style="position:absolute; top: 0; right: 0;">
-                                <v-icon small dark>mdi-check</v-icon>
+                                済
                             </v-btn>
                         </v-col>
                         <v-col cols="4" class="ma-0 pa-0" style="max-height: 128px;">
@@ -141,7 +148,7 @@
 
 <script lang="ts">
     import {Component, Emit, Vue} from 'vue-property-decorator';
-    import api, {SearchResult, Content, Author, Publisher, ContentResult, getToken, errorRoute} from '../api';
+    import api, {SearchResult, Content, Author, Publisher, ContentResult, getToken, errorRoute, SearchResultGoogle} from '../api';
     import {AxiosPromise} from 'axios';
 
     export interface SearchResultWithCheck {
@@ -191,6 +198,44 @@
 
         private mounted() {
             toTop();
+        }
+
+        private searchBookByGoogle() {
+            api.googleBook.search(this.inputTitleForSearch, this.inputAuthorForSearch, null, this.page, this.perPage)
+                .then((res) => {
+                    const result = res.data as SearchResultGoogle;
+                    this.totalCount = result.totalItems;
+                    this.searchResultWithCheck = result.items.map((x) => {
+                        const isbnObj =  x.volumeInfo.industryIdentifiers ? x.volumeInfo.industryIdentifiers.filter((x) => x.type === 'ISBN_13') : [];
+                        const isbn = isbnObj.length === 1 ? isbnObj[0].identifier : null;
+                        const author = x.volumeInfo.authors.length > 0 ? x.volumeInfo.authors[0] : '';
+                        const smallImageUrl = x.volumeInfo.imageLinks && x.volumeInfo.imageLinks.smallThumbnail ? x.volumeInfo.imageLinks.smallThumbnail : '';
+                        const mediumImageUrl = x.volumeInfo.imageLinks && x.volumeInfo.imageLinks.thumbnail ? x.volumeInfo.imageLinks.thumbnail : '';
+                        const publisherName = x.volumeInfo.publisher ? x.volumeInfo.publisher : '';
+                        const itemPrice = x.saleInfo.listPrice && x.saleInfo.listPrice.amount ? x.saleInfo.listPrice.amount.toString() : -1;
+                        const itemCaption = x.volumeInfo.description ? x.volumeInfo.description : '';
+                        const content = {
+                            isbn,
+                            title: x.volumeInfo.title,
+                            author,
+                            smallImageUrl,
+                            mediumImageUrl,
+                            largeImageUrl: mediumImageUrl,
+                            publisherName,
+                            itemPrice,
+                            itemUrl: '',
+                            affiliateUrl: '',
+                            itemCaption: x.volumeInfo.description,
+                        } as Content;
+                        x.saleInfo.listPrice
+                        x.saleInfo
+                        return this.itemToResultWithCheck(content);
+                    });
+                })
+                .catch((err) => {
+                    console.log(err);
+                    this.setAlertMessage('検索エラー');
+                });
         }
 
         private searchBook() {
