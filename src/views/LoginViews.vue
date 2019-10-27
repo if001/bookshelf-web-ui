@@ -31,7 +31,8 @@
                 <v-col lg="4" md="4" sm="4" xs="10">
                     <v-form ref="form"
                             lazy-validation
-                            v-model="valid">
+                            v-model="valid"
+                            @submit.prevent="login">
                         <v-text-field
                                 v-model="email"
                                 label="Email"
@@ -48,12 +49,11 @@
                                 @click:append="showPassword = !showPassword"
                                 prepend-icon="mdi-lock"
                                 required
-                        ></v-text-field>
+                        ></v-text-field>            
+                        <v-btn type="submit" :loading="isLoading" block color="#1E90FF" dark>
+                            Login
+                        </v-btn>
                     </v-form>
-
-                    <v-btn @click="login" :loading="isLoading" block color="#1E90FF" dark>
-                        Login
-                    </v-btn>
                 </v-col>
             </v-row>
 
