@@ -11,7 +11,10 @@
 
             <v-row justify="center">
                 <v-col cols="10" lg="4" md="4" sm="4">
-                    <v-form lazy-validation v-model="valid">
+                    <v-form ref="form"
+                            lazy-validation 
+                            v-model="valid"
+                            @submit.prevent="create">
                         <v-text-field
                                 v-model="email"
                                 label="Email"
@@ -27,13 +30,25 @@
                                 prepend-icon="mdi-lock"
                                 required
                         ></v-text-field>
+                        <v-btn type="submit" block color="#ee82ee" dark>
+                            sign up
+                        </v-btn>
                     </v-form>
+                </v-col>
+            </v-row>
 
-                    <v-btn @click="create" block color="#ee82ee" dark>
-                        sign up
-                    </v-btn>
-
-                    <div class="warning-font">{{ message }}</div>
+             <v-row justify="center" v-if="alert">
+                <v-col lg="6" md="6" sm="6" xs="12" class="pa-1" >
+                    <v-alert
+                            v-if="alert"
+                            v-model="alert"
+                            dismissible
+                            color="error"
+                            icon="mdi-warning"
+                            outlined
+                            @click="alert = false">
+                        {{message}}
+                    </v-alert>
                 </v-col>
             </v-row>
 
@@ -73,14 +88,18 @@
             (v: any) => !!v || 'E-mail is required',
             (v: any) => /.+@.+/.test(v) || 'E-mail must be valid',
         ];
+        private alreadyExistAccountCode = 'auth/email-already-in-use';
 
         private message = '';
+        private alert = false;
 
         public mounted() {
             window.scrollTo(0, 0);
         }
 
         public create() {
+            this.alert = false;
+            if (!this.validateInput()) return
             firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then((res) => {
                 if (res == null) {
                     // console.log('not get response');
@@ -101,12 +120,17 @@
                 });
             }).catch((err) => {
                 this.message = 'アカウントの作成に失敗しました。';
-                // alert('ログインエラー');
+                if (err.code && err.code === this.alreadyExistAccountCode) {
+                    this.message = this.message + 'すでに存在するメールアドレスです。';
+                }
+                this.alert = true;
                 // console.log(err);
             });
         }
 
-
+        private validateInput(): boolean {
+            return (this.$refs.form as Vue & { validate: () => boolean }).validate();
+        }
     }
 </script>
 

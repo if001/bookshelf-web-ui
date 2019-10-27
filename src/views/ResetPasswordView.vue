@@ -4,7 +4,7 @@
             <v-row justify="center">
                 <v-col cols="8">
                     <div class="login-title">
-                        For got your Password?
+                        Forgot your Password?
                     </div>
                 </v-col>
             </v-row>
@@ -12,7 +12,11 @@
             <v-row justify="center">
                 <v-col cols="10" lg="4" md="4" sm="4">
                     <div style="text-align: center;">Send email to reset your password.</div>
-                    <v-form lazy-validation v-model="valid">
+                    <v-form lazy-validation 
+                            v-model="valid"
+                            ref="form"
+                            @submit.prevent="resetPassword"
+                            >
                         <v-text-field
                                 v-model="email"
                                 label="Email"
@@ -20,15 +24,28 @@
                                 prepend-icon="mdi-email"
                                 required
                         ></v-text-field>
+                        <v-btn block color="#dc143c" dark>
+                            Reset Password
+                        </v-btn>
                     </v-form>
-
-                    <v-btn @click="resetPassword" block color="#dc143c" dark>
-                        Reset Password
-                    </v-btn>
-
-                    <div class="warning-font">{{ message }}</div>
                 </v-col>
             </v-row>
+
+            <v-row justify="center" v-if="alert">
+                <v-col lg="6" md="6" sm="6" xs="12" class="pa-1" >
+                    <v-alert
+                            v-if="alert"
+                            v-model="alert"
+                            dismissible
+                            color="error"
+                            icon="mdi-warning"
+                            outlined
+                            @click="alert = false">
+                        {{message}}
+                    </v-alert>
+                </v-col>
+            </v-row>
+
 
             <v-row justify="center">
                 <v-col cols="12">
@@ -62,8 +79,11 @@
         ];
 
         private message = '';
+        private alert = false;
 
         public resetPassword() {
+            this.alert = false;
+            if (!this.validateInput()) return
             firebase.auth().sendPasswordResetEmail(this.email).then((res) => {
                 const ans = confirm('ご登録のメールアドレスに再設定のリンクを送付いたしました。');
                 if (ans) {
@@ -73,9 +93,13 @@
                 this.message = 'ご登録のアドレスがございません。再度メールアドレスのご確認をお願いします。';
                 // alert('ログインエラー');
                 // console.log(err);
+                this.alert = true;
             });
         }
 
+        private validateInput(): boolean {
+            return (this.$refs.form as Vue & { validate: () => boolean }).validate();
+        }
     }
 </script>
 
