@@ -44,78 +44,78 @@
                             ref="form"
                             v-model="validInputForm"
                             lazy-validation
-                    >
-                        <div class="pl-2 pb-2">
-                            <v-text-field
-                                    :counter="40"
-                                    maxlength="40"
-                                    label="title"
-                                    v-model="bookName"
-                                    required
-                                    @blur="setFirstFocus"
-                            ></v-text-field>
-                        </div>
+                            >
+                                <div class="pl-2 pb-2">
+                                    <v-text-field
+                                            :counter="40"
+                                            maxlength="40"
+                                            label="title"
+                                            v-model="bookName"
+                                            required
+                                            @blur="setFirstFocus"
+                                    ></v-text-field>
+                                </div>
 
-                        <div class="pl-2 pb-2">
-                            <v-text-field
-                                    :counter="40"
-                                    maxlength="40"
-                                    label="author"
-                                    v-model="authorName"
-                                    @blur="setFirstFocus"
-                            ></v-text-field>
-<!--                            <v-combobox-->
-<!--                                    v-model="authorName"-->
-<!--                                    :items="getAuthors"-->
-<!--                                    maxlength="40"-->
-<!--                                    :counter="40"-->
-<!--                                    height="40px;"-->
-<!--                                    label="author"-->
-<!--                            ></v-combobox>-->
-                        </div>
+                                <div class="pl-2 pb-2">
+                                    <v-text-field
+                                            :counter="40"
+                                            maxlength="40"
+                                            label="author"
+                                            v-model="authorName"
+                                            @blur="setFirstFocus"
+                                    ></v-text-field>
+        <!--                            <v-combobox-->
+        <!--                                    v-model="authorName"-->
+        <!--                                    :items="getAuthors"-->
+        <!--                                    maxlength="40"-->
+        <!--                                    :counter="40"-->
+        <!--                                    height="40px;"-->
+        <!--                                    label="author"-->
+        <!--                            ></v-combobox>-->
+                                </div>
 
-                        <div class="pl-2 pb-2">
-                            <v-combobox
-                                    v-model="publisherName"
-                                    :items="getPublishers"
-                                    maxlength="40"
-                                    :counter="40"
-                                    height="40px;"
-                                    label="publisher"
-                            ></v-combobox>
-                        </div>
+                                <div class="pl-2 pb-2">
+                                    <v-combobox
+                                            v-model="publisherName"
+                                            :items="getPublishers"
+                                            maxlength="40"
+                                            :counter="40"
+                                            height="40px;"
+                                            label="publisher"
+                                    ></v-combobox>
+                                </div>
 
-                        <!-- TODO カテゴリは一旦消しとく-->
-                        <!--<h2 blue lighten-1>-->
-                        <!--カテゴリ-->
-                        <!--</h2>-->
-                        <!--<div class="pl-2 pb-2">-->
-                        <!--<div style="width:40%">-->
-                        <!--<v-text-field-->
-                        <!--:counter="10"-->
-                        <!--maxlength="10"-->
-                        <!--label="category"-->
-                        <!--v-model="inputCategory"-->
-                        <!--v-on:keydown.enter="appendCategory"-->
-                        <!--&gt;</v-text-field>-->
-                        <!--</div>-->
-                        <!--</div>-->
+                                <!-- TODO カテゴリは一旦消しとく-->
+                                <!--<h2 blue lighten-1>-->
+                                <!--カテゴリ-->
+                                <!--</h2>-->
+                                <!--<div class="pl-2 pb-2">-->
+                                <!--<div style="width:40%">-->
+                                <!--<v-text-field-->
+                                <!--:counter="10"-->
+                                <!--maxlength="10"-->
+                                <!--label="category"-->
+                                <!--v-model="inputCategory"-->
+                                <!--v-on:keydown.enter="appendCategory"-->
+                                <!--&gt;</v-text-field>-->
+                                <!--</div>-->
+                                <!--</div>-->
 
-                        <!--<div>-->
-                        <!--<div style="display: flex; flex-wrap: wrap;">-->
-                        <!--<div class="ma-0;width:auto;" v-for="category in categories">-->
-                        <!--<v-chip v-model="category.chip"-->
-                        <!--close-->
-                        <!--color="blue lighten-1"-->
-                        <!--outline-->
-                        <!--text-color="black"-->
-                        <!--&gt;{{ category.name }}-->
-                        <!--</v-chip>-->
-                        <!--</div>-->
-                        <!--</div>-->
-                        <!--</div>-->
+                                <!--<div>-->
+                                <!--<div style="display: flex; flex-wrap: wrap;">-->
+                                <!--<div class="ma-0;width:auto;" v-for="category in categories">-->
+                                <!--<v-chip v-model="category.chip"-->
+                                <!--close-->
+                                <!--color="blue lighten-1"-->
+                                <!--outline-->
+                                <!--text-color="black"-->
+                                <!--&gt;{{ category.name }}-->
+                                <!--</v-chip>-->
+                                <!--</div>-->
+                                <!--</div>-->
+                                <!--</div>-->
 
-                    </v-form>
+                            </v-form>
                             <div class="pl-2 pb-2">
                                 <img style="float:right;" :src="mediumBookImage" :height="(mediumBookImage != null && mediumBookImage !=='')? '120px;':'0'">
                             </div>
