@@ -32,12 +32,21 @@
                                 text
                                 v-model="searchKeyForBook"
                                 label="Title or Author or Publisher"
-                                append-outer-icon="mdi-book-search"
                                 @click:append-outer="searchBook()"
                                 clear-icon="mdi-close-circle"
                                 clearable
-                                @click:clear="searchKeyRemove()"
-                        ></v-text-field>
+                                @click:clear="searchKeyRemove()">
+                            <template v-slot:append-outer>
+                                <v-tooltip
+                                    bottom
+                                >
+                                    <template v-slot:activator="{ on }">
+                                        <v-icon v-on="on">mdi-book-search</v-icon>
+                                    </template>
+                                        検索
+                                </v-tooltip>
+                            </template>
+                        </v-text-field>
                     </v-col>
                     <v-col cols=12 lg="4" md="4" sm="4" class="pl-3 pr-3 pa-0">
                         <v-select
