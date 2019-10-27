@@ -75,6 +75,13 @@
             </div>
             <div v-if="!loading && booksShow.length === 0 && selectStateFilter === null && searchKeyForBook === null" style="margin: auto;padding: 20px;">
                 読みたい本を登録しましょう。
+                <div align="center" class="ma-2">
+                    <v-btn
+                        outlined
+                        @click="toRegister()">
+                        本の追加<v-icon>mdi-plus</v-icon>
+                    </v-btn>
+                </div>
             </div>
 
             <v-col v-else
