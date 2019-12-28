@@ -541,20 +541,21 @@
                     return Promise.all(p);
                 })
                 .then(() => {
-                    this.isSaving = false;
                     this.$router.push('/bookshelf');
                 })
                 .catch((err) => {
+                    console.log(err);
+                    console.log(err.response);
                     if (err.response.data && err.response.data.content) {
-                        this.setAlertMessage( '登録に失敗しました。');
                         this.message2 = err.response.data.content.title;
-                        this.isSaving = false;
-                        this.resetSelectBook();
-                    } else {
-                        errorRoute('search component: ' + err.toString());
                     }
+                    this.setAlertMessage( '登録に失敗しました。');
+                    this.resetSelectBook();
+                        errorRoute('search component: ' + err.toString());
                 })
-                .finally(() => {});
+                .finally(() => {
+                    this.isSaving = false;
+                });
         }
 
         private scrollBox(elmId: string) {
