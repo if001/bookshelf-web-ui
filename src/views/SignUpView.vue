@@ -99,7 +99,9 @@
 
         public create() {
             this.alert = false;
-            if (!this.validateInput()) return
+            if (!this.validateInput()) {
+                return;
+            }
             firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then((res) => {
                 if (res == null) {
                     // console.log('not get response');

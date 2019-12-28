@@ -104,20 +104,20 @@
         private mounted() {
             const id = this.$route.params.id;
             if (id === '') {
-                this.toRegisterPage()
+                this.toRegisterPage();
             }
             api.book.getLimited(parseInt(id, 10))
                 .then((res) => {
                     return new Promise<string>((resolve, reject) => {
                         if (res.data.content && res.data.content.isbn) {
-                            resolve(res.data.content.isbn)
+                            resolve(res.data.content.isbn);
                         } else {
-                            reject("not found")
+                            reject('not found');
                         }
-                    })
+                    });
                 })
                 .then((isbn: string) => {
-                    return api.rakuten.searchByISBN(isbn)
+                    return api.rakuten.searchByISBN(isbn);
                 })
                 .then((res) => {
                     const result  = res.data as SearchResult;
@@ -128,7 +128,7 @@
                 .catch((err) => {
                     // this.setAlertMessage('検索エラー');
                     // console.log('search api error:', err);
-                    this.toRegisterPage()
+                    this.toRegisterPage();
                 })
                 .finally(() => {
                     // this.isSearchLoading = false;

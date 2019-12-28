@@ -364,7 +364,7 @@
                     bookInfo += '(' + this.bookForEdit.author.name + ')';
                 }
                 if (this.bookForEdit.affiliate_url != null) {
-                    bookURL = 'https://bookstorage-api.edgwbs.net/share/' + this.bookForEdit.id.toString()
+                    bookURL = 'https://bookstorage.edgwbs.net/share/' + this.bookForEdit.id.toString();
                     // bookURL = this.bookForEdit.affiliate_url;
                 }
                 return base + '?text=' + ' [' + bookInfo + '] ' + text + '&hashtags=' + hashTag + '&url=' + bookURL;

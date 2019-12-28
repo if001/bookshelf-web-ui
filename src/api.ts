@@ -29,7 +29,7 @@ export default {
         getLimited(id: number) {
             return axios.request<ContentResult<Book>>({
                 method: 'GET',
-                url: `/book_limited/${id}`
+                url: `/book_limited/${id}`,
             });
         },
         startRead(token: string,  id: number) {
@@ -88,19 +88,19 @@ export default {
             });
         },
         create(token: string, data: any) {
-            return axios({
+            return axios.request({
                 method: 'POST',
                 headers: {Authorization: `Bearer ${token}`},
                 url: '/books',
-                data,
+                params: data,
             });
         },
         update(token: string, data: any) {
-            return axios({
+            return axios.request({
                 method: 'PUT',
                 headers: {Authorization: `Bearer ${token}`},
                 url: '/books',
-                data,
+                params: data,
             });
         },
         countedAuthorName(token: string) {
@@ -282,12 +282,12 @@ export default {
             const p: { [key: string]: any; } = {
                 startIndex: page,
                 maxResult: perPage,
-                Country: "JP",
+                Country: 'JP',
                 orderBy: 'newest',
                 // orderBy: 'relevance',
             };
 
-            let q = [];
+            const q = [];
             if (title) {
                 q.push(`intitle:${title}`);
             }
@@ -310,7 +310,7 @@ export default {
                 },
             );
         },
-    }
+    },
 };
 
 const rakutenBaseURL = 'https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404';

@@ -83,7 +83,9 @@
 
         public resetPassword() {
             this.alert = false;
-            if (!this.validateInput()) return
+            if (!this.validateInput()) {
+                return;
+            }
             firebase.auth().sendPasswordResetEmail(this.email).then((res) => {
                 const ans = confirm('ご登録のメールアドレスに再設定のリンクを送付いたしました。');
                 if (ans) {

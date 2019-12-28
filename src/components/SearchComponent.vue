@@ -227,8 +227,8 @@
                             affiliateUrl: '',
                             itemCaption: x.volumeInfo.description,
                         } as Content;
-                        x.saleInfo.listPrice
-                        x.saleInfo
+                        x.saleInfo.listPrice;
+                        x.saleInfo;
                         return this.itemToResultWithCheck(content);
                     });
                 })
