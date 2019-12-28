@@ -118,7 +118,6 @@
                         <v-col cols=4 class="ma-0 pa-2" align-self="center">
                             <v-row no-gutters>
                                 <v-col cols=3 class="ma-0 pa-0" align-self="center">
-
                                     <v-tooltip top>
                                               <template v-slot:activator="{ on }">                                                  
                                                     <v-btn text
@@ -365,12 +364,9 @@
                     bookInfo += '(' + this.bookForEdit.author.name + ')';
                 }
                 if (this.bookForEdit.affiliate_url != null) {
-                    bookURL = this.bookForEdit.affiliate_url;
+                    bookURL = 'https://bookstorage-api.edgwbs.net/share/' + this.bookForEdit.id.toString()
+                    // bookURL = this.bookForEdit.affiliate_url;
                 }
-                // TODO bookstrageのURLはひとまずおいとく
-                // if (this.bookForEdit.isbn != null) {
-                    // bookURL = 'https://bookstrage.edgwbs.net/' + this.bookForEdit.isbn;
-                // }
                 return base + '?text=' + ' [' + bookInfo + '] ' + text + '&hashtags=' + hashTag + '&url=' + bookURL;
             }
         }
