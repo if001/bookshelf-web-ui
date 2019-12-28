@@ -92,7 +92,7 @@ export default {
                 method: 'POST',
                 headers: {Authorization: `Bearer ${token}`},
                 url: '/books',
-                params: data,
+                data,
             });
         },
         update(token: string, data: any) {
@@ -100,7 +100,7 @@ export default {
                 method: 'PUT',
                 headers: {Authorization: `Bearer ${token}`},
                 url: '/books',
-                params: data,
+                data,
             });
         },
         countedAuthorName(token: string) {
@@ -422,12 +422,19 @@ export interface CountedTime {
 }
 
 import {captureMessage, Severity} from '@sentry/browser';
-export function errorRoute(err: string) {
-    if (process.env.NODE_ENV === 'production') {
-        captureMessage(err, Severity.Error);
-    }
-    localStorage.clear();
-    router.push('/');
+export function errorRoute(errMsg: string) {
+    getToken()
+        .then(token => {
+            // callback(errMsg)
+            console.log("ok")
+        })
+        .catch((err) => {
+            if (process.env.NODE_ENV === 'production') {
+                captureMessage(errMsg, Severity.Error);
+            }
+            localStorage.clear();
+            router.push('/');
+        });
 }
 
 export interface SearchResultGoogle {
