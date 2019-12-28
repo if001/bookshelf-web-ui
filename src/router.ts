@@ -45,7 +45,7 @@ const router = new Router({
             component: PrivacyPolicy,
         },
         {
-            path: '/share/:isbn',
+            path: '/share/:id',
             name: 'sharePage',
             component: SharePageView,
         },

@@ -26,6 +26,12 @@ export default {
                 headers: {Authorization: `Bearer ${token}`},
             });
         },
+        getLimited(id: number) {
+            return axios.request<ContentResult<Book>>({
+                method: 'GET',
+                url: `/book_limited/${id}`
+            });
+        },
         startRead(token: string,  id: number) {
             return axios.request<ContentResult<Book>>({
                 method: 'PUT',

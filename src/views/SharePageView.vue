@@ -1,6 +1,7 @@
 <template>
+    <v-app light>
     <v-container>
-        <v-toolbar
+      <!--   <v-toolbar
                 fixed
                 color="blue accent-2"
                 dark
@@ -8,21 +9,21 @@
             <div style="font-weight: 400;">
                 <router-link :to="{name:'booksView'}" class="title">BookStorage</router-link>
             </div>
-        </v-toolbar>
+        </v-toolbar> -->
+        <v-row justify="center">
+            <v-col cols=10 lg=8 md=8 sm=8 class="ma-5 pa-0" offset=1 offset-lg=2 offset-md=2 offset-sm=2>
+                <div style="text-align: center;background: #eeeeee; cursor:pointer;" @click="toRegisterPage">
+                    <img src="@/assets/logo.png" width="12%">
+                </div>
+            </v-col>
+        </v-row>
 
-
-        <v-layout column class="ma-2"style="padding-top: 50px;">
-<!--            <v-flex lg12 md12 sm12 xs12 class="ma-1 mb-3">-->
-<!--                <h1>-->
-<!--                    <router-link :to="{name:'booksView'}">Book Strage</router-link>-->
-<!--                </h1>-->
-<!--            </v-flex>-->
-
-            <v-flex v-if="searchResult != null" lg8 md8 sm8 xs8>
-                <v-card class="black--text">
-                    <v-layout column>
-                        <v-flex lg12 md12 sm12 xm12>
-                            <v-card-text primary-title>
+        <v-row v-if="searchResult != null" justify="center">
+            <v-col cols=10 lg=8 md=8 sm=8 class="ma-0 pa-0" offset=1 offset-lg=2 offset-md=2 offset-sm=2>
+                <v-card class="black--text ma-0">
+                    <v-row justify="center">
+                        <v-col cols=12 class="pa-6">
+                            <v-card-text primary-title class="pa-0 ma-0">
                                 <div class="headline">
                                     {{searchResult.title}}
                                 </div>
@@ -33,64 +34,67 @@
                                     ({{searchResult.publisherName}})
                                 </div>
                             </v-card-text>
-                        </v-flex>
-                    </v-layout>
+                        </v-col>
+                    </v-row>
 
-                    <v-layout column class="pa-3">
-                        <v-flex style="height: 200px;" lg12 md12 sm12 xm12>
-                            <div v-if="bookImage != null && bookImage !== ''">
-                                <a :href="searchResult.affiliateUrl" target="_blank">
-                                    <img :src="searchResult.largeImageUrl" height="200px" alt="bookImage">
-                                </a>
+                    <v-row justify="center">
+                        <v-col style="height: 200px;" cols=12 class="pa-6">
+                            <div v-if="bookImage != null && bookImage !== ''" style="text-align: center;">
+                                <v-tooltip top>
+                                    <template v-slot:activator="{ on }">
+                                        <a :href="searchResult.affiliateUrl" target="_blank">
+                                            <img :src="searchResult.largeImageUrl" height="200px" alt="bookImage" style="text-align: center;" v-on="on">
+                                        </a>
+                                    </template>
+                                    <span style="font-size: 0.9em">詳細を見る</span>
+                                </v-tooltip>
                             </div>
                             <div v-else>
                                 <img src="@/assets/not_found.png" alt="not_found" height="128px">
                             </div>
-                        </v-flex>
-                    </v-layout>
+                        </v-col>
+                    </v-row>
 
-                    <v-layout class="pa-3">
-                        <v-flex lg12 md12 sm12 xs12>
+                    <v-row justify="center">
+                        <v-col cols=12 class="pa-6">
                             <div style="font-size: 1.1em;">
                                 概要
                             </div>
                             <div>
                                 {{searchResult.itemCaption}}
                             </div>
-                        </v-flex>
-                    </v-layout>
+                        </v-col>
+                    </v-row>
 
                     <v-divider light></v-divider>
 
-                    <v-layout class="pa-2">
-                        <v-flex>
+                    <v-row class="pa-2">
+                        <v-col>
                             <v-btn text
                                    outlined
                                    :href="searchResult.affiliateUrl" target="_blank">
                                 商品ページへ
                             </v-btn>
-                        </v-flex>
-                    </v-layout>
+                        </v-col>
+                    </v-row>
                 </v-card>
-            </v-flex>
+            </v-col>
 
-            <v-flex lg12 md12 sm12 xs12 class="ma-3 mt-5">
+            <v-col cols=12 class="ma-3 mt-5">
                 <div style="text-align: center">
                     <v-btn outlined @click="toRegisterPage">
-                        本の管理を開始する
+                        本の管理を始める
                     </v-btn>
                 </div>
-            </v-flex>
-
-        </v-layout>
-
-
+            </v-col>
+        </v-row>
     </v-container>
+    </v-app>
 </template>
 
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
-    import api, {Content, SearchResult} from '../api';
+    import api, {Content, SearchResult, getToken} from '../api';
 
     @Component
     export default class SharePageView extends Vue {
@@ -98,23 +102,37 @@
         private searchResult: Content | null = null;
 
         private mounted() {
-            const isbn = this.$route.params.isbn;
-            if (isbn !== '') {
-                api.rakuten.searchByISBN(isbn).then((res) => {
+            const id = this.$route.params.id;
+            if (id === '') {
+                this.toRegisterPage()
+            }
+            api.book.getLimited(parseInt(id, 10))
+                .then((res) => {
+                    return new Promise<string>((resolve, reject) => {
+                        if (res.data.content && res.data.content.isbn) {
+                            resolve(res.data.content.isbn)
+                        } else {
+                            reject("not found")
+                        }
+                    })
+                })
+                .then((isbn: string) => {
+                    return api.rakuten.searchByISBN(isbn)
+                })
+                .then((res) => {
                     const result  = res.data as SearchResult;
-                    console.log(result);
-                    // this.searchResult = res.data as SearchResult;
                     if (result.Items.length > 0) {
                         this.searchResult = result.Items[0].Item;
                     }
-                }).catch((err) => {
+                })
+                .catch((err) => {
                     // this.setAlertMessage('検索エラー');
-                    // console.log('search api error');
-                }).finally(() => {
-
+                    // console.log('search api error:', err);
+                    this.toRegisterPage()
+                })
+                .finally(() => {
                     // this.isSearchLoading = false;
                 });
-            }
         }
 
         get bookImage(): string | null {
