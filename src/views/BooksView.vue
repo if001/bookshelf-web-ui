@@ -94,7 +94,7 @@
                     <v-card
                             slot-scope="{ hover }"
                             :class="`elevation-${hover ? 12 : 2}`"
-                            :to="{ name: 'bookDetail', params: { bookId: book.id }}"
+                            @click="toBookDetail(book.id)"
                     >
                         <v-card-title style="font-size: 1.2em;padding-bottom: 0px;">
                             <v-col align-self="center" class="ma-0 pa-0 bot-char">{{book.title}}</v-col>
@@ -130,17 +130,19 @@
                 ></v-pagination>
             </v-col>
         </v-row>
-
-        <v-btn
-                fab
-                bottom
-                right
-                color="pink"
-                dark
-                fixed
-                @click="toRegister()">
-            <v-icon>mdi-plus</v-icon>
-        </v-btn>
+        <v-fab-transition>
+            <v-btn
+                    fab
+                    bottom
+                    right
+                    color="pink"
+                    dark
+                    fixed
+                    v-show="!hiddenFab"
+                    @click="toRegister()">
+                <v-icon>mdi-plus</v-icon>
+            </v-btn>
+        </v-fab-transition>
     </v-container>
     <!--    </div>-->
 </template>
@@ -163,6 +165,7 @@
         private loading: boolean = true;
 
         private createModalIsOpen: boolean = false;
+        private hiddenFab: boolean = true;
 
         private sortObject = [
             {sortKey: 'updated_at', displayName: '更新日'},
@@ -223,6 +226,8 @@
                 .catch((err) => {
                     this.loading = false;
                     errorRoute('books view: ' + err.toString());
+                }).finally(() => {
+                    this.hiddenFab = false;
                 });
         }
 
@@ -276,6 +281,10 @@
             return Math.floor(this.totalCount / this.perPage) + 1;
         }
 
+        private toBookDetail(id: number) {
+            this.hiddenFab = true;
+            this.$router.push('/bookshelf/' + id.toString())
+        }
         private toRegister() {
             this.$router.push('/register');
         }

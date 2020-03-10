@@ -282,16 +282,19 @@
                     :bookID="bookID"
             ></BookDescription>
         </v-row>
-        <v-btn
-                fab
-                bottom
-                right
-                color="blue"
-                dark
-                fixed
-                @click="toListPage()">
-            <v-icon>mdi-arrow-left</v-icon>
-        </v-btn>
+        <v-fab-transition>
+            <v-btn
+                    fab
+                    bottom
+                    right
+                    color="blue"
+                    dark
+                    fixed
+                    v-show="!hiddenFab"
+                    @click="toListPage()">
+                <v-icon>mdi-arrow-left</v-icon>
+            </v-btn>
+        </v-fab-transition>
     </v-container>
 </template>
 
@@ -329,7 +332,7 @@
         private isLoadingBookState: boolean = false;
         private isUpdatingBook: boolean = false;
         private validEditBox: boolean = false;
-
+        private hiddenFab: boolean = true;
 
         private rules: any =  {
             counter12: (value: any) => value.length <= 12 || 'Max 12 characters',
@@ -419,6 +422,7 @@
                     })
                     .finally(() => {
                         this.isLoadingBook = false;
+                        this.hiddenFab = false;
                     });
             });
         }
@@ -789,6 +793,7 @@
         }
 
         private toListPage() {
+            this.hiddenFab = true;
             this.$router.push('/bookshelf');
         }
         private formatNullDate(d: string | null) {
