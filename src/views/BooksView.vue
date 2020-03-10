@@ -226,12 +226,6 @@
                 });
         }
 
-        private closeCreate() {
-            this.createModalIsOpen = false;
-            this.selectSortKey = 'created_at';
-            this.load(this.page, this.perPage, this.selectSortKey, null, null);
-        }
-
         private searchBook() {
             this.page = 1;
             if (this.searchKeyForBook != null && this.searchKeyForBook != '') {
