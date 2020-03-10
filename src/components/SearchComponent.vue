@@ -164,7 +164,7 @@
         isChecked: boolean;
         isAlreadyRegister: boolean;
     }
-    const maxRegisterNum: number = 5;
+    const maxRegisterNum: number = 8;
 
     @Component
     export default class SearchComponent extends Vue {
@@ -554,6 +554,7 @@
                         errorRoute('search component: ' + err.toString());
                 })
                 .finally(() => {
+                    this.selectMultiBooks = [];
                     this.isSaving = false;
                 });
         }
