@@ -33,6 +33,7 @@
                                 v-model="searchKeyForBook"
                                 label="Title or Author or Publisher"
                                 @click:append-outer="searchBook()"
+                                append-outer-icon="mdi-magnify"
                                 clear-icon="mdi-close-circle"
                                 clearable
                                 @click:clear="searchKeyRemove()">
@@ -41,7 +42,7 @@
                                     bottom
                                 >
                                     <template v-slot:activator="{ on }">
-                                        <v-icon v-on="on">mdi-book-search</v-icon>
+                                        <v-icon v-on="on" @click="searchBook()">mdi-magnify</v-icon>
                                     </template>
                                         検索
                                 </v-tooltip>
@@ -223,38 +224,6 @@
                     this.loading = false;
                     errorRoute('books view: ' + err.toString());
                 });
-
-
-            // api.books.list(page, perPage, sortKey, state, null, searchKeyForBook)
-            //     .then((response) => {
-            //         this.books = response.data.content.books as Book[];
-            //         this.totalCount = response.data.content.total_count as number;
-            //     })
-            //     .then(() => {
-            //         this.booksShow = this.books.map((book) => {
-            //             return {
-            //                 id: book.id,
-            //                 title: book.title,
-            //                 author: book.author,
-            //                 publishedAt: book.publishedAt,
-            //                 accountId: book.accountId,
-            //                 publisher: book.publisher,
-            //                 start_at: book.start_at,
-            //                 end_at: book.end_at,
-            //                 nextBookId: book.nextBookId,
-            //                 prevBookId: book.prevBookId,
-            //                 categories: book.categories,
-            //                 created_at: book.created_at,
-            //                 updated_at: book.updated_at,
-            //                 isOpen: false,
-            //             } as BookShow;
-            //         });
-            //         this.loading = false;
-            //     })
-            //     .catch((err) => {
-            //         this.loading = false;
-            //         errorRoute(err.response.status, '/bookshelf');
-            //     });
         }
 
         private closeCreate() {
@@ -265,7 +234,9 @@
 
         private searchBook() {
             this.page = 1;
-            this.load(this.page, this.perPage, this.selectSortKey, null, this.searchKeyForBook);
+            if (this.searchKeyForBook != null && this.searchKeyForBook != '') {
+                this.load(this.page, this.perPage, this.selectSortKey, null, this.searchKeyForBook);
+            }
         }
 
         private searchKeyRemove() {
