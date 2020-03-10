@@ -281,6 +281,9 @@
             <BookDescription
                     :bookID="bookID"
             ></BookDescription>
+            <div style="position: fixed; bottom:50px">
+                <ad :medium="true" :small="$vuetify.breakpoint.xs"></ad>
+            </div>
         </v-row>
         <v-fab-transition>
             <v-btn
@@ -304,6 +307,7 @@
     import api, {Author, Book, Category, ContentResult, getToken, errorRoute, Publisher} from '../api';
     import moment from 'moment';
     import {AxiosPromise} from 'axios';
+    import AdComponent from '@/components/AdComponent.vue';
 
     interface BookDetail extends Book {
         isOpen: boolean;
@@ -316,6 +320,7 @@
     @Component({
         components: {
             BookDescription,
+            'ad': AdComponent,
         },
     })
     export default class BookDetailView extends Vue {
