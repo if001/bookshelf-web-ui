@@ -256,7 +256,7 @@
             this.isSearchLoading = true;
             this.alert = false;
             this.searchType = 'title';
-            api.rakuten.search(this.inputTitleForSearch, this.inputAuthorForSearch, this.page, this.perPage)
+            api.rakuten.search(this.inputTitleForSearch, this.inputAuthorForSearch, this.page, this.perPage, null)
                 .then((res) => {
                     this.searchResult = res.data as SearchResult;
                     this.totalCount = this.searchResult.pageCount;

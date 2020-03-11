@@ -205,7 +205,7 @@ export default {
         },
     },
     rakuten: {
-        search(title: string, author: string, page: number, perPage: number) {
+        search(title: string, author: string, page: number, perPage: number, sort: string | null) {
             const p: { [key: string]: any; } = {
                 applicationId: appID,
                 affiliateId,
@@ -214,7 +214,9 @@ export default {
                 title,
                 author,
             };
-
+            if (sort != null) {
+                p.sort = sort;
+            }
             return Axios.get(rakutenBaseURL,
                 {
                     headers: {
