@@ -1,5 +1,5 @@
 <template>
-    <v-col class="ma-3" xs="12" md="6">
+    <div>
         <h3>
             コメント
             <v-btn text
@@ -76,7 +76,7 @@
             </div>
         </div>
 
-    </v-col>
+    </div>
 </template>
 
 

@@ -1,7 +1,7 @@
 <template>
-    <v-container style="min-height: 85vh;">
+    <v-container style="min-height: 87vh;">
         <v-row class="ma-2 mb-3" justify="space-around">
-            <v-col cols=12 lg=4 md=5 class="ma-0 pa-0">
+            <v-col cols=12 lg=4 md=5 class="ma-0 pa-0 pt-2 pb-2">
                 <v-card color="white">
                     <v-row no-gutters>
                         <v-col cols=8 class="pa-3 ma-0">
@@ -278,12 +278,18 @@
 
                 </v-card>
             </v-col>
-            <BookDescription
-                    :bookID="bookID"
-            ></BookDescription>
-            <div style="position: fixed; bottom:50px">
-                <ad :medium="true" :small="$vuetify.breakpoint.xs"></ad>
-            </div>
+            <v-col xs="12" md="6" class="ma-0 pa-0 pt-2 pb-2" style="min-height: 35vh">
+                <BookDescription
+                        :bookID="bookID"
+                ></BookDescription>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col>
+                <div style="width: 100%;" align="center">
+                    <ad :medium="true" :small="$vuetify.breakpoint.xs"></ad>
+                </div>
+            </v-col>
         </v-row>
         <v-fab-transition>
             <v-btn

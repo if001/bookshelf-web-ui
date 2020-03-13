@@ -48,7 +48,6 @@
     .footer_main_sx {
         display: flex;
         flex-direction: row;
-        position: fixed;
         height:25px;
         width: 100%;
         bottom:0;
