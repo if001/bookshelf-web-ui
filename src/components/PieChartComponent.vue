@@ -1,27 +1,33 @@
 <script lang="ts">
-    import {Component, Prop, Mixins, Watch } from 'vue-property-decorator';
+    import {Component, Prop, Watch } from 'vue-property-decorator';
     import Chart from 'chart.js';
-    import { Pie, Doughnut } from 'vue-chartjs';
+    import { Doughnut, mixins } from 'vue-chartjs';
 
-    @Component({})
-    export default class AnalyticsView extends Mixins(Pie, Doughnut) {
-        @Prop() public chartData?: Chart.ChartData;
-        @Prop() public chartOptions?: Chart.ChartOptions;
+    @Component({
+        extends: Doughnut,
+        mixins: [mixins.reactiveProp],
+    })
+    export default class PieChartComponent extends Doughnut {
+        @Prop({ default: {}, type: Object }) public chartData!: Chart.ChartData;
+        @Prop({ default: {}, type: Object }) public chartOptions!: Chart.ChartOptions;
 
-        private chartOptionsDef: Chart.ChartOptions = {
-            tooltips: {
-                callbacks: {
-                    label: (tooltipItem: any, data: any) => {
-                        return data.labels[tooltipItem.index] + ':' + data.datasets[0].data[tooltipItem.index] + ' 冊';
+
+        private chartOptionsDef: Chart.ChartOptions | null = null;
+        private initChartOptions() {
+            this.chartOptionsDef = {
+                tooltips: {
+                    callbacks: {
+                        label: (tooltipItem: any, data: any) => {
+                            return data.labels[tooltipItem.index] + ':' + data.datasets[0].data[tooltipItem.index] + ' 冊';
+                        },
                     },
                 },
-            },
-        };
+            };
+        }
 
         @Watch('chartData')
         private onValueChange(newValue: Chart.ChartData, oldValue: Chart.ChartData): void {
-            this.chartData = newValue;
-            this.renderChart(this.chartData, Object.assign(this.chartOptionsDef, this.chartOptions));
+            this.renderChart(newValue, Object.assign(this.chartOptionsDef, this.chartOptions));
         }
 
         @Watch('chartOptions')
@@ -29,8 +35,11 @@
             this.chartOptions = newValue;
             this.renderChart(this.chartData, Object.assign(this.chartOptionsDef, this.chartOptions));
         }
+
         private mounted() {
+            this.initChartOptions();
             this.renderChart(this.chartData, Object.assign(this.chartOptionsDef, this.chartOptions));
         }
+
     }
 </script>

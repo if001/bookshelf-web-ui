@@ -233,7 +233,7 @@
 
         private searchBook() {
             this.page = 1;
-            if (this.searchKeyForBook != null && this.searchKeyForBook != '') {
+            if (this.searchKeyForBook != null && this.searchKeyForBook !== '') {
                 this.load(this.page, this.perPage, this.selectSortKey, null, this.searchKeyForBook);
             }
         }
@@ -283,7 +283,7 @@
 
         private toBookDetail(id: number) {
             this.hiddenFab = true;
-            this.$router.push('/bookshelf/' + id.toString())
+            this.$router.push('/bookshelf/' + id.toString());
         }
         private toRegister() {
             this.$router.push('/register');

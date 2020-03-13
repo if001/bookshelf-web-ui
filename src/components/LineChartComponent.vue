@@ -1,12 +1,16 @@
 <script lang="ts">
-    import {Component, Prop, Mixins, Watch } from 'vue-property-decorator';
+    import {Component, Prop, Watch } from 'vue-property-decorator';
     import Chart from 'chart.js';
-    import { Line } from 'vue-chartjs';
+    import { Line, mixins } from 'vue-chartjs';
 
-    @Component({})
-    export default class AnalyticsView extends Mixins(Line) {
-        @Prop() public chartData?: Chart.ChartData;
-        @Prop() public chartOptions?: Chart.ChartOptions;
+    @Component({
+        extends: Line,
+        mixins: [mixins.reactiveProp],
+    })
+    export default class LineChartComponent extends Line {
+        @Prop({ default: {}, type: Object }) public chartData!: Chart.ChartData;
+        @Prop({ default: {}, type: Object }) public chartOptions!: Chart.ChartOptions;
+
 
         private lineChartOptionsDef: Chart.ChartOptions = {
             maintainAspectRatio: false,

@@ -206,13 +206,17 @@
                     const result = res.data as SearchResultGoogle;
                     this.totalCount = result.totalItems;
                     this.searchResultWithCheck = result.items.map((x) => {
-                        const isbnObj =  x.volumeInfo.industryIdentifiers ? x.volumeInfo.industryIdentifiers.filter((x) => x.type === 'ISBN_13') : [];
+                        const isbnObj =  x.volumeInfo.industryIdentifiers ?
+                            x.volumeInfo.industryIdentifiers.filter((f) => f.type === 'ISBN_13') : [];
                         const isbn = isbnObj.length === 1 ? isbnObj[0].identifier : null;
                         const author = x.volumeInfo.authors.length > 0 ? x.volumeInfo.authors[0] : '';
-                        const smallImageUrl = x.volumeInfo.imageLinks && x.volumeInfo.imageLinks.smallThumbnail ? x.volumeInfo.imageLinks.smallThumbnail : '';
-                        const mediumImageUrl = x.volumeInfo.imageLinks && x.volumeInfo.imageLinks.thumbnail ? x.volumeInfo.imageLinks.thumbnail : '';
+                        const smallImageUrl = x.volumeInfo.imageLinks && x.volumeInfo.imageLinks.smallThumbnail ?
+                            x.volumeInfo.imageLinks.smallThumbnail : '';
+                        const mediumImageUrl = x.volumeInfo.imageLinks && x.volumeInfo.imageLinks.thumbnail ?
+                            x.volumeInfo.imageLinks.thumbnail : '';
                         const publisherName = x.volumeInfo.publisher ? x.volumeInfo.publisher : '';
-                        const itemPrice = x.saleInfo.listPrice && x.saleInfo.listPrice.amount ? x.saleInfo.listPrice.amount.toString() : -1;
+                        const itemPrice = x.saleInfo.listPrice && x.saleInfo.listPrice.amount ?
+                            x.saleInfo.listPrice.amount.toString() : -1;
                         const itemCaption = x.volumeInfo.description ? x.volumeInfo.description : '';
                         const content = {
                             isbn,
@@ -227,8 +231,8 @@
                             affiliateUrl: '',
                             itemCaption: x.volumeInfo.description,
                         } as Content;
-                        x.saleInfo.listPrice;
-                        x.saleInfo;
+                        // x.saleInfo.listPrice;
+                        // x.saleInfo;
                         return this.itemToResultWithCheck(content);
                     });
                 })
@@ -440,9 +444,10 @@
                             }
                         });
                         // TODO tmpTokenでは、thenの中の処理中にtokenが失効した場合に死ぬ
-                        const createP: Array<AxiosPromise<ContentResult<Author>>> = notCreateAuthors.map((x: string) => {
-                            return api.author.create(tmpToken, {author_name: x});
-                        });
+                        const createP: Array<AxiosPromise<ContentResult<Author>>> =
+                            notCreateAuthors.map((x: string) => {
+                                return api.author.create(tmpToken, {author_name: x});
+                            });
                         return Promise.all(createP);
                     })
                     .then((res) => {
@@ -485,7 +490,8 @@
                                 }
                             }
                         });
-                        const createP: Array<AxiosPromise<ContentResult<Publisher>>> = notCreatePublishers.map((x: string) => {
+                        const createP: Array<AxiosPromise<ContentResult<Publisher>>>
+                            = notCreatePublishers.map((x: string) => {
                             return api.publisher.create(tmpToken, {publisher_name: x});
                         });
                         return Promise.all(createP);
@@ -551,7 +557,7 @@
                     }
                     this.setAlertMessage( '登録に失敗しました。');
                     this.resetSelectBook();
-                        errorRoute('search component: ' + err.toString());
+                    errorRoute('search component: ' + err.toString());
                 })
                 .finally(() => {
                     this.selectMultiBooks = [];

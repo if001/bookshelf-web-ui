@@ -326,7 +326,7 @@
     @Component({
         components: {
             BookDescription,
-            'ad': AdComponent,
+            ad: AdComponent,
         },
     })
     export default class BookDetailView extends Vue {
@@ -612,7 +612,8 @@
                 const isAuthorChange = (this.authorNameForShow !== this.authorNameForUpdate);
                 let isDateChange = false;
                 if (this.bookForShow.start_at != null && this.bookForEdit.start_at != null) {
-                    isDateChange = (this.bookForShow.start_at.substring(0, 10) !== this.bookForEdit.start_at.substring(0, 10));
+                    isDateChange =
+                        (this.bookForShow.start_at.substring(0, 10) !== this.bookForEdit.start_at.substring(0, 10));
                 }
                 if (this.bookForShow.start_at === null && this.bookForEdit.start_at != null) {
                     isDateChange = true;
@@ -628,8 +629,11 @@
             if (this.bookForShow != null && this.bookForEdit != null) {
                 if (this.isBookEdit()) {
                     this.isUpdatingBook = true;
-                    const authorID: number | null = this.bookForShow.author != null ? this.bookForShow.author.id : null;
-                    const publisherID: number | null = this.bookForShow.publisher != null ? this.bookForShow.publisher.id : null;
+                    const authorID: number | null = this.bookForShow.author != null ?
+                        this.bookForShow.author.id : null;
+
+                    const publisherID: number | null = this.bookForShow.publisher != null ?
+                        this.bookForShow.publisher.id : null;
 
                     let startAt: string | null = null;
                     if (this.bookForEdit.start_at != null) {

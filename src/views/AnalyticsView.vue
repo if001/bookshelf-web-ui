@@ -42,70 +42,70 @@
 
 
         <v-row justify="space-between">
-            <v-col cols="12" class="ma-0 pa-3">
-                <v-card raised>
-                    <v-card-actions class="ma-0 pr-3 pl-3 pb-0 pt-4">
-                        <v-row>
-                            <v-col cols="12" class="pa-0" style="text-align: center">
-                                <v-btn text icon small @click="backMonthly()">
-                                    <v-icon>
-                                        mdi-chevron-left
-                                    </v-icon>
-                                </v-btn>
-                                <span class="pr-2 pl-2" style="font-size: 1.2em;">{{formatMonthly(dailyDate.toISOString())}}</span>
-                                <v-btn text icon small @click="nextMonthly()">
-                                    <v-icon>
-                                        mdi-chevron-right
-                                    </v-icon>
-                                </v-btn>
-                            </v-col>
-                        </v-row>
-                    </v-card-actions>
-                    <bar-chart class="pa-4 pt-0" :chartData="bookDailyChartData" :chartOptions="bookDailyChartOptions"
-                               :height="($vuetify.breakpoint.xs)? 180 : 270"></bar-chart>
-                </v-card>
-            </v-col>
+<!--            <v-col cols="12" class="ma-0 pa-3">-->
+<!--                <v-card raised>-->
+<!--                    <v-card-actions class="ma-0 pr-3 pl-3 pb-0 pt-4">-->
+<!--                        <v-row>-->
+<!--                            <v-col cols="12" class="pa-0" style="text-align: center">-->
+<!--                                <v-btn text icon small @click="backMonthly()">-->
+<!--                                    <v-icon>-->
+<!--                                        mdi-chevron-left-->
+<!--                                    </v-icon>-->
+<!--                                </v-btn>-->
+<!--                                <span class="pr-2 pl-2" style="font-size: 1.2em;">{{formatMonthly(dailyDate.toISOString())}}</span>-->
+<!--                                <v-btn text icon small @click="nextMonthly()">-->
+<!--                                    <v-icon>-->
+<!--                                        mdi-chevron-right-->
+<!--                                    </v-icon>-->
+<!--                                </v-btn>-->
+<!--                            </v-col>-->
+<!--                        </v-row>-->
+<!--                    </v-card-actions>-->
+<!--                    <bar-chart class="pa-4 pt-0" :chartData="bookDailyChartData" :chartOptions="bookDailyChartOptions"-->
+<!--                               :height="($vuetify.breakpoint.xs)? 180 : 270"></bar-chart>-->
+<!--                </v-card>-->
+<!--            </v-col>-->
 
-            <v-col cols="12" lg="4" md="4" sm="4" class="ma-0 pa-3">
-                <v-card raised>
-                    <pie-chart class="pa-3" :chartData="authorChartData" :chartOptions="authorChartOptions"
-                               :height="270"></pie-chart>
-                    <v-divider></v-divider>
-                    <v-card-actions class="ma-0 pr-3 pl-3 pb-0 pt-0">
-                        <v-col cols="5" class="pa-0">
-                            <v-select
-                                    v-model="authorFilterKey"
-                                    :items="topFilter"
-                                    item-text="displayName"
-                                    item-value="topKey"
-                                    dense
-                                    @change="changeAuthorFilter()"
-                                    style="font-size: 0.9em;"
-                            ></v-select>
-                        </v-col>
-                    </v-card-actions>
-                </v-card>
-            </v-col>
-            <v-col cols="12" lg="4" md="4" sm="4" class="ma-0 pa-3">
-                <v-card raised>
-                    <pie-chart class="pa-3" :chartData="publisherChartData" :chartOptions="publisherChartOptions"
-                               :height="270"></pie-chart>
-                    <v-divider></v-divider>
-                    <v-card-actions class="ma-0 pr-3 pl-3 pb-0 pt-0">
-                        <v-col cols="5" class="pa-0">
-                            <v-select
-                                    v-model="publisherFilterKey"
-                                    :items="topFilter"
-                                    item-text="displayName"
-                                    item-value="topKey"
-                                    dense
-                                    @change="changePublisherFilter()"
-                                    style="font-size: 0.9em;"
-                            ></v-select>
-                        </v-col>
-                    </v-card-actions>
-                </v-card>
-            </v-col>
+<!--            <v-col cols="12" lg="4" md="4" sm="4" class="ma-0 pa-3">-->
+<!--                <v-card raised>-->
+<!--                    <pie-chart class="pa-3" :chartData="authorChartData" :chartOptions="authorChartOptions"-->
+<!--                               :height="270"></pie-chart>-->
+<!--                    <v-divider></v-divider>-->
+<!--                    <v-card-actions class="ma-0 pr-3 pl-3 pb-0 pt-0">-->
+<!--                        <v-col cols="5" class="pa-0">-->
+<!--                            <v-select-->
+<!--                                    v-model="authorFilterKey"-->
+<!--                                    :items="topFilter"-->
+<!--                                    item-text="displayName"-->
+<!--                                    item-value="topKey"-->
+<!--                                    dense-->
+<!--                                    @change="changeAuthorFilter()"-->
+<!--                                    style="font-size: 0.9em;"-->
+<!--                            ></v-select>-->
+<!--                        </v-col>-->
+<!--                    </v-card-actions>-->
+<!--                </v-card>-->
+<!--            </v-col>-->
+<!--            <v-col cols="12" lg="4" md="4" sm="4" class="ma-0 pa-3">-->
+<!--                <v-card raised>-->
+<!--                    <pie-chart class="pa-3" :chartData="publisherChartData" :chartOptions="publisherChartOptions"-->
+<!--                               :height="270"></pie-chart>-->
+<!--                    <v-divider></v-divider>-->
+<!--                    <v-card-actions class="ma-0 pr-3 pl-3 pb-0 pt-0">-->
+<!--                        <v-col cols="5" class="pa-0">-->
+<!--                            <v-select-->
+<!--                                    v-model="publisherFilterKey"-->
+<!--                                    :items="topFilter"-->
+<!--                                    item-text="displayName"-->
+<!--                                    item-value="topKey"-->
+<!--                                    dense-->
+<!--                                    @change="changePublisherFilter()"-->
+<!--                                    style="font-size: 0.9em;"-->
+<!--                            ></v-select>-->
+<!--                        </v-col>-->
+<!--                    </v-card-actions>-->
+<!--                </v-card>-->
+<!--            </v-col>-->
 
             <v-col cols="12" lg="4" md="4" sm="4" class="ma-0 pa-3">
                 <v-card raised>

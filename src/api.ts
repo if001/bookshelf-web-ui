@@ -300,7 +300,7 @@ export default {
                 q.push(`isbn:${isbn}`);
             }
             if (q.length !== 0) {
-                p['q'] = q.join('+');
+                p.q = q.join('+');
             }
             console.log(p);
             return Axios.get(googleBookBaseURL,
@@ -426,9 +426,9 @@ export interface CountedTime {
 import {captureMessage, Severity} from '@sentry/browser';
 export function errorRoute(errMsg: string) {
     getToken()
-        .then(token => {
+        .then((token) => {
             // callback(errMsg)
-            console.log("ok")
+            console.log('ok');
         })
         .catch((err) => {
             if (process.env.NODE_ENV === 'production') {
@@ -444,7 +444,7 @@ export interface SearchResultGoogle {
     totalItems: number;
 }
 
-export interface ContentGoogle {    
+export interface ContentGoogle {
     saleInfo: SalesInfo;
     volumeInfo: VolumeInfo;
 }
