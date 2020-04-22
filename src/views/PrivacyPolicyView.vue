@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="header">
-            <div style="margin: auto;margin-left: 13.5px;font-weight: 400;">
+            <div style="margin: auto;margin-left: 13.5px;font-weight: 600;font-size: 1.25em;">
                 <router-link :to="{name:'booksView'}" class="title">{{title}}</router-link>
             </div>
             <v-spacer></v-spacer>

@@ -294,12 +294,12 @@
         <v-fab-transition>
             <v-btn
                     fab
-                    bottom
                     right
                     color="blue"
                     dark
                     fixed
                     v-show="!hiddenFab"
+                    style="bottom: 26px"
                     @click="toListPage()">
                 <v-icon>mdi-arrow-left</v-icon>
             </v-btn>

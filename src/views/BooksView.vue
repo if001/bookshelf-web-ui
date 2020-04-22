@@ -5,12 +5,11 @@
 <!--            <v-tabs fixed-tabs color="#fafafa">-->
         <v-row justify="center" class="pa3">
             <v-col cols="12" lg="8" md="8" sm="8" class="ma-0 pa-0">
-                <v-tabs class="pa-3"
-                        bark
+                <v-tabs bark
                         centered
                         grow
                         show-arrows
-                >
+                        v-bind:class="[brackPointIsXS() ? 'pr-0 pl-0 pt-3 pb-3' : 'pa-3']">
                     <v-tab
                             v-for="f in filterObject"
                             :key="f.displayName"
@@ -23,9 +22,9 @@
         </v-row>
 
         <v-row justify="center" class="pa-0">
-            <v-col cols="12" lg="8" md="8" sm="8" class="ma-0 pa-2">
+            <v-col cols="12" lg="8" md="8" sm="8" class="ma-0 pt-2 pb-2 pr-0 pl-0">
                 <v-row class="ma-0">
-                    <v-col cols="12" lg="8" md="8" sm="8"  class="pl-3 pr-3 pa-0">
+                    <v-col cols="12" lg="6" md="6" sm="6"  class="pl-3 pr-3 pa-0">
                         <v-text-field
                                 text
                                 v-model="searchKeyForBook"
@@ -47,7 +46,7 @@
                             </template>
                         </v-text-field>
                     </v-col>
-                    <v-col cols=12 lg="4" md="4" sm="4" class="pl-3 pr-3 pa-0">
+                    <v-col cols=8 lg="4" md="4" sm="4" class="pl-3 pr-3 pa-0">
                         <v-select
                                 v-model="selectSortKey"
                                 :items="sortObject"
@@ -56,9 +55,19 @@
                                 append-icon="mdi-sort"
                                 label="Sort"
                                 @change="changeSort()"
-                                clear-icon="mdi-close-circle"
-                                clearable
-                                @click:clear="sortKeyRemove()"
+                                return-object
+                        ></v-select>
+                    </v-col>
+                    <v-col cols=4 lg="2" md="2" sm="2" class="pl-3 pr-3 pa-0">
+                        <v-select
+                                v-model="selectDisplayNumber"
+                                :items="displayObject"
+                                item-text="displayName"
+                                item-value="displayValue"
+                                append-icon="mdi-menu-down"
+                                label="Display number"
+                                @change="changePerPage()"
+                                return-object
                         ></v-select>
                     </v-col>
                 </v-row>
@@ -84,16 +93,15 @@
             </div>
 
             <v-col v-else
-                   class="pa-3 pt-2 pb-2"
                    v-for="book in booksShow"
                    :key="book.id"
-                   cols="12" lg="4" md="6" sm="12">
+                   cols="12" lg="4" md="6" sm="12"
+                   v-bind:class="[brackPointIsXS() ? 'pa-0 pt-0 pb-0' : 'pa-3 pt-2 pb-2']">
                 <v-hover>
                     <v-card
                             slot-scope="{ hover }"
-                            :class="`elevation-${hover ? 12 : 2}`"
                             @click="toBookDetail(book.id)"
-                    >
+                            v-bind:class="[brackPointIsXS() ? 'elevation-0' : ` elevation-${hover ? 12 : 2}`  ]">
                         <v-card-title style="font-size: 1.2em;padding-bottom: 0px;">
                             <v-col align-self="center" class="ma-0 pa-0 bot-char">{{book.title}}</v-col>
                             <v-btn
@@ -106,12 +114,13 @@
                                 </v-icon>
                             </v-btn>
                         </v-card-title>
-                        <v-card-text style="font-size: 1.0em;">
+                        <v-card-text style="font-size: 0.8em;">
                             <v-col align-self="center" :class="{ noset_font: (book.author == null)}" class="ma-0 pa-0">
                                 {{ (book.author != null) ? book.author.name : "not set" }}
                                 ({{ (book.publisher != null) ? book.publisher.name : "not set" }})
                             </v-col>
                         </v-card-text>
+                        <v-divider v-if="brackPointIsXS()"></v-divider>
                     </v-card>
                 </v-hover>
             </v-col>
@@ -131,12 +140,12 @@
         <v-fab-transition>
             <v-btn
                     fab
-                    bottom
                     right
                     color="pink"
                     dark
                     fixed
                     v-show="!hiddenFab"
+                    style="bottom: 26px"
                     @click="toRegister()">
                 <v-icon>mdi-plus</v-icon>
             </v-btn>
@@ -159,7 +168,7 @@
         private books: Book[] = [];
         private totalCount: number = 0;
         private page = 1;
-        private perPage: number = 16;
+        private perPage: number = 15;
         private loading: boolean = true;
 
         private createModalIsOpen: boolean = false;
@@ -172,7 +181,7 @@
             {sortKey: 'author_id', displayName: '作者'},
             {sortKey: 'publisher_id', displayName: '出版社'},
         ];
-        private selectSortKey = '';
+        private selectSortKey = {sortKey: 'updated_at', displayName: '更新日'};
         private filterObject = [
             {filterKey: null, displayName: 'ALL', icon: ''},
             {filterKey: 'not_read', displayName: '未読', icon: 'fa-book'},
@@ -180,10 +189,17 @@
             {filterKey: 'read', displayName: '読了', icon: 'mdi-check'},
         ];
         private selectStateFilter: string | null = null;
+        private displayObject = [
+            {displayValue: 15, displayName: '15'},
+            {displayValue: 30, displayName: '30'},
+            {displayValue: 45, displayName: '45'},
+        ];
+        private selectDisplayNumber =  {displayValue: 15, displayName: '15'};
+
         private searchKeyForBook: string | null = null;
 
         public mounted() {
-            this.load(this.page, this.perPage, this.selectSortKey, this.selectStateFilter, this.searchKeyForBook);
+            this.load(this.page, this.perPage, this.selectSortKey.sortKey, this.selectStateFilter, this.searchKeyForBook);
             toTop();
         }
 
@@ -232,13 +248,13 @@
         private searchBook() {
             this.page = 1;
             if (this.searchKeyForBook != null && this.searchKeyForBook !== '') {
-                this.load(this.page, this.perPage, this.selectSortKey, null, this.searchKeyForBook);
+                this.load(this.page, this.perPage, this.selectSortKey.sortKey, null, this.searchKeyForBook);
             }
         }
 
         private searchKeyRemove() {
             this.searchKeyForBook = null;
-            this.load(this.page, this.perPage, this.selectSortKey, this.selectStateFilter, this.searchKeyForBook);
+            this.load(this.page, this.perPage, this.selectSortKey.sortKey, this.selectStateFilter, this.searchKeyForBook);
         }
 
         private bookState(startAt: string | null, endAt: string | null) {
@@ -253,24 +269,24 @@
 
         private changeSort() {
             this.page = 1;
-            this.load(this.page, this.perPage, this.selectSortKey, this.selectStateFilter, this.searchKeyForBook);
+            this.load(this.page, this.perPage, this.selectSortKey.sortKey, this.selectStateFilter, this.searchKeyForBook);
         }
 
-        private sortKeyRemove() {
-            this.page = 1;
-            this.selectSortKey = '';
-            this.load(this.page, this.perPage, this.selectSortKey, this.selectStateFilter, this.searchKeyForBook);
+        private changePerPage() {
+            this.perPage = this.selectDisplayNumber.displayValue;
+            this.load(this.page, this.perPage, this.selectSortKey.sortKey, this.selectStateFilter, this.searchKeyForBook);
+            toTop();
         }
 
         private changeFilter(filter: string) {
             this.selectStateFilter = filter;
             this.page = 1;
-            this.load(this.page, this.perPage, this.selectSortKey, this.selectStateFilter, this.searchKeyForBook);
+            this.load(this.page, this.perPage, this.selectSortKey.sortKey, this.selectStateFilter, this.searchKeyForBook);
             toTop();
         }
 
         private pagenaite() {
-            this.load(this.page, this.perPage, this.selectSortKey, this.selectStateFilter, this.searchKeyForBook);
+            this.load(this.page, this.perPage, this.selectSortKey.sortKey, this.selectStateFilter, this.searchKeyForBook);
             toTop();
         }
 
@@ -285,6 +301,10 @@
         }
         private toRegister() {
             this.$router.push('/register');
+        }
+
+        private brackPointIsXS(): boolean {
+            return this.$vuetify.breakpoint.name === 'xs';
         }
     }
     function toTop() {
