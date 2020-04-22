@@ -6,14 +6,12 @@
         <v-row justify="center" class="pa3">
             <v-col cols="12" lg="8" md="8" sm="8" class="ma-0 pa-0">
                 <v-tabs class="pa-3"
-                        background-color="grey lighten-5"
                         bark
                         centered
                         grow
                         show-arrows
                 >
                     <v-tab
-                            color="grey lighten-5"
                             v-for="f in filterObject"
                             :key="f.displayName"
                             @change="changeFilter(f.filterKey)"
