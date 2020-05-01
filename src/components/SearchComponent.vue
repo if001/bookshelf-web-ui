@@ -11,23 +11,24 @@
                         >
                     <v-text-field
                             flat
-                            label="Search From Title"
+                            label="Search By Title"
                             v-model="inputTitleForSearch"
-                            :roles="searchFormRules"
                             required
-                            @click="scrollBox('title_box')"
                     ></v-text-field>
-
                     <v-text-field
                             flat
-                            label="Search From Author"
+                            label="Search By Author"
                             v-model="inputAuthorForSearch"
-                            :roles="searchFormRules"
                             required
-                            @click="scrollBox('author_box')"
+                    ></v-text-field>
+                    <v-text-field
+                            flat
+                            label="Search By ISBN(10桁)"
+                            v-model="inputISBNForSearch"
+                            required
                     ></v-text-field>
                     <div align="center">
-                        <v-btn v-if="inputTitleForSearch.length !== 0 || inputAuthorForSearch.length !== 0"
+                        <v-btn v-if="inputTitleForSearch.length !== 0 || inputAuthorForSearch.length !== 0 || inputISBNForSearch.length !== 0"
                             type="submit"
                             outlined
                             :loading="isSearchLoading">                    
@@ -175,6 +176,8 @@
         private isSearchLoading: boolean = false;
         private inputTitleForSearch: string = '';
         private inputAuthorForSearch: string = '';
+        private inputISBNForSearch: string = '';
+
         private searchType = 'title';
         private rakutenSearchRepo: RakutenSearchRepository | null = null;
 
@@ -191,10 +194,6 @@
         private message: string = '';
         private message2: string = '';
 
-        private searchFormRules = [
-            (v: any) => !!v || 'required',
-        ];
-
         @Emit()
         private select(book: Content) {}
 
@@ -207,6 +206,7 @@
             this.rakutenSearchRepo = new RakutenSearchRepository(
                 this.inputTitleForSearch,
                 this.inputAuthorForSearch,
+                this.inputISBNForSearch,
             );
             this.searchByRakuten();
         }
@@ -514,22 +514,39 @@
     class RakutenSearchRepository {
         private readonly title: string;
         private readonly author: string;
+        private readonly isbn: string;
 
-        constructor(title: string, author: string) {
+        constructor(title: string, author: string, isbn: string) {
             this.title = title;
             this.author = author;
+            this.isbn = isbn;
         }
 
         public search<T>(page: number, perPage: number): Promise<AxiosResponse<T>> | null {
-            if (this.title.length !== 0 && this.author.length === 0) {
+            if (this.isISBN()) {
+                return api.rakuten.searchByISBN(this.isbn);
+            } else if (this.isTitle()) {
                 return api.rakuten.searchByTitle(this.title, page, perPage);
-            } else if (this.title.length === 0 && this.author.length !== 0) {
+            } else if (this.isAuthor()) {
                 return api.rakuten.searchByAuthor(this.author, page, perPage);
-            } else if (this.title.length !== 0 && this.author.length !== 0) {
+            } else if (this.isTitleAndAuthor()) {
                 return api.rakuten.search(this.title, this.author, page, perPage, null);
             } else {
                 return null;
             }
+        }
+
+        private isTitle(): boolean {
+            return (this.title.length !== 0 && this.author.length === 0 && this.isbn.length === 0);
+        }
+        private isAuthor(): boolean {
+            return (this.title.length === 0 && this.author.length !== 0 && this.isbn.length !== 0);
+        }
+        private isISBN(): boolean {
+            return this.isbn.length !== 0;
+        }
+        private isTitleAndAuthor(): boolean {
+            return (this.title.length !== 0 && this.author.length !== 0 && this.isbn.length === 0);
         }
     }
 
