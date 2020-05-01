@@ -196,7 +196,7 @@
                     <v-divider light></v-divider>
 
                     <v-row column justify-end class="ma-0 pr-2 pl-2 pt-1 pb-1" v-if="!isOpen">
-                        <v-col class="pa-0">
+                        <v-col class="pa-0" cols="4">
                             <div v-if="createTwitterURL() != null" class="twitter-link share-button">
                                 <a :href="createTwitterURL()"
                                    onClick="window.open(encodeURI(decodeURI(this.href)), 'tweetwindow', 'width=650, height=470, personalbar=0, toolbar=0, scrollbars=1, sizable=1'); return false;"
@@ -210,6 +210,9 @@
                                 <img src="@/assets/twitter-icon-96-disable.png" alt="twittericon" height="24px" style="vertical-align: middle; padding: 2px">
                                 Share
                             </div>
+                        </v-col>
+                        <v-col class="pa-0" style="height: 100%">
+                            hoge
                         </v-col>
                     </v-row>
 
@@ -875,7 +878,7 @@
     }
 
     .share-button {
-        width: 100px;
+        /*width: 100px;*/
     }
     @-moz-keyframes loader {
         from {

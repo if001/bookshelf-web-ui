@@ -204,81 +204,6 @@ export default {
             });
         },
     },
-    rakuten: {
-        search(title: string, author: string, page: number, perPage: number, sort: string | null) {
-            const p: { [key: string]: any; } = {
-                applicationId: appID,
-                affiliateId,
-                page,
-                hits: perPage,
-                title,
-                author,
-            };
-            if (sort != null) {
-                p.sort = sort;
-            }
-            return Axios.get(rakutenBaseURL,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    params: p,
-                },
-            );
-        },
-        searchByTitle(title: string, page: number, perPage: number) {
-            const p: { [key: string]: any; } = {
-                applicationId: appID,
-                affiliateId,
-                page,
-                hits: perPage,
-                title,
-            };
-
-            return Axios.get(rakutenBaseURL,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    params: p,
-                },
-            );
-        },
-        searchByAuthor(author: string, page: number, perPage: number) {
-            const p: { [key: string]: any; } = {
-                applicationId: appID,
-                affiliateId,
-                page,
-                hits: perPage,
-                author,
-            };
-
-            return Axios.get(rakutenBaseURL,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    params: p,
-                },
-            );
-        },
-        searchByISBN(isbn: string) {
-            const p: { [key: string]: any; } = {
-                applicationId: appID,
-                affiliateId,
-                isbn,
-            };
-
-            return Axios.get(rakutenBaseURL,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    params: p,
-                },
-            );
-        },
-    },
     googleBook: {
         search(title: string | null, author: string | null, isbn: string | null, page: number, perPage: number) {
             const p: { [key: string]: any; } = {
@@ -314,10 +239,6 @@ export default {
         },
     },
 };
-
-const rakutenBaseURL = 'https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404';
-const appID = '1035362638897131844';
-const affiliateId = '188fe732.33eb93bf.188fe733.aaced19b';
 
 const googleBookBaseURL = 'https://www.googleapis.com/books/v1/volumes';
 
@@ -387,30 +308,6 @@ export interface Publisher {
     id: number;
     name: string;
     count: number;
-}
-
-export interface SearchResult {
-    Items: Contents[];
-    page: number;
-    pageCount: number;
-}
-
-export interface Contents {
-    Item: Content;
-}
-
-export interface Content {
-    isbn: string;
-    title: string;
-    author: string;
-    smallImageUrl: string;
-    mediumImageUrl: string;
-    largeImageUrl: string;
-    publisherName: string;
-    itemPrice: string;
-    itemUrl: string;
-    affiliateUrl: string;
-    itemCaption: string;
 }
 
 export interface CountedName {

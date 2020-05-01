@@ -152,8 +152,9 @@
 <script lang="ts">
     import {Component, Prop, Vue} from 'vue-property-decorator';
     import SearchComponent from '@/components/SearchComponent.vue';
-    import api, {Author, Category, Content, errorRoute, getToken, Publisher} from '../api';
+    import api, {Author, Category, errorRoute, getToken, Publisher} from '@/api';
     import Footer from '@/components/Footer.vue';
+    import {Content} from '@/rakutenAPI';
 
     interface CategoryWithChip extends Category {
         chip: boolean;

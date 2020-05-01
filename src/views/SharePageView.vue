@@ -94,7 +94,8 @@
 
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
-    import api, {Content, SearchResult, getToken, Book} from '../api';
+    import api, {getToken, Book} from '../api';
+    import rakutenAPI, {Content, makeEmptyQuery, SearchResult} from '../rakutenAPI';
 
     @Component
     export default class SharePageView extends Vue {
@@ -120,7 +121,9 @@
                     });
                 })
                 .then((isbn: string) => {
-                    return api.rakuten.searchByISBN(isbn);
+                    const query = makeEmptyQuery();
+                    query.setISBN(isbn);
+                    return rakutenAPI.search(query);
                 })
                 .then((res) => {
                     const result  = res.data as SearchResult;
