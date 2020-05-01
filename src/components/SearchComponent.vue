@@ -149,7 +149,7 @@
 <script lang="ts">
     import {Component, Emit, Vue} from 'vue-property-decorator';
     import api, {SearchResult, Content, Author, Publisher, ContentResult, getToken, errorRoute, SearchResultGoogle} from '../api';
-    import {AxiosPromise} from 'axios';
+    import {AxiosPromise, AxiosResponse} from 'axios';
 
     export interface SearchResultWithCheck {
         isbn: string;
@@ -176,6 +176,8 @@
         private inputTitleForSearch: string = '';
         private inputAuthorForSearch: string = '';
         private searchType = 'title';
+        private rakutenSearchRepo: RakutenSearchRepository | null = null;
+
         private page: number = 1;
         private perPage: number = 18;
         private totalCount: number = 1;
@@ -200,76 +202,40 @@
             toTop();
         }
 
-        private searchBookByGoogle() {
-            api.googleBook.search(this.inputTitleForSearch, this.inputAuthorForSearch, null, this.page, this.perPage)
-                .then((res) => {
-                    const result = res.data as SearchResultGoogle;
-                    this.totalCount = result.totalItems;
-                    this.searchResultWithCheck = result.items.map((x) => {
-                        const isbnObj =  x.volumeInfo.industryIdentifiers ?
-                            x.volumeInfo.industryIdentifiers.filter((f) => f.type === 'ISBN_13') : [];
-                        const isbn = isbnObj.length === 1 ? isbnObj[0].identifier : null;
-                        const author = x.volumeInfo.authors.length > 0 ? x.volumeInfo.authors[0] : '';
-                        const smallImageUrl = x.volumeInfo.imageLinks && x.volumeInfo.imageLinks.smallThumbnail ?
-                            x.volumeInfo.imageLinks.smallThumbnail : '';
-                        const mediumImageUrl = x.volumeInfo.imageLinks && x.volumeInfo.imageLinks.thumbnail ?
-                            x.volumeInfo.imageLinks.thumbnail : '';
-                        const publisherName = x.volumeInfo.publisher ? x.volumeInfo.publisher : '';
-                        const itemPrice = x.saleInfo.listPrice && x.saleInfo.listPrice.amount ?
-                            x.saleInfo.listPrice.amount.toString() : -1;
-                        const itemCaption = x.volumeInfo.description ? x.volumeInfo.description : '';
-                        const content = {
-                            isbn,
-                            title: x.volumeInfo.title,
-                            author,
-                            smallImageUrl,
-                            mediumImageUrl,
-                            largeImageUrl: mediumImageUrl,
-                            publisherName,
-                            itemPrice,
-                            itemUrl: '',
-                            affiliateUrl: '',
-                            itemCaption: x.volumeInfo.description,
-                        } as Content;
-                        // x.saleInfo.listPrice;
-                        // x.saleInfo;
-                        return this.itemToResultWithCheck(content);
-                    });
-                })
-                .catch((err) => {
-                    console.log(err);
-                    this.setAlertMessage('検索エラー');
-                });
-        }
-
         private searchBook() {
             this.resetAlertMessage();
-            if (this.inputTitleForSearch.length !== 0 && this.inputAuthorForSearch.length !== 0) {
-                this.searchTitleAndAuthor();
-            } else if (this.inputTitleForSearch.length !== 0 && this.inputAuthorForSearch.length === 0) {
-                this.searchTitle();
-            } else if (this.inputTitleForSearch.length === 0 && this.inputAuthorForSearch.length !== 0) {
-                this.searchAuthor();
-            } else {
-                this.setAlertMessage('入力してください');
-            }
+            this.rakutenSearchRepo = new RakutenSearchRepository(
+                this.inputTitleForSearch,
+                this.inputAuthorForSearch,
+            );
+            this.searchByRakuten();
         }
 
-        private searchTitleAndAuthor() {
+
+        private searchByRakuten() {
             toTop();
             this.isSearchLoading = true;
             this.alert = false;
-            this.searchType = 'title';
-            api.rakuten.search(this.inputTitleForSearch, this.inputAuthorForSearch, this.page, this.perPage, null)
-                .then((res) => {
+            this.searchType = 'author';
+
+            if (!this.rakutenSearchRepo) {
+                return;
+            }
+            const searchFun = this.rakutenSearchRepo.search(this.page, this.perPage);
+            if (searchFun == null) {
+                this.setAlertMessage('入力してください');
+                return;
+            }
+
+            searchFun.then((res) => {
                     this.searchResult = res.data as SearchResult;
                     this.totalCount = this.searchResult.pageCount;
                     this.searchResultWithCheck = this.searchResult.Items.map((x) => {
                         return this.itemToResultWithCheck(x.Item);
                     });
                 })
-                .catch((err) => {
-                    console.log(err);
+                .catch((e) => {
+                    console.log(e);
                     this.setAlertMessage('検索エラー');
                     // console.log('search api error');
                 })
@@ -278,53 +244,6 @@
                 });
         }
 
-        private searchTitle() {
-            if (this.inputTitleForSearch.length !== 0) {
-                toTop();
-                this.isSearchLoading = true;
-                this.alert = false;
-                this.searchType = 'title';
-                api.rakuten.searchByTitle(this.inputTitleForSearch, this.page, this.perPage)
-                    .then((res) => {
-                        this.searchResult = res.data as SearchResult;
-                        this.totalCount = this.searchResult.pageCount;
-                        this.searchResultWithCheck = this.searchResult.Items.map((x) => {
-                            return this.itemToResultWithCheck(x.Item);
-                        });
-                    })
-                    .catch(() => {
-                        this.setAlertMessage('検索エラー');
-                        // console.log('search api error');
-                    })
-                    .finally(() => {
-                        this.isSearchLoading = false;
-                    });
-            }
-        }
-
-        private searchAuthor() {
-            if (this.inputAuthorForSearch.length !== 0) {
-                toTop();
-                this.isSearchLoading = true;
-                this.alert = false;
-                this.searchType = 'author';
-                api.rakuten.searchByAuthor(this.inputAuthorForSearch, this.page, this.perPage)
-                    .then((res) => {
-                        this.searchResult = res.data as SearchResult;
-                        this.totalCount = this.searchResult.pageCount;
-                        this.searchResultWithCheck = this.searchResult.Items.map((x) => {
-                            return this.itemToResultWithCheck(x.Item);
-                        });
-                    })
-                    .catch(() => {
-                        this.setAlertMessage('検索エラー');
-                        // console.log('search api error');
-                    })
-                    .finally(() => {
-                        this.isSearchLoading = false;
-                    });
-            }
-        }
         private itemToResultWithCheck(item: Content): SearchResultWithCheck {
             return {
                 isbn: item.isbn,
@@ -346,13 +265,7 @@
         }
 
         private pagenaite() {
-            if (this.searchType === 'title') {
-                this.searchTitle();
-            } else if (this.searchType === 'author') {
-                this.searchAuthor();
-            } else {
-                console.log('bad search type');
-            }
+            this.searchByRakuten();
         }
 
         private selectBook(book: SearchResultWithCheck) {
@@ -596,6 +509,30 @@
     function toTop() {
         window.scrollTo(0, 0);
     }
+
+
+    class RakutenSearchRepository {
+        private readonly title: string;
+        private readonly author: string;
+
+        constructor(title: string, author: string) {
+            this.title = title;
+            this.author = author;
+        }
+
+        public search<T>(page: number, perPage: number): Promise<AxiosResponse<T>> | null {
+            if (this.title.length !== 0 && this.author.length === 0) {
+                return api.rakuten.searchByTitle(this.title, page, perPage);
+            } else if (this.title.length === 0 && this.author.length !== 0) {
+                return api.rakuten.searchByAuthor(this.author, page, perPage);
+            } else if (this.title.length !== 0 && this.author.length !== 0) {
+                return api.rakuten.search(this.title, this.author, page, perPage, null);
+            } else {
+                return null;
+            }
+        }
+    }
+
 </script>
 
 <style scoped>
