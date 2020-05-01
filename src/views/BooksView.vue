@@ -1,20 +1,17 @@
 <template>
-    <!--<v-container  style="height: 1000px;">-->
-<!--    <div>-->
     <v-container v-bind:class="{ xs_height: $vuetify.breakpoint.xs}">
-<!--            <v-tabs fixed-tabs color="#fafafa">-->
-        <v-row justify="center" class="pa3">
-            <v-col cols="12" lg="8" md="8" sm="8" class="ma-0 pa-0">
+        <v-row justify="center" class="pa-0 pa-0">
+            <v-col cols="12" class="ma-0 pa-0">
                 <v-tabs bark
                         centered
                         grow
                         show-arrows
                         v-bind:class="[brackPointIsXS() ? 'pr-0 pl-0 pt-3 pb-3' : 'pa-3']">
-                    <v-tab
+                    <v-tab class="pa-0 pb-3"
                             v-for="f in filterObject"
                             :key="f.displayName"
                             @change="changeFilter(f.filterKey)"
-                            class="ma-0 pa-0">
+                            >
                         <span class="mr-2">{{ f.displayName }}</span><v-icon small>{{f.icon}}</v-icon>
                     </v-tab>
                 </v-tabs>
@@ -22,7 +19,7 @@
         </v-row>
 
         <v-row justify="center" class="pa-0">
-            <v-col cols="12" lg="8" md="8" sm="8" class="ma-0 pt-2 pb-2 pr-0 pl-0">
+            <v-col cols="12" class="ma-0 pb-2 pr-0 pl-0">
                 <v-row class="ma-0">
                     <v-col cols="12" lg="6" md="6" sm="6"  class="pl-3 pr-3 pa-0">
                         <v-text-field
@@ -36,7 +33,7 @@
                                 @click:clear="searchKeyRemove()">
                             <template v-slot:append-outer>
                                 <v-tooltip
-                                    bottom
+                                        bottom
                                 >
                                     <template v-slot:activator="{ on }">
                                         <v-icon v-on="on" @click="searchBook()">mdi-magnify</v-icon>
@@ -91,38 +88,46 @@
                     </v-btn>
                 </div>
             </div>
-
-            <v-col v-else
-                   v-for="book in booksShow"
-                   :key="book.id"
-                   cols="12" lg="4" md="6" sm="12"
-                   v-bind:class="[brackPointIsXS() ? 'pa-0 pt-0 pb-0' : 'pa-3 pt-2 pb-2']">
-                <v-hover>
-                    <v-card
-                            slot-scope="{ hover }"
-                            @click="toBookDetail(book.id)"
-                            v-bind:class="[brackPointIsXS() ? 'elevation-0' : ` elevation-${hover ? 12 : 2}`  ]">
-                        <v-card-title style="font-size: 1.2em;padding-bottom: 0px;">
-                            <v-col align-self="center" class="ma-0 pa-0 bot-char">{{book.title}}</v-col>
-                            <v-btn
-                                    text
-                                    icon
-                                    color="dark">
-                                <v-icon large
-                                        color="blue-grey darken-1"
-                                    >{{ bookState(book.start_at, book.end_at).icon }}
-                                </v-icon>
-                            </v-btn>
-                        </v-card-title>
-                        <v-card-text style="font-size: 0.8em;">
-                            <v-col align-self="center" :class="{ noset_font: (book.author == null)}" class="ma-0 pa-0">
-                                {{ (book.author != null) ? book.author.name : "not set" }}
-                                ({{ (book.publisher != null) ? book.publisher.name : "not set" }})
-                            </v-col>
-                        </v-card-text>
-                        <v-divider v-if="brackPointIsXS()"></v-divider>
-                    </v-card>
-                </v-hover>
+            <v-col v-else cols="12" class="ma-0 pa-0">
+                <v-row class="ma-0 pa-0 pb-3">
+                    <v-col class="ma-0 pa-0" align="center" style="font-size:0.875rem; color:  rgba(0, 0, 0, 0.6);">
+                        <span>登録数:</span>
+                        <span class="pl-2" style="font-size: 1.5em;">{{totalCount}}</span>
+                    </v-col>
+                </v-row>
+                <v-row class="ma-0 pa-0">
+                    <v-col v-for="book in booksShow"
+                           :key="book.id"
+                           cols="12" lg="4" md="6" sm="12"
+                           v-bind:class="[brackPointIsXS() ? 'pa-0 pt-0 pb-0' : 'pa-3 pt-2 pb-2']">
+                        <v-hover>
+                            <v-card
+                                    slot-scope="{ hover }"
+                                    @click="toBookDetail(book.id)"
+                                    v-bind:class="[brackPointIsXS() ? 'elevation-0' : ` elevation-${hover ? 12 : 2}`  ]">
+                                <v-card-title style="font-size: 1.2em;padding-bottom: 0px;">
+                                    <v-col align-self="center" class="ma-0 pa-0 bot-char">{{book.title}}</v-col>
+                                    <v-btn
+                                            text
+                                            icon
+                                            color="dark">
+                                        <v-icon large
+                                                color="blue-grey darken-1"
+                                            >{{ bookState(book.start_at, book.end_at).icon }}
+                                        </v-icon>
+                                    </v-btn>
+                                </v-card-title>
+                                <v-card-text style="font-size: 0.8em;">
+                                    <v-col align-self="center" :class="{ noset_font: (book.author == null)}" class="ma-0 pa-0">
+                                        {{ (book.author != null) ? book.author.name : "not set" }}
+                                        ({{ (book.publisher != null) ? book.publisher.name : "not set" }})
+                                    </v-col>
+                                </v-card-text>
+                                <v-divider v-if="brackPointIsXS()"></v-divider>
+                            </v-card>
+                        </v-hover>
+                    </v-col>
+                </v-row>
             </v-col>
         </v-row>
 
@@ -151,7 +156,6 @@
             </v-btn>
         </v-fab-transition>
     </v-container>
-    <!--    </div>-->
 </template>
 
 <script lang="ts">
