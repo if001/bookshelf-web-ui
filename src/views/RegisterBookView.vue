@@ -12,12 +12,10 @@
             <v-row cols="8" justify="center">
                 <v-col lg="8" md="8" sm="8" xs="8">
                     <v-tabs v-model="selectTab"
-                            background-color="grey lighten-5"
                             bark
                             :centered="true"
                             :grow="true">
                         <v-tab
-                                color="grey lighten-5"
                                 v-for="f in tabObject"
                                 :key="f.displayName"
                                 @click="changeTab(f.tag)"
