@@ -221,11 +221,13 @@
             this.alert = false;
 
             if (!this.rakutenSearchQuery) {
+                this.isSearchLoading = false;
                 return;
             }
             if (this.inputAuthorForSearch.length === 0 && this.inputTitleForSearch.length === 0
                 && this.inputISBNForSearch.length === 0) {
                 this.setAlertMessage('入力してください');
+                this.isSearchLoading = false;
                 return;
             }
             rakutenAPI.search(this.rakutenSearchQuery)
