@@ -1,13 +1,10 @@
 <template>
     <v-app light>
-        <v-container>
+        <v-container style="height: 100%;">
             <v-row justify="center">
-                <v-col lg="8" md="8" sm="8" xs="8">
-                    <div  style="text-align: center;">
-                        <img src="@/assets/logo.png" width="30%">
-                    </div>
-                    <div class="login-title">
-                        Simple Manage Your Books!
+                <v-col cols="12" lg="8" md="8">
+                    <div class="display-1" style="text-align: center; color: dimgrey;">
+                        ログイン
                     </div>
                 </v-col>
             </v-row>
@@ -49,9 +46,9 @@
                                 @click:append="showPassword = !showPassword"
                                 prepend-icon="mdi-lock"
                                 required
-                        ></v-text-field>            
+                        ></v-text-field>
                         <v-btn type="submit" :loading="isLoading" block color="#1E90FF" dark>
-                            Login
+                            ログイン
                         </v-btn>
                     </v-form>
                 </v-col>
@@ -61,7 +58,7 @@
             <v-row justify="center">
                 <v-col>
                     <div class="create-account-link pa-2">
-                        <router-link to="/reset_password">Forgot Password?</router-link>
+                        <router-link to="/reset_password">パスワードを忘れた場合</router-link>
                     </div>
                 </v-col>
             </v-row>
@@ -69,8 +66,8 @@
             <v-row justify="center">
                 <v-col>
                     <div class="create-account-link pa-2">
-                        Don't have an account?
-                        <router-link to="/signup">Create account</router-link>
+                        アカウントがない場合
+                        <router-link to="/signup">アカウントを登録する</router-link>
                     </div>
                 </v-col>
             </v-row>

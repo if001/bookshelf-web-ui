@@ -1,10 +1,10 @@
 <template>
     <v-app light>
-        <v-container text-xs-center>
+        <v-container text-xs-center style="height: 100%">
             <v-row justify="center">
                 <v-col cols="8">
-                    <div class="login-title">
-                        Create New Account
+                    <div class="display-1" style="color:dimgrey; text-align: center">
+                        BookStorage に新規登録
                     </div>
                 </v-col>
             </v-row>
@@ -31,14 +31,14 @@
                                 required
                         ></v-text-field>
                         <v-btn type="submit" block color="#ee82ee" dark>
-                            sign up
+                            登録
                         </v-btn>
                     </v-form>
                 </v-col>
             </v-row>
 
              <v-row justify="center" v-if="alert">
-                <v-col lg="6" md="6" sm="6" xs="12" class="pa-1" >
+                <v-col cols="6" lg="6" md="6" class="pa-1" >
                     <v-alert
                             v-if="alert"
                             v-model="alert"
@@ -53,12 +53,13 @@
             </v-row>
 
             <v-row justify="center">
-                <v-flex lg12 md12 sm12 xs12>
+                <v-col cols="12" stretch>
                     <div class="create-account-link pa-3">
-                        Already have an account?
-                        <router-link to="/login">Log in here</router-link>
+                        登録済みの場合は
+                        <router-link to="/login">こちらからログイン</router-link>
+                        できます。
                     </div>
-                </v-flex>
+                </v-col>
             </v-row>
 
         </v-container>
@@ -148,7 +149,6 @@
         color: dimgray;
         font-size: 1.8em;
         font-weight: 600;
-        font-family: Roboto, sans-serif;
         padding: 15px;
         text-align: center;
     }

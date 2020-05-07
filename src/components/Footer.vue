@@ -11,7 +11,10 @@
     <!--</v-footer>-->
 
 <!--    v-bind:class="{ active: isActive }"-->
-    <div v-bind:class="{ footer_main: !$vuetify.breakpoint.xs, footer_main_sx: $vuetify.breakpoint.xs }">
+    <div v-bind:class="
+    [{ footer_main: !$vuetify.breakpoint.xs, footer_main_sx: $vuetify.breakpoint.xs },
+    { forceFixed: isForceFixed },
+    ]">
         <div style="color: lightgrey;margin: auto">
             <router-link class="policy" to="/policy">privacy policy</router-link>
             <span class="vertical-line">|</span>
@@ -24,10 +27,13 @@
 </template>
 
 <script lang="ts">
-    import { Component, Vue } from 'vue-property-decorator';
+    import {Component, Prop, Vue} from 'vue-property-decorator';
+
 
     @Component
     export default class Footer extends Vue {
+        @Prop({default: false}) private isForceFixed!: boolean;
+
         private version: string = '0.3.3';
     }
 
@@ -54,6 +60,10 @@
         background-color: gray;
         justify-content:space-around;
         font-size: 0.8em;
+    }
+    .forceFixed {
+        position: absolute;
+        bottom: 0px;
     }
 
     .policy {

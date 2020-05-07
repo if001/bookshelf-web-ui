@@ -1,17 +1,17 @@
 <template>
     <v-app light>
-        <v-container>
+        <v-container style="height: 100%;">
             <v-row justify="center">
-                <v-col cols="8">
+                <v-col cols="12" lg="8" md="8">
                     <div class="login-title">
-                        Forgot your Password?
+                        パスワードをリセットします
                     </div>
                 </v-col>
             </v-row>
 
             <v-row justify="center">
                 <v-col cols="10" lg="4" md="4" sm="4">
-                    <div style="text-align: center;">Send email to reset your password.</div>
+                    <div style="text-align: center;">パスワードをリセットするためにメールを送信します。</div>
                     <v-form lazy-validation 
                             v-model="valid"
                             ref="form"
@@ -50,8 +50,9 @@
             <v-row justify="center">
                 <v-col cols="12">
                     <div class="create-account-link pa-3">
-                        Already have an account?
-                        <router-link to="/login">Log in here</router-link>
+                        すでにアカウントを持っている場合
+                        <router-link to="/login">こちらからログイン</router-link>
+                        できます
                     </div>
                 </v-col>
             </v-row>

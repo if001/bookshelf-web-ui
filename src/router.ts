@@ -3,6 +3,7 @@ import Router from 'vue-router';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 
+
 const MainViews = () => import('@/views/MainViews.vue');
 const LoginViews = () => import('@/views/LoginViews.vue');
 const SignUpViews = () => import('@/views/SignUpView.vue');
@@ -13,6 +14,7 @@ const RegisterBookViews = () => import('@/views/RegisterBookView.vue');
 const BookDetailView = () => import('@/views/BookDetailView.vue');
 const SharePageView = () => import('@/views/SharePageView.vue');
 const AnalyticsView = () => import('@/views/AnalyticsView.vue');
+const LandingView = () => import('@/views/LandingView.vue');
 
 Vue.use(Router);
 
@@ -21,12 +23,12 @@ const router = new Router({
     base: process.env.BASE_URL,
     routes: [
         {
-            path: '/login',
-            name: 'loginViews',
-            component: LoginViews,
+            path: '/',
+            component: LandingView,
         },
         {
-            path: '/',
+            path: '/login',
+            name: 'loginViews',
             component: LoginViews,
         },
         {
