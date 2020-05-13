@@ -64,6 +64,8 @@
             const user = firebase.auth().currentUser;
             if (user && user.displayName) {
                 return user.displayName;
+            } else if (user && user.email) {
+                return user.email;
             } else {
                 return '';
             }

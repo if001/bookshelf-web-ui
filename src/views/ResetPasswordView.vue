@@ -24,7 +24,7 @@
                                 prepend-icon="mdi-email"
                                 required
                         ></v-text-field>
-                        <v-btn block color="#dc143c" dark>
+                        <v-btn block color="#dc143c" type="submit" dark>
                             Reset Password
                         </v-btn>
                     </v-form>
@@ -87,17 +87,19 @@
             if (!this.validateInput()) {
                 return;
             }
-            firebase.auth().sendPasswordResetEmail(this.email).then((res) => {
-                const ans = confirm('ご登録のメールアドレスに再設定のリンクを送付いたしました。');
-                if (ans) {
-                    this.$router.replace('/login');
-                }
-            }).catch((err) => {
-                this.message = 'ご登録のアドレスがございません。再度メールアドレスのご確認をお願いします。';
-                // alert('ログインエラー');
-                // console.log(err);
-                this.alert = true;
-            });
+            firebase.auth().sendPasswordResetEmail(this.email)
+                .then((res) => {
+                    const ans = confirm('ご登録のメールアドレスに再設定のリンクを送付いたしました。');
+                    if (ans) {
+                        this.$router.replace('/login');
+                    }
+                })
+                .catch((err) => {
+                    this.message = 'ご登録のアドレスがございません。再度メールアドレスのご確認をお願いします。';
+                    // alert('ログインエラー');
+                    // console.log(err);
+                    this.alert = true;
+                });
         }
 
         private validateInput(): boolean {

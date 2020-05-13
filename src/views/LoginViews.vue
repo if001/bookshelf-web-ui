@@ -47,7 +47,7 @@
                                 prepend-icon="mdi-lock"
                                 required
                         ></v-text-field>
-                        <v-btn type="submit" :loading="isLoading" block color="#1E90FF" dark>
+                        <v-btn id="login_button" type="submit" :loading="isLoading" block color="#1E90FF" dark>
                             ログイン
                         </v-btn>
                     </v-form>
@@ -84,39 +84,40 @@
             </v-row>
 
             <v-row justify="center">
-                <v-col lg=8 md=8 sm=8 xs=10 class="pa-3" style="text-align: center">
-                    <img class="google-login" src="@/assets/btn_google.png" @click="loginWithGoogleAsMobile">
+                <v-col cols="10" lg=8 md=8 class="pa-3" align="center">
+                    <div class="google-login-a" @click="loginWithGoogleByRedirect"></div>
+                </v-col>
+                <v-col cols="10" lg=8 md=8 class="pa-3" align="center">
+                    <v-btn class="twitter-login-btn"
+                           color="white" elevation="1"
+                           @click="loginWithTwitter">
+                        <img style="height: 25px;width: 25px;" src="@/assets/twitter-icon-96.png">
+                        <div style="font-size: 1.2em; color:dimgrey; padding-left: 10px;letter-spacing: -0.1px;">Sign in with Twitter</div>
+                    </v-btn>
+                </v-col>
+                <v-col cols="10" lg=8 md=8 class="pa-3" align="center">
                     <p style="font-size: 0.8em; color:dimgray">※ログインにのみ使われます</p>
                 </v-col>
-<!--                 ログイン処理は常にリダイレクトにする -->
-<!--                 <v-col lg=8 md=8 sm=8 xs=10 class="pa-3" v-if="isMobile()" style="text-align: center">
-                    <img class="google-login" src="@/assets/btn_google.png" @click="loginWithGoogleAsMobile">
-                    <p style="font-size: 0.8em; color:dimgray">※ログインにのみ使われます</p>
-                </v-col>
-                <v-col v-else lg=8 md=8 sm=8 xs=10 class="pa-3" style="text-align: center">
-                    <img class="google-login" src="@/assets/btn_google.png" @click="loginWithGoogle">
-                    <p style="font-size: 0.8em; color:dimgray">※ログインにのみ使われます</p>
-                </v-col> -->
             </v-row>
         </v-container>
         <v-footer></v-footer>
         <v-dialog
-            v-model="isLoading"
-            hide-overlay
-            persistent
-            width="300"
+                v-model="isLoading"
+                hide-overlay
+                persistent
+                width="300"
         >
             <v-card
-                color="primary"
-                dark
+                    color="primary"
+                    dark
             >
                 <v-card-text>
                     Login ...
-                <v-progress-linear
-                    indeterminate
-                    color="white"
-                    class="mb-0"
-                ></v-progress-linear>
+                    <v-progress-linear
+                            indeterminate
+                            color="white"
+                            class="mb-0"
+                    ></v-progress-linear>
                 </v-card-text>
             </v-card>
         </v-dialog>
@@ -144,7 +145,7 @@
         private isRedirectLogin = 'isRedirectLogin';
         private loginErrorMessage = 'メールアドレスまたはパスワードが間違っています';
         private passRules = [
-            (v: any) => !!v || 'Name is required',
+            (v: any) => !!v || 'Password is required',
         ];
 
         private emailRules = [
@@ -171,7 +172,7 @@
             this.loginOps(firebase.auth().signInWithPopup(provider));
         }
 
-        public loginWithGoogleAsMobile() {
+        public loginWithGoogleByRedirect() {
             localStorage.setItem('isRedirectLogin', 'true');
             const provider = new firebase.auth.GoogleAuthProvider();
             firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
@@ -181,6 +182,22 @@
                 .catch((err) => {
                     // console.log(err);
                     // this.message = err.toString();
+                    localStorage.clear();
+                    this.setAlertMessage(this.loginErrorMessage);
+                    console.log('firebase sign in error');
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
+        }
+        private loginWithTwitter() {
+            localStorage.setItem('isRedirectLogin', 'true');
+            const provider = new firebase.auth.TwitterAuthProvider();
+            firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+                .then((res) => {
+                    return firebase.auth().signInWithRedirect(provider);
+                })
+                .catch((err) => {
                     localStorage.clear();
                     this.setAlertMessage(this.loginErrorMessage);
                     console.log('firebase sign in error');
@@ -268,15 +285,19 @@
         padding: 10px;
         text-align: center;
     }
-
-    .login-title {
-        color: dimgray;
-        font-size: 1.5em;
-        font-weight: 600;
-        font-family: Roboto, sans-serif;
-        padding: 15px;
-        text-align: center;
-        /*background-color: dodgerblue;*/
+    .google-login-a {
+        cursor: pointer;
+        background-image:url('../assets/btn_google_signin_light_normal_web.png');
+        background-repeat:no-repeat;
+        width: 191px;
+        height: 46px;
+    }
+    .google-login-a:hover {
+        cursor: pointer;
+        background-image:url('../assets/btn_google_signin_light_pressed_web.png');
+        background-repeat:no-repeat;
+        width: 191px;
+        height: 46px;
     }
 
     .create-account-link {
@@ -300,10 +321,11 @@
     .create-account-link a:active {
         color: dimgray;
     }
-
-    .google-login {
-        cursor: pointer;
-        height: 50px;
+    .twitter-login-btn {
+        text-transform: none;
+        width: 191px;
+        height:46px;
+        font-size: 12px;
     }
 
     .divide {

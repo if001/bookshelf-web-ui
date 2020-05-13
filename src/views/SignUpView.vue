@@ -25,8 +25,20 @@
                         <v-text-field
                                 v-model="password"
                                 label="Password"
-                                :type="'password'"
+                                :type="showPassword ? 'text' : 'password'"
                                 :rules="passRules"
+                                :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                                @click:append="showPassword = !showPassword"
+                                prepend-icon="mdi-lock"
+                                required
+                        ></v-text-field>
+                        <v-text-field
+                                v-model="confirmPassword"
+                                label="Confirm Password"
+                                :type="showConfirmPassword ? 'text' : 'password'"
+                                :rules="passRules"
+                                :append-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                                @click:append="showConfirmPassword = !showConfirmPassword"
                                 prepend-icon="mdi-lock"
                                 required
                         ></v-text-field>
@@ -64,6 +76,26 @@
 
         </v-container>
         <v-footer></v-footer>
+        <v-dialog
+                v-model="isLoading"
+                hide-overlay
+                persistent
+                width="300"
+        >
+            <v-card
+                    color="primary"
+                    dark
+            >
+                <v-card-text>
+                    <p>{{modalMessage}}</p>
+                    <v-progress-linear
+                            indeterminate
+                            color="white"
+                            class="mb-0"
+                    ></v-progress-linear>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
     </v-app>
 </template>
 <script lang="ts">
@@ -80,9 +112,13 @@
     export default class SignUpView extends Vue {
         private email: string = '';
         private password: string = '';
+        private confirmPassword: string = '';
+        private showPassword: boolean = false;
+        private showConfirmPassword: boolean = false;
+
         private valid = false;
         private passRules = [
-            (v: any) => !!v || 'Name is required',
+            (v: any) => !!v || 'Password is required',
         ];
 
         private emailRules = [
@@ -93,42 +129,64 @@
 
         private message = '';
         private alert = false;
-
+        private isLoading = false;
+        // private isLoading = true;
+        private modalMessage = '登録しています....';
         public mounted() {
             window.scrollTo(0, 0);
         }
 
         public create() {
             this.alert = false;
+            this.message = '';
             if (!this.validateInput()) {
                 return;
             }
-            firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then((res) => {
-                if (res == null) {
-                    // console.log('not get response');
-                    // alert('auth failed');
-                    return;
-                }
-                if (res.user == null) {
-                    // console.log('user not found');
-                    // alert('auth failed');
-                    return;
-                }
-                res.user.getIdToken()
-                    .then((idToken) => {
-                        this.$router.push('/bookshelf');
-                    }).catch((err) => {
-                    // console.log(err);
-                    console.log('firebase get token error');
-                });
-            }).catch((err) => {
-                this.message = 'アカウントの作成に失敗しました。';
-                if (err.code && err.code === this.alreadyExistAccountCode) {
-                    this.message = this.message + 'すでに存在するメールアドレスです。';
-                }
+            if (this.password !== this.confirmPassword) {
                 this.alert = true;
-                // console.log(err);
-            });
+                this.message = 'パスワードが一致しません';
+                return;
+            }
+            this.isLoading = true;
+            firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
+                .then((res) => {
+                    if (res == null) {
+                        // console.log('not get response');
+                        this.isLoading = false;
+                        return;
+                    }
+                    if (res.user == null) {
+                        // console.log('user not found');
+                        this.isLoading = false;
+                        return;
+                    }
+                    return res.user.getIdToken();
+                })
+                .then((idToken) => {
+                    this.modalMessage = '登録に成功しました。ログインします....';
+                    // console.log(idToken);
+                })
+                .then(() => {
+                    return new Promise((resolve) => {
+                        setTimeout(() => {
+                            resolve();
+                        }, 5 * 1000);
+                    });
+                })
+                .then(() => {
+                    this.$router.push('/bookshelf');
+                })
+                .catch((err) => {
+                    this.message = 'アカウントの作成に失敗しました。';
+                    if (err.code && err.code === this.alreadyExistAccountCode) {
+                        this.message = this.message + 'すでに存在するメールアドレスです。';
+                    }
+                    this.alert = true;
+                    // console.log(err);
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
         }
 
         private validateInput(): boolean {
