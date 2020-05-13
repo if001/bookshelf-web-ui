@@ -16,6 +16,7 @@
         </div>
         <v-spacer></v-spacer>
         <v-btn v-if="$vuetify.breakpoint.xs"
+               id="logout_button"
                style="color: white"
                icon
                color="dark"
@@ -24,6 +25,7 @@
             <v-icon right>mdi-logout</v-icon>
         </v-btn>
         <v-btn v-else
+               id="logout_button_sm"
                style="color: white"
                text
                color="dark"

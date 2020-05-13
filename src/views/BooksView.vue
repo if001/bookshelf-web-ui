@@ -90,7 +90,7 @@
             </div>
             <v-col v-else cols="12" class="ma-0 pa-0">
                 <v-row class="ma-0 pa-0 pb-3">
-                    <v-col class="ma-0 pa-0" align="center" style="font-size:0.875rem; color:  rgba(0, 0, 0, 0.6);">
+                    <v-col id="empty_book" class="ma-0 pa-0" align="center" style="font-size:0.875rem; color:  rgba(0, 0, 0, 0.6);">
                         <span>登録数:</span>
                         <span class="pl-2" style="font-size: 1.5em;">{{totalCount}}</span>
                     </v-col>

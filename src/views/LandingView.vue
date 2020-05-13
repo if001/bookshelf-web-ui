@@ -134,7 +134,7 @@
                                                     prepend-icon="mdi-lock"
                                                     required
                                             ></v-text-field>
-                                            <v-btn type="submit" :loading="isLoading" block color="black" outlined>
+                                            <v-btn id="login_button_landing" type="submit" :loading="isLoading" block color="black" outlined>
                                                 ログイン
                                             </v-btn>
                                         </v-form>
