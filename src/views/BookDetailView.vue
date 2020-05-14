@@ -211,9 +211,6 @@
                                 Share
                             </div>
                         </v-col>
-                        <v-col class="pa-0" style="height: 100%">
-                            hoge
-                        </v-col>
                     </v-row>
 
                         <!-- TODO Ratingはひとまずつけない -->

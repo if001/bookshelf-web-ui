@@ -51,7 +51,7 @@
                 </div>
             </div>
             <div v-if="!isLoading && getDescriptions.length === 0" style="margin: auto;">
-                本のコメントを追加しましょう
+                本の感想やコメントが残せます
             </div>
 
             <div v-else v-bind:class="{ scroll_description: !$vuetify.breakpoint.xs}">
