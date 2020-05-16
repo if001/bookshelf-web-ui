@@ -1,12 +1,23 @@
 import Axios from 'axios';
 
 const rakutenBaseURL = 'https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404';
+const rakutenKoboBaseURL = 'https://app.rakuten.co.jp/services/api/Kobo/EbookSearch/20170426';
 const appID = '1035362638897131844';
 const affiliateId = '188fe732.33eb93bf.188fe733.aaced19b';
 
 export default {
     search(query: RakutenSearchQuery) {
         return Axios.get(rakutenBaseURL,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                params: query.make(),
+            },
+        );
+    },
+    searchEbook(query: RakutenSearchQuery) {
+        return Axios.get(rakutenKoboBaseURL,
             {
                 headers: {
                     'Content-Type': 'application/json',

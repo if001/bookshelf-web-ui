@@ -27,28 +27,38 @@
                             v-model="inputISBNForSearch"
                             required
                     ></v-text-field>
-                    <div align="center" id="searchButton">
-                        <v-btn v-if="inputTitleForSearch.length !== 0 || inputAuthorForSearch.length !== 0 || inputISBNForSearch.length !== 0"
-                            type="submit"
-                            outlined
-                            :loading="isSearchLoading">
-                            search
-                            <v-icon>mdi-search-web</v-icon>
-                        </v-btn>
-                        <v-btn v-else
-                            outlined
-                            disabled>
-                            search
-                        <v-icon>mdi-search-web</v-icon>
-                        </v-btn>
-<!--                     <v-btn
-                        outlined
-                        :loading="isSearchLoading"
-                        @click="searchBookByGoogle()">
-                        search google
-                        <v-icon>mdi-search-web</v-icon>
-                    </v-btn> -->
-                    </div>
+                    <v-row align="center" justify="center">
+                        <v-col id="searchButton" cols="6" lg="3" md="3">
+                            <v-btn v-if="inputTitleForSearch.length !== 0 || inputAuthorForSearch.length !== 0 || inputISBNForSearch.length !== 0"
+                                   type="submit"
+                                   outlined
+                                   block
+                                   :loading="isSearchLoading">
+                                search
+                                <v-icon>mdi-search-web</v-icon>
+                            </v-btn>
+                            <v-btn v-else
+                                   outlined
+                                   block
+                                   disabled>
+                                search
+                                <v-icon>mdi-search-web</v-icon>
+                            </v-btn>
+                        </v-col>
+                        <v-col cols="6" lg="3" md="3">
+                            <v-select
+                                    v-model="selectSearchCondition"
+                                    :items="searchCondition"
+                                    item-text="displayName"
+                                    item-value="key"
+                                    append-icon="mdi-chevron-down"
+                                    label="検索条件"
+                                    @change="changeSearchCondition()"
+                                    return-object
+                                    style="width: 100px;"
+                            ></v-select>
+                        </v-col>
+                    </v-row>
                 </v-form>
             </v-col>
 
@@ -194,6 +204,14 @@
         private message: string = '';
         private message2: string = '';
 
+        private searchCondition = [
+            {key: 'book', displayName: '本'},
+            {key: 'e_book', displayName: '電子書籍'}
+        ];
+        private selectSearchCondition = {key: 'book', displayName: '本'};
+
+        private searchFunc = rakutenAPI.search;
+
         @Emit()
         private select(book: Content) {}
 
@@ -230,7 +248,8 @@
                 this.isSearchLoading = false;
                 return;
             }
-            rakutenAPI.search(this.rakutenSearchQuery)
+
+            this.searchFunc(this.rakutenSearchQuery)
                 .then((res) => {
                     this.searchResult = res.data as SearchResult;
                     this.totalCount = this.searchResult.pageCount;
@@ -277,27 +296,29 @@
         }
 
         private selectBook(book: SearchResultWithCheck) {
+            book.isAlreadyRegister = false;
             if (book.isChecked) {
                 book.isChecked = false;
-                book.isAlreadyRegister = false;
                 const ind = this.selectMultiBooks.indexOf(book);
                 this.selectMultiBooks.splice(ind, 1);
             } else {
                 if (this.selectMultiBooks.length < maxRegisterNum) {
                     book.isChecked = true;
                     this.selectMultiBooks.push(book);
-                    getToken()
-                        .then((token) => {
-                            return api.books.list(token, null, null, null, null, book.isbn, null);
-                        })
-                        .then((res) => {
-                            if (res.data.content.total_count > 0) {
-                                book.isAlreadyRegister = true;
-                            }
-                        })
-                        .catch((err) => {
-                            console.log('get isbn error');
-                        });
+                    if (this.selectSearchCondition.key === 'book') {
+                        getToken()
+                            .then((token) => {
+                                return api.books.list(token, null, null, null, null, book.isbn, null);
+                            })
+                            .then((res) => {
+                                if (res.data.content.total_count > 0) {
+                                    book.isAlreadyRegister = true;
+                                }
+                            })
+                            .catch((err) => {
+                                console.log('get isbn error');
+                            });
+                    }
                 } else {
                     alert(`一括で登録できる数は${maxRegisterNum}個までです。`);
                 }
@@ -509,9 +530,15 @@
             } else {
                 return st;
             }
-
         }
 
+        private changeSearchCondition() {
+            if (this.selectSearchCondition.key === 'book') {
+                this.searchFunc = rakutenAPI.search;
+            } else if (this.selectSearchCondition.key === 'e_book') {
+                this.searchFunc = rakutenAPI.searchEbook;
+            }
+        }
     }
 
     function toTop() {
@@ -525,47 +552,6 @@
             window.scrollTo(0, posY + window.pageYOffset);
         }
     }
-
-
-    // class RakutenSearchRepository {
-    //     private readonly title: string;
-    //     private readonly author: string;
-    //     private readonly isbn: string;
-    //
-    //     constructor(title: string, author: string, isbn: string) {
-    //         this.title = title;
-    //         this.author = author;
-    //         this.isbn = isbn;
-    //     }
-    //
-    //     public search<T>(page: number, perPage: number): Promise<AxiosResponse<T>> | null {
-    //         if (this.isISBN()) {
-    //             return rakutenAPI.searchByISBN(this.isbn);
-    //         } else if (this.isTitle()) {
-    //             return rakutenAPI.searchByTitle(this.title, page, perPage);
-    //         } else if (this.isAuthor()) {
-    //             return rakutenAPI.searchByAuthor(this.author, page, perPage);
-    //         } else if (this.isTitleAndAuthor()) {
-    //             return rakutenAPI.search(this.title, this.author, page, perPage, null);
-    //         } else {
-    //             return null;
-    //         }
-    //     }
-    //
-    //     private isTitle(): boolean {
-    //         return (this.title.length !== 0 && this.author.length === 0 && this.isbn.length === 0);
-    //     }
-    //     private isAuthor(): boolean {
-    //         return (this.title.length === 0 && this.author.length !== 0 && this.isbn.length !== 0);
-    //     }
-    //     private isISBN(): boolean {
-    //         return this.isbn.length !== 0;
-    //     }
-    //     private isTitleAndAuthor(): boolean {
-    //         return (this.title.length !== 0 && this.author.length !== 0 && this.isbn.length === 0);
-    //     }
-    // }
-
 </script>
 
 <style scoped>
