@@ -27,25 +27,23 @@
                             v-model="inputISBNForSearch"
                             required
                     ></v-text-field>
-                    <v-row align="center" justify="center">
-                        <v-col id="searchButton" cols="6" lg="3" md="3">
-                            <v-btn v-if="inputTitleForSearch.length !== 0 || inputAuthorForSearch.length !== 0 || inputISBNForSearch.length !== 0"
-                                   type="submit"
-                                   outlined
-                                   block
-                                   :loading="isSearchLoading">
-                                search
-                                <v-icon>mdi-search-web</v-icon>
-                            </v-btn>
-                            <v-btn v-else
-                                   outlined
-                                   block
-                                   disabled>
-                                search
-                                <v-icon>mdi-search-web</v-icon>
-                            </v-btn>
-                        </v-col>
-                        <v-col cols="6" lg="3" md="3">
+                    <v-row align="center" justify="center" class="d-flex flex-row">
+                        <div class="d-flex flex-row align-center" cols="12" lg="3" md="3" align="center">
+                            <div id="searchButton" class="pr-4">
+                                <v-btn v-if="inputTitleForSearch.length !== 0 || inputAuthorForSearch.length !== 0 || inputISBNForSearch.length !== 0"
+                                       type="submit"
+                                       outlined
+                                       :loading="isSearchLoading">
+                                    search
+                                    <v-icon>mdi-search-web</v-icon>
+                                </v-btn>
+                                <v-btn v-else
+                                       outlined
+                                       disabled>
+                                    search
+                                    <v-icon>mdi-search-web</v-icon>
+                                </v-btn>
+                            </div>
                             <v-select
                                     v-model="selectSearchCondition"
                                     :items="searchCondition"
@@ -55,9 +53,8 @@
                                     label="検索条件"
                                     @change="changeSearchCondition()"
                                     return-object
-                                    style="width: 100px;"
-                            ></v-select>
-                        </v-col>
+                                    style="width: 100px;"></v-select>
+                        </div>
                     </v-row>
                 </v-form>
             </v-col>
