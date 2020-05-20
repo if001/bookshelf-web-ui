@@ -47,7 +47,7 @@
                                     <v-text-field
                                             :counter="40"
                                             maxlength="40"
-                                            label="title"
+                                            label="Title"
                                             v-model="bookName"
                                             required
                                             @blur="setFirstFocus"
@@ -58,7 +58,7 @@
                                     <v-text-field
                                             :counter="40"
                                             maxlength="40"
-                                            label="author"
+                                            label="Author"
                                             v-model="authorName"
                                             @blur="setFirstFocus"
                                     ></v-text-field>
@@ -79,7 +79,7 @@
                                             maxlength="40"
                                             :counter="40"
                                             height="40px;"
-                                            label="publisher"
+                                            label="Publisher"
                                     ></v-combobox>
                                 </div>
 
@@ -125,14 +125,12 @@
                     <v-row justify="center">
                         <v-col cols="12" align="center">
                             <v-btn class="ma-2"
-                                   small
                                    outlined
                                    color="black"
                                    @click="closeRegister()">CLOSE
                             </v-btn>
 
                             <v-btn class="ma-2"
-                                   small
                                    color="success"
                                    outlined
                                    :loading="isSaving"

@@ -8,7 +8,7 @@
             </v-list-item-icon>
 
             <v-list-item-content>
-                <v-list-item-title>ダッシュボード</v-list-item-title>
+                <v-list-item-title>本の一覧</v-list-item-title>
             </v-list-item-content>
         </v-list-item>
 

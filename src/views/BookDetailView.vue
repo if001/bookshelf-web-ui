@@ -2,7 +2,7 @@
     <v-container style="min-height: 87vh;">
         <v-row class="mb-3" justify="space-around" v-bind:class="[brackPointIsXS() ? 'ma-0' : 'ma-2' ]">
             <v-col cols=12 lg=4 md=5 class="ma-0 pa-0 pt-2 pb-2">
-                <v-card color="white" v-bind:class="[brackPointIsXS() ? 'elevation-0' : ` elevation-${hover ? 12 : 2}`  ]">
+                <v-card color="white" v-bind:class="[brackPointIsXS() ? 'elevation-0' : ` elevation-2`  ]">
                     <v-row no-gutters>
                         <v-col cols=8 class="pa-3 ma-0">
                             <v-row v-if="!isOpen">
