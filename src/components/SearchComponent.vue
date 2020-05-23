@@ -1,5 +1,5 @@
 <template>
-    <v-container class="pr-0 pl-0 pt-0" style="min-height: 600px;">
+    <v-container class="pr-0 pl-0 pt-0" style="">
         <v-row align="center" justify="center">
             <v-col cols=12 lg="8" md="8" class="pa-2 ma-0">
                 <v-form

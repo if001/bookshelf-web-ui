@@ -3,7 +3,6 @@ import Router from 'vue-router';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 
-
 const MainViews = () => import('@/views/MainViews.vue');
 const LoginViews = () => import('@/views/LoginViews.vue');
 const SignUpViews = () => import('@/views/SignUpView.vue');
@@ -15,6 +14,7 @@ const BookDetailView = () => import('@/views/BookDetailView.vue');
 const SharePageView = () => import('@/views/SharePageView.vue');
 const AnalyticsView = () => import('@/views/AnalyticsView.vue');
 const LandingView = () => import('@/views/LandingView.vue');
+const AboutView = () => import('@/views/AboutView.vue');
 
 Vue.use(Router);
 
@@ -50,6 +50,11 @@ const router = new Router({
             path: '/share/:id',
             name: 'sharePage',
             component: SharePageView,
+        },
+        {
+            path: '/about',
+            name: 'about',
+            component: AboutView,
         },
         {
             path: '/bookshelf',

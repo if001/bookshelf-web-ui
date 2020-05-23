@@ -1,29 +1,35 @@
 <template>
-    <!--<v-footer-->
-            <!--absolute-->
-            <!--height="20px"-->
-            <!--class="grey lighten-1">-->
-        <!--<v-layout row wrap justify-center>-->
-            <!--<v-flex xs12 py-3 text-xs-center white&#45;&#45;text>-->
-                <!--&copy;2018 — <strong>Vuetify</strong>-->
-            <!--</v-flex>-->
-        <!--</v-layout>-->
-    <!--</v-footer>-->
+    <div>
+        <v-row class="flex-row flex-row-reverse text-center" v-if="applySmall()">
+            <v-col class="pa-0" style="background-color: gray;">
+                <div class="container policy">
+                    <router-link class="policy" to="/policy">お問い合わせ、質問はこちら</router-link><span class="ml-3 mr-3">/</span>
+                    <router-link class="policy" to="/policy">BookStorageについて</router-link><span class="ml-3 mr-3">/</span>
+                    <router-link class="policy" to="/policy">privacy policy</router-link><span class="ml-3 mr-3">/</span>
+                    ver. {{version}} <span class="vertical-line">|</span> &copy;2019 <strong>edgwbs.net</strong>
+                </div>
+            </v-col>
+        </v-row>
 
-<!--    v-bind:class="{ active: isActive }"-->
-    <div v-bind:class="
-    [{ footer_main: !$vuetify.breakpoint.xs, footer_main_sx: $vuetify.breakpoint.xs },
-    { forceFixed: isForceFixed },
-    ]">
-        <div style="color: lightgrey;margin: auto">
-            <router-link class="policy" to="/policy">privacy policy</router-link>
-            <span class="vertical-line">|</span>
-            ver. {{version}}
-            <span class="vertical-line">|</span>
-            &copy;2019 <strong>edgwbs.net</strong>
-        </div>
+        <v-row class="flex-column" v-else>
+            <v-col style="background-color: gray;">
+                <div class="container mt-5 mb-5">
+                    <div class="mb-2">
+                        <a class="policy" href="https://docs.google.com/forms/d/e/1FAIpQLSduyq2V4hdH671SdSJFcBJXmiEuac8k6dsgaeaa8UNnUKnYwg/viewform?usp=sf_link" target="_blank">お問い合わせ/質問はこちら</a>
+                    </div>
+                    <div class="mb-2">
+                        <router-link class="policy" to="/about">BookStorageについて</router-link>
+                    </div>
+                    <div class="mb-2">
+                        <router-link class="policy" to="/policy">privacy policy</router-link>
+                    </div>
+                    <div class="policy">
+                        ver. {{version}} <span class="vertical-line">|</span> &copy;2019 <strong>edgwbs.net</strong>
+                    </div>
+                </div>
+            </v-col>
+        </v-row>
     </div>
-
 </template>
 
 <script lang="ts">
@@ -34,42 +40,20 @@
     export default class Footer extends Vue {
         @Prop({default: false}) private isForceFixed!: boolean;
 
-        private version: string = '0.3.3';
+        private version: string = '1.0.0';
+
+        private applySmall(): boolean {
+            const route = this.$router.app.$route.path;
+            return route === '/' || route === '/login' || route === '/signup';
+        }
     }
 
 </script>
 
 <style scoped>
-    .footer_main{
-        display: flex;
-        flex-direction: row;
-        position: fixed;
-        bottom:0;
-        height:25px;
-        width: 100%;
-        background-color: gray;
-        justify-content:space-around;
-    }
-
-    .footer_main_sx {
-        display: flex;
-        flex-direction: row;
-        height:25px;
-        width: 100%;
-        bottom:0;
-        background-color: gray;
-        justify-content:space-around;
-        font-size: 0.8em;
-    }
-    .forceFixed {
-        position: absolute;
-        bottom: 0px;
-    }
-
     .policy {
         text-decoration:none;
         color: lightgrey;
-        margin-left: 20px;
     }
 
     .vertical-line {

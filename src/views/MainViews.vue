@@ -13,7 +13,7 @@
             <navi :propIsOpen="drawer" @closeDrawer="handleClose"></navi>
         </v-navigation-drawer>
 
-        <div style="padding-top: 50px;" @click="forceCloseDrawer">
+        <div style="padding-top: 50px; height: 100%;" @click="forceCloseDrawer">
             <router-view/>
         </div>
 

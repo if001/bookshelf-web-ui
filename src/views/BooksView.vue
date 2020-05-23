@@ -78,7 +78,7 @@
                     <v-icon large>fa-book</v-icon>
                 </div>
             </div>
-            <div v-if="!loading && booksShow.length === 0 && selectStateFilter === null && searchKeyForBook === null" style="margin: auto;padding: 20px;">
+            <div v-if="!loading && booksShow.length === 0 && selectStateFilter === null && searchKeyForBook === null" style="margin: auto;padding: 20px;height: 100%;">
                 読みたい本を登録しましょう。
                 <div align="center" class="ma-2">
                     <v-btn
