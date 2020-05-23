@@ -203,7 +203,7 @@
 
         private searchCondition = [
             {key: 'book', displayName: '本'},
-            {key: 'e_book', displayName: '電子書籍'}
+            {key: 'e_book', displayName: '電子書籍'},
         ];
         private selectSearchCondition = {key: 'book', displayName: '本'};
 

@@ -63,26 +63,26 @@
         }
 
         get title() {
-            return this.searchBook? this.searchBook.title: '';
+            return this.searchBook ? this.searchBook.title : '';
         }
         get author() {
-            return this.searchBook? this.searchBook.author: '';
+            return this.searchBook ? this.searchBook.author : '';
         }
         get publisher() {
-            return this.searchBook? this.searchBook.publisherName: '';
+            return this.searchBook ? this.searchBook.publisherName : '';
         }
         get caption() {
-            return this.searchBook? this.searchBook.itemCaption: '';
+            return this.searchBook ? this.searchBook.itemCaption : '';
         }
         get bookImage() {
-            return this.searchBook? this.searchBook.mediumImageUrl: '';
+            return this.searchBook ? this.searchBook.mediumImageUrl : '';
         }
         get aflink() {
-            return this.searchBook? this.searchBook.affiliateUrl: '';
+            return this.searchBook ? this.searchBook.affiliateUrl : '';
         }
 
         private dialogWidth(): string {
-            return this.breakPointXS() ? "90%" : '60%';
+            return this.breakPointXS() ? '90%' : '60%';
         }
 
         private loadBook(query: RakutenSearchQuery) {

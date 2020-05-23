@@ -359,7 +359,7 @@
     import {AxiosPromise} from 'axios';
     import AdComponent from '@/components/AdComponent.vue';
     import rakutenAPI, {Content, makeEmptyQuery, RakutenSearchQuery, SearchResult} from '@/rakutenAPI';
-    import NotRegisterBookDetailModalComponent from "@/components/NotRegisterBookDetailModalComponent.vue";
+    import NotRegisterBookDetailModalComponent from '@/components/NotRegisterBookDetailModalComponent.vue';
 
     interface BookDetail extends Book {
         isOpen: boolean;
@@ -369,10 +369,10 @@
         chip: boolean;
     }
 
-    interface BookState{}
-    class BookStateNotRead implements BookState{}
-    class BookStateReading implements BookState{}
-    class BookStateEnd implements BookState{}
+    interface BookState {}
+    class BookStateNotRead implements BookState {}
+    class BookStateReading implements BookState {}
+    class BookStateEnd implements BookState {}
 
     @Component({
         components: {
