@@ -31,7 +31,7 @@ export default {
 interface Query { [key: string]: any; }
 export class RakutenSearchQuery {
     private readonly title: string;
-    private readonly author: string;
+    private author: string;
     private isbn: string;
     private page: number;
     private perPage: number;
@@ -53,6 +53,9 @@ export class RakutenSearchQuery {
     public setISBN(isbn: string) {
         this.isbn = isbn;
     }
+    public setAuthor(author: string) {
+        this.author = author;
+    }
     public setSort(sort: string) {
         this.sort = sort;
     }
@@ -63,6 +66,8 @@ export class RakutenSearchQuery {
             page: this.page,
             hits: this.perPage,
             outOfStockFlag: 1,
+            sort: 'sales',
+            booksGenreId: '001004',
         };
         // outOfStockFlag
         // 売り切れ商品も表示させない: 0

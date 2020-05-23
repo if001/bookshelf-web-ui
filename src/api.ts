@@ -95,6 +95,14 @@ export default {
                 data,
             });
         },
+        createWith(token: string, data: any) {
+            return axios.request({
+                method: 'POST',
+                headers: {Authorization: `Bearer ${token}`},
+                url: '/books_with',
+                data,
+            });
+        },
         update(token: string, data: any) {
             return axios.request({
                 method: 'PUT',
@@ -274,6 +282,7 @@ export interface Book {
     affiliate_url: string | null;
     created_at: string;
     updated_at: string;
+    read_state: number;
 }
 
 export interface PaginateBooks {

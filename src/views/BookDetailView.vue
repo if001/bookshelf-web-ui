@@ -91,16 +91,14 @@
                                 </v-btn>
                         </v-col>
                         <v-col cols=4 style="height: 128px;">
-                            <div v-if="bookImage != null && bookImage !== '' && bookForShow.affiliate_url !== null">
+                            <div v-if="bookImage && bookImage !== '' && bookForShow.affiliate_url !== null">
                                 <a :href="bookForShow.affiliate_url" target="_blank">
 <!--                                    <img style="float:right;" :src="bookImage" height="128px" alt="bookImage">-->
                                     <v-tooltip bottom>
-                                              <template v-slot:activator="{ on }">                                                  
-                                                <img :src="bookImage" 
-                                                    v-on="on"
-                                                    style="float:right;" height="128px" alt="bookImage">
-                                                </template>
-                                              <span style="font-size: 0.9em">詳細を見る</span>
+                                        <template v-slot:activator="{ on }">
+                                            <img :src="bookImage" v-on="on" style="float:right;" height="128px" alt="bookImage">
+                                        </template>
+                                        <span style="font-size: 0.9em">商品ページを見る</span>
                                     </v-tooltip>
                                 </a>
                             </div>
@@ -121,23 +119,23 @@
                                     <v-tooltip top>
                                               <template v-slot:activator="{ on }">                                                  
                                                     <v-btn text
-                                                            icon
-                                                            color="dark"
-                                                            class="ma-0"
-                                                            v-on="on"
-                                                            :loading="isLoadingBookState"
-                                                            @click="changeState(startAt, endAt)">
-                                                    <v-icon large
-                                                        color="blue-grey darken-1"> {{ bookState(startAt, endAt).icon }}
-                                                    </v-icon>
+                                                           icon
+                                                           color="dark"
+                                                           class="ma-0"
+                                                           v-on="on"
+                                                           :loading="isLoadingBookState"
+                                                           @click="changeState(bookState)">
+                                                        <v-icon large
+                                                                color="blue-grey darken-1"> {{ getBookStateLabel(bookState).icon }}
+                                                        </v-icon>
                                                     </v-btn>
                                               </template>
-                                             <span style="font-size: 0.9em">状態を変更する</span>
+                                        <span style="font-size: 0.9em">状態を変更する</span>
                                     </v-tooltip>
 
                                 </v-col>
                                 <v-col cols=9 class="ma-0 pl-3" align-self="center">
-                                    {{ bookState(startAt, endAt).label }}
+                                    {{ getBookStateLabel(bookState).label }}
                                 </v-col>
                             </v-row>
                         </v-col>
@@ -213,6 +211,38 @@
                         </v-col>
                     </v-row>
                     <v-divider light></v-divider>
+
+                    <v-row class="ma-0 pa-3" justify="center" no-gutters v-if="isEndState && !isOpen && similarBooks.length === 0">
+                        <v-col cols="12">
+                            <v-btn outlined small @click="setSimilarBookByRakutenSearch()">おすすめの本を取得</v-btn>
+                        </v-col>
+                    </v-row>
+                    <v-divider v-if="isEndState && !isOpen && similarBooks.length === 0" light></v-divider>
+
+                    <v-row class="pa-0 ma-0" v-if="isEndState && !isOpen && similarBooks.length !== 0">
+                        <v-col cols="12" class="ma-0 pa-3 pb-0" style="color: dimgrey;font-size: 0.8em;">あなたへのおすすめ</v-col>
+                        <div v-for="book in similarBooks" class="pa-3">
+                            <div>
+                                <a v-if="book.smallImageUrl"
+                                   @click="openDetailModal(book)">
+                                    <v-tooltip top>
+                                        <template v-slot:activator="{ on }">
+                                            <img :src="book.smallImageUrl"
+                                                 v-on="on"
+                                                 style="float:right;" height="80px" alt="bookImage">
+                                        </template>
+                                        <span style="font-size: 0.9em">詳細を見る</span>
+                                    </v-tooltip>
+                                </a>
+                                <img v-else src="@/assets/not_found.png" alt="not_found" height="80px">
+                            </div>
+                            <div style="color: gray;font-size: 0.8em; max-width: 56px;">
+                                {{parseBookTitleAtRecommend(book.title)}}
+                            </div>
+                        </div>
+                    </v-row>
+                    <v-divider v-if="isEndState && !isOpen && similarBooks.length !== 0" light></v-divider>
+
                         <!-- TODO Ratingはひとまずつけない -->
                         <!--<v-divider light></v-divider>-->
                         <!--<v-card-actions class="pl-3 pb-2 pt-2">-->
@@ -304,16 +334,32 @@
                 <v-icon>mdi-arrow-left</v-icon>
             </v-btn>
         </v-fab-transition>
+        <detail_modal :dialog="bookDetailDialog"
+                      :isbn="selectBookISBN"
+                      @closeDialogEvent="dialogPropsHandle"
+                      @registerSuccessEvent="registerSuccessHandle"
+                      ></detail_modal>
+        <div style="position: fixed; top: 60px; right: 1.0em; z-index: 100;">
+            <v-alert v-model="registerAlert" type="success"
+                     border="left"
+                     close-text="Close Alert"
+                     dismissible>
+                登録しました
+            </v-alert>
+        </div>
+
     </v-container>
 </template>
 
 <script lang="ts">
     import {Component, Prop, Vue} from 'vue-property-decorator';
     import BookDescription from '@/components/BookDescriptionComponent.vue';
-    import api, {Author, Book, Category, ContentResult, getToken, errorRoute, Publisher} from '../api';
+    import api, {Author, Book, Category, ContentResult, getToken, errorRoute, Publisher} from '@/api';
     import moment from 'moment';
     import {AxiosPromise} from 'axios';
     import AdComponent from '@/components/AdComponent.vue';
+    import rakutenAPI, {Content, makeEmptyQuery, RakutenSearchQuery, SearchResult} from '@/rakutenAPI';
+    import NotRegisterBookDetailModalComponent from "@/components/NotRegisterBookDetailModalComponent.vue";
 
     interface BookDetail extends Book {
         isOpen: boolean;
@@ -323,10 +369,16 @@
         chip: boolean;
     }
 
+    interface BookState{}
+    class BookStateNotRead implements BookState{}
+    class BookStateReading implements BookState{}
+    class BookStateEnd implements BookState{}
+
     @Component({
         components: {
             BookDescription,
             ad: AdComponent,
+            detail_modal: NotRegisterBookDetailModalComponent,
         },
     })
     export default class BookDetailView extends Vue {
@@ -350,13 +402,41 @@
             counter15: (value: any) => value.length <= 15 || 'Max 15 characters',
         };
 
+        private similarBooks: Content[] = [];
+
+        private isSearchLoading: boolean = false;
+        private isEndState: boolean = false;
+
+        private bookDetailDialog: boolean = false;
+        private selectBookISBN: string | null = null;
+        private registerAlert = false;
+
+        private openDetailModal(selectBook: Content) {
+            this.selectBookISBN = selectBook.isbn;
+            this.bookDetailDialog = true;
+        }
+        private dialogPropsHandle(e: boolean) {
+            this.bookDetailDialog = e;
+        }
+        private registerSuccessHandle(e: boolean) {
+            this.registerAlert = e;
+            const sleep = (second: number, func: any) => {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve(func());
+                    }, second * 1000);
+                });
+            };
+            sleep(3, () => { this.registerAlert = false; });
+        }
+
         private createTwitterURL(): string | null {
             if (this.bookForEdit == null) {
                 return '';
             } else {
                 const base = 'https://twitter.com/intent/tweet';
 
-                const state = this.bookState(this.bookForEdit.start_at, this.bookForEdit.end_at);
+                const state = this.getBookStateLabel(this.bookForEdit.read_state);
                 let text = '';
                 let bookInfo = '';
                 let bookURL = '';
@@ -421,6 +501,8 @@
                         //         this.categories.push(newC);
                         //     }
                         // }
+                        // this.bookState(this.book.start_at, this.book.end_at);
+                        this.isEndState = getBookState(this.book) === BookStateEnd;
 
                         this.bookForShow = {
                             ...this.book,
@@ -741,25 +823,44 @@
                 return this.bookForEdit.end_at;
             }
         }
-
-        private changeState(startAt: string | null, endAt: string | null) {
-            if (startAt == null && endAt == null) {
-                this.doChangeStateAPI('読み始めた本に設定しますか？', api.book.startRead);
-            } else if (startAt != null && endAt == null) {
-                this.doChangeStateAPI('読み終わった本に設定しますか？', api.book.endRead);
-            } else if (startAt != null && endAt != null) {
-                this.doChangeStateAPI('読み始めた本に設定しますか？', api.book.startRead);
+        get bookState() {
+            if (this.bookForEdit == null) {
+                return null;
             } else {
+                return getBookState(this.bookForEdit);
+            }
+        }
+
+        private changeState(state: BookState) {
+            if (state === BookStateNotRead) {
+                this.doChangeStateAPI('読み始めた本に設定しますか？', api.book.startRead);
+            } else if (state === BookStateEnd) {
+                this.doChangeStateAPI('読み始めた本に設定しますか？', api.book.startRead);
+            } else if (state === BookStateReading) {
+                const result = this.doChangeStateAPI('読み終わった本に設定しますか？', api.book.endRead);
+                // TODO おすすめの本を表示するのは楽天のAPIを叩く回数を減らすため、ステータスを読了に変更したときのみとする
+                if (result) {
+                    result
+                        .then(() => {
+                            return this.setSimilarBookByRakutenSearch();
+                        })
+                        .then(() => {
+                            this.isEndState = true;
+                        });
+                }
+            }  else {
                 console.log('bad read state');
             }
         }
 
-        private doChangeStateAPI(msg: string, apiFunc: (token: string, id: number) => AxiosPromise<ContentResult<Book>>) {
+        private doChangeStateAPI(msg: string,
+                                 apiFunc: (token: string, id: number) => AxiosPromise<ContentResult<Book>>,
+        ): Promise<void> | undefined {
             const res = confirm(msg);
             if (res && this.bookForEdit != null) {
                 this.isLoadingBookState = true;
                 const tmp = this.bookForEdit;
-                getToken()
+                return getToken()
                     .then((token) => {
                         return apiFunc(token, tmp.id);
                     })
@@ -776,10 +877,10 @@
             }
         }
 
-        private bookState(startAt: string | null, endAt: string | null) {
-            if (endAt == null && startAt == null) {
+        private getBookStateLabel(state: BookState) {
+            if (state === BookStateNotRead) {
                 return { icon : 'fa-book', label : '未読' };
-            } else if (endAt == null) {
+            } else if (state === BookStateReading) {
                 return  { icon : 'mdi-bookmark', label : '読中' };
             } else {
                 return  { icon : 'mdi-check', label : '読了' };
@@ -808,6 +909,28 @@
             }
         }
 
+        private setSimilarBookByRakutenSearch(): Promise<void> | undefined {
+            const query = makeEmptyQuery();
+            query.setPaginate(1, 4);
+            if (this.bookForShow && this.bookForShow.author) {
+                query.setAuthor(this.bookForShow.author.name);
+                query.setSort('sales');
+                return rakutenAPI.search(query).then()
+                    .then((res) => {
+                        const result  = res.data as SearchResult;
+                        this.similarBooks = result.Items.map((x) => x.Item);
+                    })
+                    .catch((e) => {
+                        // console.log(e);
+                        // this.setAlertMessage('検索エラー');
+                        // console.log('search api error');
+                    })
+                    .finally(() => {
+                        this.isSearchLoading = false;
+                    });
+            }
+        }
+
         private toListPage() {
             this.hiddenFab = true;
             this.$router.push('/bookshelf');
@@ -822,6 +945,14 @@
         private brackPointIsXS(): boolean {
             return this.$vuetify.breakpoint.name === 'xs';
         }
+
+        private parseBookTitleAtRecommend(title: string): string {
+            if (title.length > 15) {
+                return title.slice(0, 15) + '...';
+            } else {
+                return title;
+            }
+        }
     }
     function formatDate(d: string | null): string | null {
         if (d != null) {
@@ -831,7 +962,14 @@
             return null;
         }
     }
-
+    function getBookState(b: Book): BookState {
+        switch (b.read_state) {
+            case 1: return BookStateNotRead;
+            case 2: return BookStateReading;
+            case 3: return BookStateEnd;
+            default: return BookStateNotRead;
+        }
+    }
 
 </script>
 
