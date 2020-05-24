@@ -34,11 +34,10 @@
 <script lang="ts">
     import {Vue, Prop, Component, Watch} from 'vue-property-decorator';
     import rakutenAPI, {Content, makeEmptyQuery, RakutenSearchQuery, SearchResult} from '@/rakutenAPI';
-    import api, {Author, Publisher, ContentResult, getToken, errorRoute} from '@/api';
-    // import rakutenAPI, {SearchResult, Content, RakutenSearchQuery} from '@/rakutenAPI';
-    import {AxiosPromise, AxiosResponse} from 'axios';
+    import api, {getToken, PostBookForm} from '@/api';
+    import {AxiosPromise} from 'axios';
 
-    interface Book extends Content{}
+    interface Book extends Content {}
 
     @Component
     export default class NotRegisterBookDetailModalComponent extends Vue {
@@ -128,7 +127,7 @@
                     small_image_url: searchBook.smallImageUrl,
                     item_url: searchBook.itemUrl,
                     affiliate_url: searchBook.affiliateUrl,
-                };
+                } as PostBookForm;
                 return api.books.createWith(token, book);
             });
     }

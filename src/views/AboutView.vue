@@ -18,7 +18,7 @@
 
     @Component({
         components: {
-            'about': About,
+            about: About,
         },
     })
     export default class AboutView extends BaseComponent {

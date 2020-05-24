@@ -159,7 +159,7 @@
 
 <script lang="ts">
     import {Component, Emit, Vue} from 'vue-property-decorator';
-    import api, {Author, Publisher, ContentResult, getToken, errorRoute} from '@/api';
+    import api, {Author, Publisher, ContentResult, getToken, errorRoute, PostBookForm} from '@/api';
     import rakutenAPI, {SearchResult, Content, RakutenSearchQuery} from '@/rakutenAPI';
     import {AxiosPromise} from 'axios';
     import {BaseComponent, toTop} from '@/utils/utils';
@@ -213,12 +213,12 @@
 
         private searchFunc = rakutenAPI.search;
 
-        @Emit()
-        private select(book: Content) {}
-
         public mounted() {
             super.mounted();
         }
+
+        @Emit()
+        private select(book: Content) {}
 
         private searchBook() {
             this.resetAlertMessage();
@@ -361,131 +361,25 @@
             return id;
         }
 
-        private createAuthorP() {
-            const authorIds: number[] = [];
-            const notCreateAuthors: string[] = [];
-            let tmpToken = '';
-            return new Promise<number[]>((resolve, reject) => {
-                getToken()
-                    .then((token) => {
-                        tmpToken = token;
-                        return api.author.getCounted(token);
-                    })
-                    .then((res1) => {
-                        this.authors = res1.data.content as Author[];
-                        this.selectMultiBooks.forEach((x) => {
-                            if (x.author !== '') {
-                                const authorId = this.getAuthorIDByName(x.author);
-                                if (authorId === -1) {
-                                    if (!notCreateAuthors.includes(x.author)) {
-                                        notCreateAuthors.push(x.author);
-                                    }
-                                } else {
-                                    authorIds.push(authorId);
-                                }
-                            }
-                        });
-                        // TODO tmpTokenでは、thenの中の処理中にtokenが失効した場合に死ぬ
-                        const createP: Array<AxiosPromise<ContentResult<Author>>> =
-                            notCreateAuthors.map((x: string) => {
-                                return api.author.create(tmpToken, {author_name: x});
-                            });
-                        return Promise.all(createP);
-                    })
-                    .then((res) => {
-                        res.forEach((x) => {
-                            const newAuthor = x.data.content as Author;
-                            authorIds.push(newAuthor.id);
-                        });
-                        resolve(authorIds);
-                    })
-                    .catch(() => {
-                        console.log('create author error');
-                        reject();
-                    });
-            });
-        }
-
-
-        private createPublisherP() {
-            const publisherIds: number[] = [];
-            const notCreatePublishers: string[] = [];
-            let tmpToken = '';
-
-            return new Promise<number[]>((resolve, reject) => {
-                getToken()
-                    .then((token) => {
-                        tmpToken = token;
-                        return api.publisher.getCounted(token);
-                    })
-                    .then((res1) => {
-                        this.publishers = res1.data.content as Publisher[];
-                        this.selectMultiBooks.forEach((x) => {
-                            if (x.publisherName !== '') {
-                                const publisherId = this.getPublisherIDByName(x.publisherName);
-                                if (publisherId === -1) {
-                                    if (!notCreatePublishers.includes(x.publisherName)) {
-                                        notCreatePublishers.push(x.publisherName);
-                                    }
-                                } else {
-                                    publisherIds.push(publisherId);
-                                }
-                            }
-                        });
-                        const createP: Array<AxiosPromise<ContentResult<Publisher>>>
-                            = notCreatePublishers.map((x: string) => {
-                            return api.publisher.create(tmpToken, {publisher_name: x});
-                        });
-                        return Promise.all(createP);
-                    })
-                    .then((res) => {
-                        res.forEach((x) => {
-                            const newPublisher = x.data.content as Publisher;
-                            publisherIds.push(newPublisher.id);
-                        });
-                        resolve(publisherIds);
-                    })
-                    .catch(() => {
-                        console.log('create publisher error');
-                        reject();
-                    });
-            });
-        }
-
-        private createBook(x: SearchResultWithCheck): AxiosPromise {
-            const authorID = this.getAuthorIDByName(x.author);
-            const publisherID = this.getPublisherIDByName(x.publisherName);
-            const book = {
-                isbn: x.isbn,
-                title: x.title,
-                author_id: authorID === -1 ? null : authorID,
-                publisher_Id: publisherID === -1 ? null : publisherID,
-                medium_image_url: x.mediumImageUrl,
-                small_image_url: x.smallImageUrl,
-                item_url: x.itemUrl,
-                affiliate_url: x.affiliateUrl,
-            };
-            return getToken()
-                .then((token) => {
-                    return api.books.create(token, book);
-                });
-        }
-
         private createBookMultiple() {
             this.isSaving = true;
-            Promise.all([this.createAuthorP(), this.createPublisherP()])
-                .then(() => {
-                    return getToken();
-                })
+            getToken()
                 .then((token) => {
-                    return Promise.all([api.author.getCounted(token), api.publisher.getCounted(token)]);
-                })
-                .then((value) => {
-                    this.authors = value[0].data.content as Author[];
-                    this.publishers = value[1].data.content as Publisher[];
-                    const p: AxiosPromise[] = this.selectMultiBooks.map((x) => {
-                        return this.createBook(x);
+                    return this.selectMultiBooks.map((x) => {
+                        const b = {
+                            isbn: x.isbn,
+                            title: x.title,
+                            author_name: x.author,
+                            publisher_name: x.publisherName,
+                            medium_image_url: x.mediumImageUrl,
+                            small_image_url: x.smallImageUrl,
+                            item_url: x.itemUrl,
+                            affiliate_url: x.affiliateUrl,
+                        } as PostBookForm;
+                        return api.books.createWith(token, b);
                     });
+                })
+                .then((p) => {
                     return Promise.all(p);
                 })
                 .then(() => {
