@@ -3,9 +3,12 @@
         <v-row class="flex-row flex-row-reverse text-center" v-if="applySmall()">
             <v-col class="pa-0" style="background-color: gray;">
                 <div class="container policy">
-                    <router-link class="policy" to="/policy">お問い合わせ、質問はこちら</router-link><span class="ml-3 mr-3">/</span>
-                    <router-link class="policy" to="/policy">BookStorageについて</router-link><span class="ml-3 mr-3">/</span>
-                    <router-link class="policy" to="/policy">privacy policy</router-link><span class="ml-3 mr-3">/</span>
+                    <a class="policy" href="https://docs.google.com/forms/d/e/1FAIpQLSduyq2V4hdH671SdSJFcBJXmiEuac8k6dsgaeaa8UNnUKnYwg/viewform?usp=sf_link" target="_blank">お問い合わせ/質問はこちら</a>
+                    <span class="ml-3 mr-3">/</span>
+                    <router-link class="policy" to="/about">BookStorageについて</router-link>
+                    <span class="ml-3 mr-3">/</span>
+                    <router-link class="policy" to="/policy">privacy policy</router-link>
+                    <span class="ml-3 mr-3">/</span>
                     ver. {{version}} <span class="vertical-line">|</span> &copy;2019 <strong>edgwbs.net</strong>
                 </div>
             </v-col>
