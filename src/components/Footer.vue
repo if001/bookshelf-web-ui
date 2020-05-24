@@ -12,19 +12,21 @@
         </v-row>
 
         <v-row class="flex-column" v-else>
-            <v-col style="background-color: gray;">
+            <v-col class="pa-0" style="background-color: gray;">
                 <div class="container mt-5 mb-5">
-                    <div class="mb-2">
-                        <a class="policy" href="https://docs.google.com/forms/d/e/1FAIpQLSduyq2V4hdH671SdSJFcBJXmiEuac8k6dsgaeaa8UNnUKnYwg/viewform?usp=sf_link" target="_blank">お問い合わせ/質問はこちら</a>
-                    </div>
-                    <div class="mb-2">
-                        <router-link class="policy" to="/about">BookStorageについて</router-link>
-                    </div>
-                    <div class="mb-2">
-                        <router-link class="policy" to="/policy">privacy policy</router-link>
-                    </div>
-                    <div class="policy">
-                        ver. {{version}} <span class="vertical-line">|</span> &copy;2019 <strong>edgwbs.net</strong>
+                    <div  v-bind:class="{ 'pl-3': this.$vuetify.breakpoint.xs }">
+                        <div class="mb-2">
+                            <a class="policy" href="https://docs.google.com/forms/d/e/1FAIpQLSduyq2V4hdH671SdSJFcBJXmiEuac8k6dsgaeaa8UNnUKnYwg/viewform?usp=sf_link" target="_blank">お問い合わせ/質問はこちら</a>
+                        </div>
+                        <div class="mb-2">
+                            <router-link class="policy" to="/about">BookStorageについて</router-link>
+                        </div>
+                        <div class="mb-2">
+                            <router-link class="policy" to="/policy">privacy policy</router-link>
+                        </div>
+                        <div class="policy">
+                            ver. {{version}} <span class="vertical-line">|</span> &copy;2019 <strong>edgwbs.net</strong>
+                        </div>
                     </div>
                 </div>
             </v-col>
@@ -45,6 +47,9 @@
         private applySmall(): boolean {
             const route = this.$router.app.$route.path;
             return route === '/' || route === '/login' || route === '/signup';
+        }
+        private breakPointIsXS(): boolean {
+            return this.$vuetify.breakpoint.name === 'xs';
         }
     }
 

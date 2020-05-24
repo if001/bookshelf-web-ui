@@ -35,15 +35,17 @@ export class RakutenSearchQuery {
     private isbn: string;
     private page: number;
     private perPage: number;
-    private sort: string | null;
+    private sort: string;
+    private genreID: string | null;
 
-    constructor(title: string, author: string, isbn: string, page: number, perPage: number, sort: string | null) {
+    constructor(title: string, author: string, isbn: string, page: number, perPage: number) {
         this.title = title;
         this.author = author;
         this.isbn = isbn;
         this.page = page;
         this.perPage = perPage;
-        this.sort = sort;
+        this.sort = 'sales';
+        this.genreID = '001004';
     }
 
     public setPaginate(page: number, perPage: number) {
@@ -59,6 +61,9 @@ export class RakutenSearchQuery {
     public setSort(sort: string) {
         this.sort = sort;
     }
+    public setGenreID(genreID: string | null) {
+        this.genreID = genreID;
+    }
     public make(): Query {
         const p: Query = {
             applicationId: appID,
@@ -66,8 +71,7 @@ export class RakutenSearchQuery {
             page: this.page,
             hits: this.perPage,
             outOfStockFlag: 1,
-            sort: 'sales',
-            booksGenreId: '001004',
+            sort: this.sort,
         };
         // outOfStockFlag
         // 売り切れ商品も表示させない: 0
@@ -82,8 +86,8 @@ export class RakutenSearchQuery {
         if (this.isbn.length !== 0) {
             p.isbn = this.isbn;
         }
-        if (this.sort !== null) {
-            p.sort = this.sort;
+        if (this.genreID !== null) {
+            p.booksGenreId = this.genreID;
         }
         return p;
     }
@@ -95,7 +99,6 @@ export function makeEmptyQuery(): RakutenSearchQuery {
         '',
         1,
         1,
-        null,
     );
 }
 

@@ -93,7 +93,9 @@
             </div>
 
             <v-col cols="12" lg="4" md="4" sm="6" v-else class="pa-2" v-for="result in getSearchResult" v-bind:key="result.isbn">
-                <v-card raised color="white" class="black--text" @click="selectBook(result)" style="cursor:pointer">
+                <v-card raised color="white" class="black--text" @click="selectBook(result)"
+                        style="cursor:pointer"
+                        v-bind:class="[breakPointIsXS() ? 'elevation-0' : ` elevation-2`  ]">
                     <v-row no-gutters>
                         <v-col cols="8" class="ma-0 pa-2">
                             <div class="ma-1" style="width: 100%; float:left; font-size: 0.9em; font-weight: 600;">{{reshapeString(result.title)}}</div>
@@ -120,6 +122,7 @@
                             <img style="float:right;" :src="result.mediumImageUrl" height="128px;">
                         </v-col>
                     </v-row>
+                    <v-divider v-if="breakPointIsXS()"></v-divider>
                 </v-card>
             </v-col>
         </v-row>
@@ -224,7 +227,6 @@
                 this.inputISBNForSearch,
                 this.page,
                 this.perPage,
-                null,
             );
             this.searchByRakuten();
         }
@@ -535,6 +537,10 @@
             } else if (this.selectSearchCondition.key === 'e_book') {
                 this.searchFunc = rakutenAPI.searchEbook;
             }
+        }
+
+        private breakPointIsXS(): boolean {
+            return this.$vuetify.breakpoint.name === 'xs';
         }
     }
 

@@ -53,6 +53,7 @@
             if (this.isOpenDialog && this.isbn) {
                 const query = makeEmptyQuery();
                 query.setISBN(this.isbn);
+                query.setGenreID(null);
                 this.loadBook(query);
             }
         }
