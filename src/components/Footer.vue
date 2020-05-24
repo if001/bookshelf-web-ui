@@ -14,9 +14,9 @@
             </v-col>
         </v-row>
 
-        <v-row class="flex-column" v-else>
+        <v-row class="flex-column ma-0" v-else>
             <v-col class="pa-0" style="background-color: gray;">
-                <div class="container mt-5 mb-5">
+                <div class="container mt-5 mb-5 pa-0">
                     <div  v-bind:class="{ 'pl-3': this.$vuetify.breakpoint.xs }">
                         <div class="mb-2">
                             <a class="policy" href="https://docs.google.com/forms/d/e/1FAIpQLSduyq2V4hdH671SdSJFcBJXmiEuac8k6dsgaeaa8UNnUKnYwg/viewform?usp=sf_link" target="_blank">お問い合わせ/質問はこちら</a>
