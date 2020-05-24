@@ -360,6 +360,7 @@
     import AdComponent from '@/components/AdComponent.vue';
     import rakutenAPI, {Content, makeEmptyQuery, RakutenSearchQuery, SearchResult} from '@/rakutenAPI';
     import NotRegisterBookDetailModalComponent from '@/components/NotRegisterBookDetailModalComponent.vue';
+    import {BaseComponent} from '@/utils/utils';
 
     interface BookDetail extends Book {
         isOpen: boolean;
@@ -381,7 +382,7 @@
             detail_modal: NotRegisterBookDetailModalComponent,
         },
     })
-    export default class BookDetailView extends Vue {
+    export default class BookDetailView extends BaseComponent {
         private book: Book | null = null;
         private bookForShow: BookDetail | null = null; // 表示する方
         private bookForEdit: BookDetail | null = null; // 書き換える方
@@ -410,6 +411,15 @@
         private bookDetailDialog: boolean = false;
         private selectBookISBN: string | null = null;
         private registerAlert = false;
+
+        public mounted() {
+            super.mounted();
+            this.bookForEdit = null;
+            this.bookForShow = null;
+            // this.categories = [];
+            // this.loadAuthors();
+            this.loadBookDetail().then(() => this.isLoadingBook = false);
+        }
 
         private openDetailModal(selectBook: Content) {
             this.selectBookISBN = selectBook.isbn;
@@ -463,15 +473,6 @@
                 }
                 return base + '?text=' + ' [' + bookInfo + '] ' + text + '&hashtags=' + hashTag + '&url=' + bookURL;
             }
-        }
-
-        private mounted() {
-            window.scrollTo(0, 0);
-            this.bookForEdit = null;
-            this.bookForShow = null;
-            // this.categories = [];
-            // this.loadAuthors();
-            this.loadBookDetail().then(() => this.isLoadingBook = false);
         }
 
         private loadBookDetail(): Promise<boolean> {

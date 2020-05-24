@@ -6,7 +6,7 @@
                         centered
                         grow
                         show-arrows
-                        v-bind:class="[breakPointIsXS() ? 'pr-0 pl-0 pt-3 pb-3' : 'pa-3']">
+                        v-bind:class="[$vuetify.breakpoint.xs ? 'pr-0 pl-0 pt-3 pb-3' : 'pa-3']">
                     <v-tab class="pa-0 pb-3"
                             v-for="f in filterObject"
                             :key="f.displayName"
@@ -99,12 +99,12 @@
                     <v-col v-for="book in booksShow"
                            :key="book.id"
                            cols="12" lg="4" md="6" sm="12"
-                           v-bind:class="[breakPointIsXS() ? 'pa-0 pt-0 pb-0' : 'pa-3 pt-2 pb-2']">
+                           v-bind:class="[$vuetify.breakpoint.xs ? 'pa-0 pt-0 pb-0' : 'pa-3 pt-2 pb-2']">
                         <v-hover>
                             <v-card
                                     slot-scope="{ hover }"
                                     @click="toBookDetail(book.id)"
-                                    v-bind:class="[breakPointIsXS() ? 'elevation-0' : ` elevation-${hover ? 12 : 2}`  ]">
+                                    v-bind:class="[$vuetify.breakpoint.xs ? 'elevation-0' : ` elevation-${hover ? 12 : 2}`  ]">
                                 <v-card-title style="font-size: 1.2em;padding-bottom: 0px;">
                                     <v-col align-self="center" class="ma-0 pa-0 bot-char">{{book.title}}</v-col>
                                     <v-btn
@@ -123,7 +123,7 @@
                                         ({{ (book.publisher != null) ? book.publisher.name : "not set" }})
                                     </v-col>
                                 </v-card-text>
-                                <v-divider v-if="breakPointIsXS()"></v-divider>
+                                <v-divider v-if="$vuetify.breakpoint.xs"></v-divider>
                             </v-card>
                         </v-hover>
                     </v-col>
@@ -161,13 +161,14 @@
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
     import api, {Book, errorRoute, getToken} from '@/api';
+    import {BaseComponent, toTop} from '@/utils/utils';
 
     interface BookShow extends Book {
         isOpen: boolean;
     }
 
     @Component
-    export default class BooksView extends Vue {
+    export default class BooksView extends BaseComponent {
         private booksShow: BookShow[] = [];
         private books: Book[] = [];
         private totalCount: number = 0;
@@ -203,8 +204,8 @@
         private searchKeyForBook: string | null = null;
 
         public mounted() {
+            super.mounted();
             this.load(this.page, this.perPage, this.selectSortKey.sortKey, this.selectStateFilter, this.searchKeyForBook);
-            toTop();
         }
 
         private load(page: number | null, perPage: number | null, sortKey: string | null,
@@ -306,13 +307,6 @@
         private toRegister() {
             this.$router.push('/register');
         }
-
-        private breakPointIsXS(): boolean {
-            return this.$vuetify.breakpoint.name === 'xs';
-        }
-    }
-    function toTop() {
-        window.scrollTo(0, 0);
     }
 
 </script>

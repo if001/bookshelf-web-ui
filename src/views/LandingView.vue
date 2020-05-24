@@ -113,6 +113,7 @@
     import About from '@/components/About.vue';
     import firebase from 'firebase/app';
     import 'firebase/auth';
+    import {BaseComponent} from '@/utils/utils';
 
     @Component({
         components: {
@@ -120,7 +121,7 @@
             'about': About,
         },
     })
-    export default class LandingView extends Vue {
+    export default class LandingView extends BaseComponent {
         private email: string = '';
         private password: string = '';
         private valid = false;
@@ -140,7 +141,7 @@
         ];
 
         public mounted() {
-            window.scrollTo(0, 0);
+            super.mounted();
             const isRedirectAfter = localStorage.getItem(this.isRedirectLogin);
             if (isRedirectAfter != null && isRedirectAfter === 'true') {
                 this.afterRedirect();
@@ -262,11 +263,6 @@
             return (isiPhone || isiPad || isAndroid || isAndroidTablet);
         }
 
-
-        // todo booksViewでも使ってるのでまとめる
-        private brackPointIsXS(): boolean {
-            return this.$vuetify.breakpoint.name === 'xs';
-        }
         // todo searchComponentでも使ってるのでまとめる
         private toLoginBox() {
             const target = document.getElementById('loginBox');

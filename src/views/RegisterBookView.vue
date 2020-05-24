@@ -153,6 +153,7 @@
     import api, {Author, Category, errorRoute, getToken, Publisher} from '@/api';
     import Footer from '@/components/Footer.vue';
     import {Content} from '@/rakutenAPI';
+    import {BaseComponent} from '@/utils/utils';
 
     interface CategoryWithChip extends Category {
         chip: boolean;
@@ -167,7 +168,7 @@
             'v-footer': Footer,
         },
     })
-    export default class RegisterBookView extends Vue {
+    export default class RegisterBookView extends BaseComponent {
         private bookName: string = '';
         private authorName: string = '';
         private smallBookImage: string = '';
@@ -193,7 +194,7 @@
         private inputAuthorForSarch: string = '';
 
         public mounted() {
-            window.scrollTo(0, 0);
+            super.mounted();
             // this.categories = [];
             this.authors = [];
             this.publishers = [];

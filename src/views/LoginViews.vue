@@ -128,13 +128,14 @@
     import firebase from 'firebase/app';
     import 'firebase/auth';
     import Footer from '@/components/Footer.vue';
+    import {BaseComponent} from '@/utils/utils';
 
     @Component({
         components: {
             'v-footer': Footer,
         },
     })
-    export default class LoginViews extends Vue {
+    export default class LoginViews extends BaseComponent {
         private email: string = '';
         private password: string = '';
         private valid = false;
@@ -154,7 +155,7 @@
         ];
 
         public mounted() {
-            window.scrollTo(0, 0);
+            super.mounted();
             const isRedirectAfter = localStorage.getItem(this.isRedirectLogin);
             if (isRedirectAfter != null && isRedirectAfter === 'true') {
                 this.afterRedirect();

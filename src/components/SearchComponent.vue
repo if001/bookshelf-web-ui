@@ -161,7 +161,8 @@
     import {Component, Emit, Vue} from 'vue-property-decorator';
     import api, {Author, Publisher, ContentResult, getToken, errorRoute} from '@/api';
     import rakutenAPI, {SearchResult, Content, RakutenSearchQuery} from '@/rakutenAPI';
-    import {AxiosPromise, AxiosResponse} from 'axios';
+    import {AxiosPromise} from 'axios';
+    import {BaseComponent, toTop} from '@/utils/utils';
 
     export interface SearchResultWithCheck {
         isbn: string;
@@ -179,7 +180,7 @@
     const maxRegisterNum: number = 8;
 
     @Component
-    export default class SearchComponent extends Vue {
+    export default class SearchComponent extends BaseComponent {
         private validTitleSearchBox: boolean = true;
         private validAuthorSearchBox: boolean = true;
         private searchResult: SearchResult | null = null;
@@ -215,8 +216,8 @@
         @Emit()
         private select(book: Content) {}
 
-        private mounted() {
-            toTop();
+        public mounted() {
+            super.mounted();
         }
 
         private searchBook() {
@@ -542,10 +543,6 @@
         private breakPointIsXS(): boolean {
             return this.$vuetify.breakpoint.name === 'xs';
         }
-    }
-
-    function toTop() {
-        window.scrollTo(0, 0);
     }
 
     function toSearchBox() {
