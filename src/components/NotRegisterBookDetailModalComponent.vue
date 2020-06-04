@@ -4,9 +4,14 @@
             :width=dialogWidth()
     >
         <v-card class="pa-5">
+            <div style="width: 10px;position: absolute;top:15px;right: 40px;">
+                <v-btn @click="isOpenDialog = false" outlined fab x-small>
+                    <v-icon small>mdi-close</v-icon>
+                </v-btn>
+            </div>
             <v-row justify="center">
                 <v-col col="10" lg="8" md="8" align="center">
-<!--                    <h2>{{this.searchBook ? this.searchBook.title : ''}}</h2>-->
+                    <!--                    <h2>{{this.searchBook ? this.searchBook.title : ''}}</h2>-->
                     <p style="font-size: 1.4em;font-weight: bold;">{{title}}</p>
                     <p>{{author}}</p>
                     <p>{{publisher}}</p>
