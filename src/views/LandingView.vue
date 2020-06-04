@@ -9,7 +9,7 @@
             <about></about>
 
             <v-row justify="center" style="color: dimgrey;">
-                <v-col cols="10" align="center" class="ma-5" id="loginBox">
+                <v-col cols="12" lg="10" md="10" align="center" class="ma-5" id="loginBox">
                     <v-row align="stretch">
                         <v-col cols="12">
                             <div style="font-size: 1.5em;">ログインはこちらから</div>
