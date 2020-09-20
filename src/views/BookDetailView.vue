@@ -910,7 +910,11 @@
             const query = makeEmptyQuery();
             query.setPaginate(1, 4);
             if (this.bookForShow && this.bookForShow.author) {
-                query.setAuthor(this.bookForShow.author.name);
+                let authorName = this.bookForShow.author.name;
+                if (this.bookForShow.author.name.includes('/')) {
+                    authorName = this.bookForShow.author.name.split('/')[0];
+                }
+                query.setAuthor(authorName);
                 query.setSort('sales');
                 return rakutenAPI.search(query).then()
                     .then((res) => {
