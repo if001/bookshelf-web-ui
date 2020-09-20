@@ -1,5 +1,5 @@
 <template>
-    <v-container style="min-height: 87vh;">
+    <v-container style="min-height: calc(100vh);">
         <v-row class="mb-3" justify="space-around" v-bind:class="[brackPointIsXS() ? 'ma-0' : 'ma-2' ]">
             <v-col cols=12 lg=4 md=5 class="ma-0 pa-0 pt-2 pb-2">
                 <v-card color="white" v-bind:class="[brackPointIsXS() ? 'elevation-0' : ` elevation-2`  ]">
@@ -195,16 +195,22 @@
 
                     <v-row column justify-end class="ma-0 pr-2 pl-2 pt-1 pb-1" v-if="!isOpen">
                         <v-col class="pa-0" cols="4">
-                            <div v-if="createTwitterURL() != null" class="twitter-link share-button">
-                                <a :href="createTwitterURL()"
-                                   onClick="window.open(encodeURI(decodeURI(this.href)), 'tweetwindow', 'width=650, height=470, personalbar=0, toolbar=0, scrollbars=1, sizable=1'); return false;"
-                                   rel="nofollow"
-                                   style="text-decoration:none;">
-                                    <img src="@/assets/twitter-icon-96.png" alt="twittericon" height="24px" style="vertical-align: middle; ">
-                                    Share
-                                </a>
-                            </div>
-                            <div v-else class="twitter-link-disable share-button">
+                            <v-tooltip top v-model="showShare">
+                                <template v-slot:activator="{ on }">
+                                    <div v-if="createTwitterURL() != null" class="twitter-link share-button" v-on="on">
+                                        <a :href="createTwitterURL()"
+                                           onClick="window.open(encodeURI(decodeURI(this.href)), 'tweetwindow', 'width=650, height=470, personalbar=0, toolbar=0, scrollbars=1, sizable=1'); return false;"
+                                           rel="nofollow"
+                                           style="text-decoration:none;">
+                                            <img src="@/assets/twitter-icon-96.png" alt="twittericon" height="24px" style="vertical-align: middle; ">
+                                            Share
+                                        </a>
+                                    </div>
+                                </template>
+                                <span>読み終わった本をShareしましょう</span>
+                            </v-tooltip>
+
+                            <div v-if="createTwitterURL() == null" class="twitter-link-disable share-button">
                                 <img src="@/assets/twitter-icon-96-disable.png" alt="twittericon" height="24px" style="vertical-align: middle; padding: 2px">
                                 Share
                             </div>
@@ -398,6 +404,7 @@
         private bookDetailDialog: boolean = false;
         private selectBookISBN: string | null = null;
         private registerAlert = false;
+        private showShare: boolean = false;
 
         public mounted() {
             super.mounted();
@@ -830,6 +837,8 @@
                 if (result) {
                     result
                         .then(() => {
+                            this.showShare = true;
+                            setTimeout(() => { this.showShare = false }, 3000);
                             return this.setSimilarBookByRakutenSearch();
                         })
                         .then(() => {
