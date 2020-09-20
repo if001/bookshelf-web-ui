@@ -32,8 +32,7 @@
     export default class Footer extends Vue {
         @Prop({default: false}) private isForceFixed!: boolean;
 
-        private version: string = '1.0.0';
-        private hoge = "hoge";
+        private version: string = '1.1.0';
 
         private breakPointIsXS(): boolean {
             return this.$vuetify.breakpoint.name === 'xs';

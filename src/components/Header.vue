@@ -89,11 +89,11 @@
         }
 
         private toTopPage() {
-            this.$router.push('/bookshelf')
+            this.$router.push('/bookshelf');
         }
 
         @Watch('$route', { immediate: true, deep: true })
-        onUrlChange(route: Route) {
+        private onUrlChange(route: Route) {
             switch (route.name) {
                 case 'bookDetail':
                     this.isBackButton = true;

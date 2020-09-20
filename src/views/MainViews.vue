@@ -53,7 +53,7 @@
         }
 
         @Watch('$route', { immediate: true, deep: true })
-        onUrlChange(route: Route) {
+        private onUrlChange(route: Route) {
             this.$router.beforeEach((to, from, next) => {
                 this.translate = getTranslate(
                     from.name ? from.name : '',
