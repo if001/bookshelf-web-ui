@@ -132,7 +132,7 @@
             </v-col>
         </v-row>
 
-        <v-row>
+        <v-row v-if="booksShow.length !== 0">
             <v-col cols=12 md="12" class="mt-2 mb-5 text-xs-center">
                 <v-pagination
                         v-model="page"
