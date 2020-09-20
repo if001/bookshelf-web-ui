@@ -72,9 +72,9 @@
         </v-row>
 
         <v-row justify="center">
-            <div v-if="loading" style="margin: auto;">
+            <div v-if="loading" class="loading-content">
                 <div style="display:inline-block; padding-right: 15px;">loading...</div>
-                <div class="loading loading-content">
+                <div class="loading">
                     <v-icon large>fa-book</v-icon>
                 </div>
             </div>
@@ -96,7 +96,7 @@
                     </v-col>
                 </v-row>
 
-                <v-row class="ma-0 pa-0">
+                <transition-group row wrap class="row ma-0 pa-0" tag="div" name="fade-left">
                     <v-col v-for="book in booksShow"
                            :key="book.id"
                            cols="12" lg="4" md="6" sm="12"
@@ -114,8 +114,8 @@
                                             color="dark">
                                         <v-icon large
                                                 color="blue-grey darken-1"
-                                            >{{ bookState(book.start_at, book.end_at).icon }}
-                                        </v-icon>
+                                        >{{ bookState(book.start_at, book.end_at).icon }}
+                                            </v-icon>
                                     </v-btn>
                                 </v-card-title>
                                 <v-card-text style="font-size: 0.8em;">
@@ -128,7 +128,7 @@
                             </v-card>
                         </v-hover>
                     </v-col>
-                </v-row>
+                </transition-group>
             </v-col>
         </v-row>
 
@@ -329,12 +329,19 @@
         min-height: 87vh;
     }
 
+
+    .loading-content {
+        position: fixed;
+        top: 250px;
+        z-index: 30;
+        background-color: white;
+        padding: 20px;
+        color: gray;
+    }
+
     .loading {
         display: inline-block;
         font-size: 3em;
-    }
-
-    .loading-content {
         animation: r1 1s linear infinite;
     }
 

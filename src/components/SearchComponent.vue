@@ -79,7 +79,7 @@
             </v-col>
         </v-row>
 
-        <v-row justify="start">
+        <transition-group row wrap class="row ma-0 pa-0" tag="div" name="fade-left">
             <div v-if="isSearchLoading" style="margin: auto;">
                 <div style="display:inline-block; padding-right: 15px;">loading...</div>
                 <div class="loading loading-content">
@@ -125,7 +125,7 @@
                     <v-divider v-if="breakPointIsXS()"></v-divider>
                 </v-card>
             </v-col>
-        </v-row>
+        </transition-group>
 
         <v-row justify="center" v-if="getSearchResult.length !== 0">
             <v-col cols="12" class="mt-2 mb-4 text-xs-center">

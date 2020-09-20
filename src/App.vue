@@ -7,6 +7,7 @@
 </template>
 
 <style>
+  /* fade in left */
   .fade-left-enter {
     transform: translate(100px, 0);
     opacity: 0;
@@ -30,6 +31,7 @@
   }
 
 
+  /* fade in right */
   .fade-right-enter {
     transform: translate(-100px, 0);
     opacity: 0;
@@ -52,6 +54,8 @@
     transition: all .5s 0s ease;
   }
 
+
+  /* fade in */
   .fade-in-enter {
     opacity: 0;
   }
@@ -68,6 +72,30 @@
     opacity: 0;
   }
   .fade-in-leave-active {
+    transition: all .5s 0s ease;
+  }
+
+
+  /* fade in top */
+  .fade-in-top-enter {
+    transform: translate(0, -1px);
+    opacity: 0;
+  }
+  .fade-in-top-enter-to {
+    opacity: 1;
+  }
+  .fade-in-top-enter-active {
+    transition: all 0.5s 0s ease;
+  }
+  .fade-in-top-leave {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  .fade-in-top-leave-to {
+    transform: translate(0, -1px);
+    opacity: 0;
+  }
+  .fade-in-top-leave-active {
     transition: all .5s 0s ease;
   }
 

@@ -9,6 +9,7 @@
             </v-btn>
         </h3>
 
+        <transition mode="out-in" name="fade-in-top">
         <div v-if="isOpenTextfield">
             <v-form
                     ref="form"
@@ -42,6 +43,7 @@
                 </div>
             </v-form>
         </div>
+        </transition>
 
         <div>
             <div v-if="isLoading" style="margin: auto;">
