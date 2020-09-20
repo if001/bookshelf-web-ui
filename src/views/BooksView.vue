@@ -1,5 +1,5 @@
 <template>
-    <v-container v-bind:class="{ xs_height: $vuetify.breakpoint.xs}">
+    <v-container v-bind:class="{ xs_height: $vuetify.breakpoint.xs }">
         <v-row justify="center" class="pa-0 pa-0">
             <v-col cols="12" class="ma-0 pa-0">
                 <v-tabs bark
@@ -95,6 +95,7 @@
                         <span class="pl-2" style="font-size: 1.5em;">{{totalCount}}</span>
                     </v-col>
                 </v-row>
+
                 <v-row class="ma-0 pa-0">
                     <v-col v-for="book in booksShow"
                            :key="book.id"

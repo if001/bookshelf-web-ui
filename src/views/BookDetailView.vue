@@ -321,19 +321,7 @@
                 </div>
             </v-col>
         </v-row>
-        <v-fab-transition>
-            <v-btn
-                    fab
-                    right
-                    color="blue"
-                    dark
-                    fixed
-                    v-show="!hiddenFab"
-                    style="bottom: 26px"
-                    @click="toListPage()">
-                <v-icon>mdi-arrow-left</v-icon>
-            </v-btn>
-        </v-fab-transition>
+
         <detail_modal :dialog="bookDetailDialog"
                       :isbn="selectBookISBN"
                       @closeDialogEvent="dialogPropsHandle"
@@ -347,7 +335,6 @@
                 登録しました
             </v-alert>
         </div>
-
     </v-container>
 </template>
 
