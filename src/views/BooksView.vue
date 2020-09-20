@@ -174,7 +174,7 @@
         private books: Book[] = [];
         private totalCount: number = 0;
         private page = 1;
-        private perPage: number = 15;
+        private perPage: number = 20;
         private loading: boolean = true;
 
         private createModalIsOpen: boolean = false;
@@ -196,11 +196,11 @@
         ];
         private selectStateFilter: string | null = null;
         private displayObject = [
-            {displayValue: 15, displayName: '15'},
+            {displayValue: 20, displayName: '20'},
             {displayValue: 30, displayName: '30'},
             {displayValue: 45, displayName: '45'},
         ];
-        private selectDisplayNumber =  {displayValue: 15, displayName: '15'};
+        private selectDisplayNumber =  this.displayObject[0];
 
         private searchKeyForBook: string | null = null;
 
