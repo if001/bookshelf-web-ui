@@ -1,116 +1,99 @@
 <template>
     <v-app light>
-        <v-container style="height: 100%;">
-            <v-row justify="center">
-                <v-col cols="12" lg="8" md="8">
-                    <div class="display-1" style="text-align: center; color: dimgrey;">
-                        ログイン
-                    </div>
-                </v-col>
-            </v-row>
+        <v-container>
 
-            <v-row justify="center" v-if="alert">
-                <v-col lg="6" md="6" sm="6" xs="12" class="pa-1" >
-                    <v-alert
-                            v-if="alert"
-                            v-model="alert"
-                            dismissible
-                            color="error"
-                            icon="mdi-warning"
-                            outlined
-                            @click="alert = false">
-                        {{message}}
-                    </v-alert>
-                </v-col>
-            </v-row>
+            <div style="position: absolute; top:1.0em; right: 2.0em;">
+                <v-btn color="black" small outlined @click="toLoginBox()">ログイン</v-btn>
+            </div>
 
-            <v-row justify="center">
-                <v-col lg="4" md="4" sm="4" xs="10">
-                    <v-form ref="form"
-                            lazy-validation
-                            v-model="valid"
-                            @submit.prevent="login">
-                        <v-text-field
-                                v-model="email"
-                                label="Email"
-                                :rules="emailRules"
-                                prepend-icon="mdi-email"
-                                required
-                        ></v-text-field>
-                        <v-text-field
-                                v-model="password"
-                                label="Password"
-                                :type="showPassword ? 'text' : 'password'"
-                                :rules="passRules"
-                                :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                                @click:append="showPassword = !showPassword"
-                                prepend-icon="mdi-lock"
-                                required
-                        ></v-text-field>
-                        <v-btn id="login_button" type="submit" :loading="isLoading" block color="#1E90FF" dark>
-                            ログイン
-                        </v-btn>
-                    </v-form>
-                </v-col>
-            </v-row>
+            <about></about>
 
-
-            <v-row justify="center">
-                <v-col>
-                    <div class="create-account-link pa-2">
-                        <router-link to="/reset_password">パスワードを忘れた場合</router-link>
-                    </div>
-                </v-col>
-            </v-row>
-
-            <v-row justify="center">
-                <v-col>
-                    <div class="create-account-link pa-2">
-                        アカウントがない場合
-                        <router-link to="/signup">アカウントを登録する</router-link>
-                    </div>
-                </v-col>
-            </v-row>
-
-            <v-row justify="center">
-                <v-col lg="8" md="8" sm="8" xs="8" style="text-align: center">
-                    <v-btn
-                            fab
-                            color="gray"
-                            disabled>
-                        or
-                    </v-btn>
-                </v-col>
-            </v-row>
-
-            <v-row justify="center">
-                <v-col cols="10" lg=8 md=8 class="pa-3" align="center">
-                    <div class="google-login-a" @click="loginWithGoogleByRedirect"></div>
-                </v-col>
-                <v-col cols="10" lg=8 md=8 class="pa-3" align="center">
-                    <v-btn class="twitter-login-btn"
-                           color="white" elevation="1"
-                           @click="loginWithTwitter">
-                        <img style="height: 25px;width: 25px;" src="@/assets/twitter-icon-96.png">
-                        <div style="font-size: 1.2em; color:dimgrey; padding-left: 10px;letter-spacing: -0.1px;">Sign in with Twitter</div>
-                    </v-btn>
-                </v-col>
-                <v-col cols="10" lg=8 md=8 class="pa-3" align="center">
-                    <p style="font-size: 0.8em; color:dimgray">※ログインにのみ使われます</p>
+            <v-row justify="center" style="color: dimgrey;">
+                <v-col cols="12" lg="10" md="10" align="center" class="ma-5" id="loginBox">
+                    <v-row align="stretch">
+                        <v-col cols="12">
+                            <div style="font-size: 1.5em;">ログインはこちらから</div>
+                        </v-col>
+                        <v-col cols="12" lg="6" md="6">
+                            <v-card style="height: 100%;" class="pa-5">
+                                <v-row justify="center" align="center">
+                                    <v-col cols="12" class="pa-2"
+                                           style="font-weight:bold; color:dimgrey;">
+                                        外部サービスでログイン
+                                    </v-col>
+                                    <v-col cols="12" class="pa-3">
+                                        <div class="google-login-a" @click="loginWithGoogleByRedirect"></div>
+                                    </v-col>
+                                    <v-col cols="12" class="pa-3">
+                                        <v-btn class="twitter-login-btn"
+                                               color="white" elevation="1"
+                                               @click="loginWithTwitter">
+                                            <img style="height: 25px;width: 25px;" src="@/assets/twitter-icon-96.png">
+                                            <div style="font-size: 1.2em; color:dimgrey; padding-left: 10px;letter-spacing: -0.1px;">Sign in with Twitter</div>
+                                        </v-btn>
+                                    </v-col>
+                                    <p style="font-size: 0.8em; color:dimgray">※ログインにのみ使われます</p>
+                                </v-row>
+                            </v-card>
+                        </v-col>
+                        <v-col cols="12" lg="6" md="6">
+                            <v-card class="pa-5" style="height: 100%;">
+                                <v-row justify="center" class="pa-0 ma-0">
+                                    <v-col cols="12" class="pa-2"
+                                           style="font-weight:bold; color:dimgrey;">
+                                        メールアドレスでログイン
+                                    </v-col>
+                                    <v-col cols="10" class="pa-0 ma-0">
+                                        <v-form ref="form"
+                                                lazy-validation
+                                                v-model="valid"
+                                                @submit.prevent="login">
+                                            <v-text-field
+                                                    v-model="email"
+                                                    label="Email"
+                                                    :rules="emailRules"
+                                                    prepend-icon="mdi-email"
+                                                    required
+                                            ></v-text-field>
+                                            <v-text-field
+                                                    v-model="password"
+                                                    label="Password"
+                                                    :type="showPassword ? 'text' : 'password'"
+                                                    :rules="passRules"
+                                                    :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                                                    @click:append="showPassword = !showPassword"
+                                                    prepend-icon="mdi-lock"
+                                                    required
+                                            ></v-text-field>
+                                            <v-btn id="login_button_landing" type="submit" :loading="isLoading" block color="black" outlined>
+                                                ログイン
+                                            </v-btn>
+                                        </v-form>
+                                    </v-col>
+                                    <v-col cols="12">
+                                        <div class="create-account-link pa-2" style="font-size: 0.8em;">
+                                            <router-link to="/reset_password">パスワードを忘れた場合</router-link>
+                                        </div>
+                                    </v-col>
+                                </v-row>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col class="pa-5">
+                            <v-btn @click="toSignUpPage()" color="#1E90FF" dark>新規登録</v-btn>
+                        </v-col>
+                    </v-row>
                 </v-col>
             </v-row>
         </v-container>
-        <v-footer></v-footer>
+        <v-footer :isForceFixed="true"></v-footer>
         <v-dialog
                 v-model="isLoading"
                 hide-overlay
                 persistent
-                width="300"
-        >
-            <v-card
-                    color="primary"
-                    dark
-            >
+                width="300">
+            <v-card color="primary" dark>
                 <v-card-text>
                     Login ...
                     <v-progress-linear
@@ -123,19 +106,22 @@
         </v-dialog>
     </v-app>
 </template>
+
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
+    import Footer from '@/components/Footer.vue';
+    import About from '@/components/About.vue';
     import firebase from 'firebase/app';
     import 'firebase/auth';
-    import Footer from '@/components/Footer.vue';
     import {BaseComponent} from '@/utils/utils';
 
     @Component({
         components: {
             'v-footer': Footer,
+            'about': About,
         },
     })
-    export default class LoginViews extends BaseComponent {
+    export default class LandingView extends BaseComponent {
         private email: string = '';
         private password: string = '';
         private valid = false;
@@ -146,7 +132,7 @@
         private isRedirectLogin = 'isRedirectLogin';
         private loginErrorMessage = 'メールアドレスまたはパスワードが間違っています';
         private passRules = [
-            (v: any) => !!v || 'Password is required',
+            (v: any) => !!v || 'Name is required',
         ];
 
         private emailRules = [
@@ -191,6 +177,7 @@
                     this.isLoading = false;
                 });
         }
+
         private loginWithTwitter() {
             localStorage.setItem('isRedirectLogin', 'true');
             const provider = new firebase.auth.TwitterAuthProvider();
@@ -276,16 +263,24 @@
             return (isiPhone || isiPad || isAndroid || isAndroidTablet);
         }
 
+        // todo searchComponentでも使ってるのでまとめる
+        private toLoginBox() {
+            const target = document.getElementById('loginBox');
+            if (target) {
+                const posY = target.getBoundingClientRect().top;
+                window.scrollTo(0, posY + window.pageYOffset);
+            }
+        }
+
+        private toSignUpPage() {
+            this.$router.push('/signup');
+        }
     }
+
+
 </script>
 
 <style scoped>
-    .warning-font {
-        color: #db4448;
-        font-size: 1.0em;
-        padding: 10px;
-        text-align: center;
-    }
     .google-login-a {
         cursor: pointer;
         background-image:url('../assets/btn_google_signin_light_normal_web.png');
@@ -300,10 +295,22 @@
         width: 191px;
         height: 46px;
     }
+    .google-login-icon {
+        background-image:url('../assets/btn_google_light_normal_icon.svg');
+    }
+    .twitter-login-btn {
+        text-transform: none;
+        width: 191px;
+        height:46px;
+        font-size: 12px;
+    }
+    .pd-divier{
+        padding-bottom: 5em;
+    }
 
     .create-account-link {
         text-align: center;
-        font-color: dimgray;
+        color: dimgray;
     }
 
     .create-account-link a:link {
@@ -322,17 +329,4 @@
     .create-account-link a:active {
         color: dimgray;
     }
-    .twitter-login-btn {
-        text-transform: none;
-        width: 191px;
-        height:46px;
-        font-size: 12px;
-    }
-
-    .divide {
-        border: 0 none;
-        height: 2px;
-        border-top: 1px solid #8c8b8b;
-    }
-
 </style>

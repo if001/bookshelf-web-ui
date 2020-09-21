@@ -12,12 +12,10 @@
             <v-row cols="8" justify="center">
                 <v-col lg="8" md="8" sm="8" xs="8">
                     <v-tabs v-model="selectTab"
-                            background-color="grey lighten-5"
                             bark
                             :centered="true"
                             :grow="true">
                         <v-tab
-                                color="grey lighten-5"
                                 v-for="f in tabObject"
                                 :key="f.displayName"
                                 @click="changeTab(f.tag)"
@@ -28,125 +26,122 @@
                 </v-col>
             </v-row>
 
-            <v-row justify="center" cols="12"  v-if="isSearchWeb" >
-                <v-col justify="center">
-                    <SearchComponent
-                            @select="searchSelect"></SearchComponent>
-                </v-col>
-            </v-row>
+            <transition name="fade-right">
+                <v-row key=1 justify="center" cols="12" v-if="isSearchWeb">
+                    <v-col justify="center">
+                        <SearchComponent
+                                @select="searchSelect"></SearchComponent>
+                    </v-col>
+                </v-row>
+                <v-row key=2 cols="12" v-else>
+                    <v-col cols="12">
+                        <v-row justify="center">
+                            <v-col lg="8" md="8" sm="12" xs="12" class="pa-2">
+                                <v-form
+                                        ref="form"
+                                        v-model="validInputForm"
+                                        lazy-validation
+                                >
+                                    <div class="pl-2 pb-2">
+                                        <v-text-field
+                                                :counter="40"
+                                                maxlength="40"
+                                                label="Title"
+                                                v-model="bookName"
+                                                required
+                                                @blur="setFirstFocus"
+                                        ></v-text-field>
+                                    </div>
 
-            <v-row cols="12" v-else>
-                <v-col cols="12">
+                                    <div class="pl-2 pb-2">
+                                        <v-text-field
+                                                :counter="40"
+                                                maxlength="40"
+                                                label="Author"
+                                                v-model="authorName"
+                                                @blur="setFirstFocus"
+                                        ></v-text-field>
+                                        <!--                            <v-combobox-->
+                                        <!--                                    v-model="authorName"-->
+                                        <!--                                    :items="getAuthors"-->
+                                        <!--                                    maxlength="40"-->
+                                        <!--                                    :counter="40"-->
+                                        <!--                                    height="40px;"-->
+                                        <!--                                    label="author"-->
+                                        <!--                            ></v-combobox>-->
+                                    </div>
 
-                    <v-row justify="center">
-                        <v-col lg="8" md="8" sm="12" xs="12" class="pa-2">
-                            <v-form
-                            ref="form"
-                            v-model="validInputForm"
-                            lazy-validation
-                            >
+                                    <div class="pl-2 pb-2">
+                                        <v-combobox
+                                                v-model="publisherName"
+                                                :items="getPublishers"
+                                                maxlength="40"
+                                                :counter="40"
+                                                height="40px;"
+                                                label="Publisher"
+                                        ></v-combobox>
+                                    </div>
+
+                                    <!-- TODO カテゴリは一旦消しとく-->
+                                    <!--<h2 blue lighten-1>-->
+                                    <!--カテゴリ-->
+                                    <!--</h2>-->
+                                    <!--<div class="pl-2 pb-2">-->
+                                    <!--<div style="width:40%">-->
+                                    <!--<v-text-field-->
+                                    <!--:counter="10"-->
+                                    <!--maxlength="10"-->
+                                    <!--label="category"-->
+                                    <!--v-model="inputCategory"-->
+                                    <!--v-on:keydown.enter="appendCategory"-->
+                                    <!--&gt;</v-text-field>-->
+                                    <!--</div>-->
+                                    <!--</div>-->
+
+                                    <!--<div>-->
+                                    <!--<div style="display: flex; flex-wrap: wrap;">-->
+                                    <!--<div class="ma-0;width:auto;" v-for="category in categories">-->
+                                    <!--<v-chip v-model="category.chip"-->
+                                    <!--close-->
+                                    <!--color="blue lighten-1"-->
+                                    <!--outline-->
+                                    <!--text-color="black"-->
+                                    <!--&gt;{{ category.name }}-->
+                                    <!--</v-chip>-->
+                                    <!--</div>-->
+                                    <!--</div>-->
+                                    <!--</div>-->
+
+                                </v-form>
                                 <div class="pl-2 pb-2">
-                                    <v-text-field
-                                            :counter="40"
-                                            maxlength="40"
-                                            label="title"
-                                            v-model="bookName"
-                                            required
-                                            @blur="setFirstFocus"
-                                    ></v-text-field>
+                                    <img style="float:right;" :src="mediumBookImage" :height="(mediumBookImage != null && mediumBookImage !=='')? '120px;':'0'">
                                 </div>
-
-                                <div class="pl-2 pb-2">
-                                    <v-text-field
-                                            :counter="40"
-                                            maxlength="40"
-                                            label="author"
-                                            v-model="authorName"
-                                            @blur="setFirstFocus"
-                                    ></v-text-field>
-        <!--                            <v-combobox-->
-        <!--                                    v-model="authorName"-->
-        <!--                                    :items="getAuthors"-->
-        <!--                                    maxlength="40"-->
-        <!--                                    :counter="40"-->
-        <!--                                    height="40px;"-->
-        <!--                                    label="author"-->
-        <!--                            ></v-combobox>-->
-                                </div>
-
-                                <div class="pl-2 pb-2">
-                                    <v-combobox
-                                            v-model="publisherName"
-                                            :items="getPublishers"
-                                            maxlength="40"
-                                            :counter="40"
-                                            height="40px;"
-                                            label="publisher"
-                                    ></v-combobox>
-                                </div>
-
-                                <!-- TODO カテゴリは一旦消しとく-->
-                                <!--<h2 blue lighten-1>-->
-                                <!--カテゴリ-->
-                                <!--</h2>-->
-                                <!--<div class="pl-2 pb-2">-->
-                                <!--<div style="width:40%">-->
-                                <!--<v-text-field-->
-                                <!--:counter="10"-->
-                                <!--maxlength="10"-->
-                                <!--label="category"-->
-                                <!--v-model="inputCategory"-->
-                                <!--v-on:keydown.enter="appendCategory"-->
-                                <!--&gt;</v-text-field>-->
-                                <!--</div>-->
-                                <!--</div>-->
-
-                                <!--<div>-->
-                                <!--<div style="display: flex; flex-wrap: wrap;">-->
-                                <!--<div class="ma-0;width:auto;" v-for="category in categories">-->
-                                <!--<v-chip v-model="category.chip"-->
-                                <!--close-->
-                                <!--color="blue lighten-1"-->
-                                <!--outline-->
-                                <!--text-color="black"-->
-                                <!--&gt;{{ category.name }}-->
-                                <!--</v-chip>-->
-                                <!--</div>-->
-                                <!--</div>-->
-                                <!--</div>-->
-
-                            </v-form>
-                            <div class="pl-2 pb-2">
-                                <img style="float:right;" :src="mediumBookImage" :height="(mediumBookImage != null && mediumBookImage !=='')? '120px;':'0'">
-                            </div>
-                        </v-col>
-                    </v-row>
+                            </v-col>
+                        </v-row>
 
 
 
-                    <v-row justify="center">
-                        <v-col cols="12" align="center">
-                            <v-btn class="ma-2"
-                                   small
-                                   outlined
-                                   color="black"
-                                   @click="closeRegister()">CLOSE
-                            </v-btn>
+                        <v-row justify="center">
+                            <v-col cols="12" align="center">
+                                <v-btn class="ma-2"
+                                       outlined
+                                       color="black"
+                                       @click="closeRegister()">CLOSE
+                                </v-btn>
 
-                            <v-btn class="ma-2"
-                                   small
-                                   color="success"
-                                   outlined
-                                   :loading="isSaving"
-                                   @click="createBookWithDetail()">SAVE
-                                <v-icon small color="green" class="ml-2">mdi-check</v-icon>
-                            </v-btn>
-                        </v-col>
-                    </v-row>
+                                <v-btn class="ma-2"
+                                       color="success"
+                                       outlined
+                                       :loading="isSaving"
+                                       @click="createBookWithDetail()">SAVE
+                                    <v-icon small color="green" class="ml-2">mdi-check</v-icon>
+                                </v-btn>
+                            </v-col>
+                        </v-row>
 
-                </v-col>
-            </v-row>
-
+                    </v-col>
+                </v-row>
+            </transition>
         </v-container>
     </v-app>
 </template>
@@ -154,8 +149,10 @@
 <script lang="ts">
     import {Component, Prop, Vue} from 'vue-property-decorator';
     import SearchComponent from '@/components/SearchComponent.vue';
-    import api, {Author, Category, Content, errorRoute, getToken, Publisher} from '../api';
+    import api, {Author, Category, errorRoute, getToken, Publisher} from '@/api';
     import Footer from '@/components/Footer.vue';
+    import {Content} from '@/rakutenAPI';
+    import {BaseComponent} from '@/utils/utils';
 
     interface CategoryWithChip extends Category {
         chip: boolean;
@@ -170,7 +167,7 @@
             'v-footer': Footer,
         },
     })
-    export default class RegisterBookView extends Vue {
+    export default class RegisterBookView extends BaseComponent {
         private bookName: string = '';
         private authorName: string = '';
         private smallBookImage: string = '';
@@ -196,7 +193,7 @@
         private inputAuthorForSarch: string = '';
 
         public mounted() {
-            window.scrollTo(0, 0);
+            super.mounted();
             // this.categories = [];
             this.authors = [];
             this.publishers = [];

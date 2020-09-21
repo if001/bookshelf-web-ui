@@ -1,65 +1,62 @@
 <template>
-    <!--<v-footer-->
-            <!--absolute-->
-            <!--height="20px"-->
-            <!--class="grey lighten-1">-->
-        <!--<v-layout row wrap justify-center>-->
-            <!--<v-flex xs12 py-3 text-xs-center white&#45;&#45;text>-->
-                <!--&copy;2018 — <strong>Vuetify</strong>-->
-            <!--</v-flex>-->
-        <!--</v-layout>-->
-    <!--</v-footer>-->
-
-<!--    v-bind:class="{ active: isActive }"-->
-    <div v-bind:class="{ footer_main: !$vuetify.breakpoint.xs, footer_main_sx: $vuetify.breakpoint.xs }">
-        <div style="color: lightgrey;margin: auto">
-            <router-link class="policy" to="/policy">privacy policy</router-link>
-            <span class="vertical-line">|</span>
-            ver. {{version}}
-            <span class="vertical-line">|</span>
-            &copy;2019 <strong>edgwbs.net</strong>
-        </div>
-    </div>
-
+    <v-row class="flex-column ma-0" v-else>
+        <v-col class="pa-0" style="background-color: gray;">
+            <div class="container mt-5 mb-5 pa-0">
+                <div v-bind:class="{ 'pl-3': this.$vuetify.breakpoint.xs }">
+                    <div class="mb-2">
+                        <div class="footer-item pointer" @click="installApp()">ホーム画面に追加する</div>
+                    </div>
+                    <div class="mb-2">
+                        <a class="footer-item" href="https://docs.google.com/forms/d/e/1FAIpQLSduyq2V4hdH671SdSJFcBJXmiEuac8k6dsgaeaa8UNnUKnYwg/viewform?usp=sf_link" target="_blank">お問い合わせ/質問はこちら</a>
+                    </div>
+                    <div class="mb-2">
+                        <router-link class="footer-item" to="/about">BookStorageについて</router-link>
+                    </div>
+                    <div class="mb-2">
+                        <router-link class="footer-item" to="/policy">privacy policy</router-link>
+                    </div>
+                    <div class="footer-item">
+                        ver. {{version}} <span class="vertical-line">|</span> &copy;2019 <strong>edgwbs.net</strong>
+                    </div>
+                </div>
+            </div>
+        </v-col>
+    </v-row>
 </template>
 
 <script lang="ts">
-    import { Component, Vue } from 'vue-property-decorator';
+    import {Component, Prop, Vue} from 'vue-property-decorator';
+
 
     @Component
     export default class Footer extends Vue {
-        private version: string = '0.3.3';
-    }
+        @Prop({default: false}) private isForceFixed!: boolean;
 
+        private version: string = '1.1.0';
+
+        private breakPointIsXS(): boolean {
+            return this.$vuetify.breakpoint.name === 'xs';
+        }
+
+        private installApp() {
+            window.addEventListener('beforeinstallprompt', (e: any) => {
+                let deferredPrompt;
+                e.preventDefault();
+                // Stash the event so it can be triggered later.
+                deferredPrompt = e;
+                deferredPrompt.prompt();
+            });
+        }
+    }
 </script>
 
 <style scoped>
-    .footer_main{
-        display: flex;
-        flex-direction: row;
-        position: fixed;
-        bottom:0;
-        height:25px;
-        width: 100%;
-        background-color: gray;
-        justify-content:space-around;
-    }
-
-    .footer_main_sx {
-        display: flex;
-        flex-direction: row;
-        height:25px;
-        width: 100%;
-        bottom:0;
-        background-color: gray;
-        justify-content:space-around;
-        font-size: 0.8em;
-    }
-
-    .policy {
+    .footer-item {
         text-decoration:none;
         color: lightgrey;
-        margin-left: 20px;
+    }
+    .pointer {
+        cursor: pointer;
     }
 
     .vertical-line {

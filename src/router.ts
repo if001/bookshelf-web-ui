@@ -13,6 +13,8 @@ const RegisterBookViews = () => import('@/views/RegisterBookView.vue');
 const BookDetailView = () => import('@/views/BookDetailView.vue');
 const SharePageView = () => import('@/views/SharePageView.vue');
 const AnalyticsView = () => import('@/views/AnalyticsView.vue');
+const LandingView = () => import('@/views/LandingView.vue');
+const AboutView = () => import('@/views/AboutView.vue');
 
 Vue.use(Router);
 
@@ -21,12 +23,12 @@ const router = new Router({
     base: process.env.BASE_URL,
     routes: [
         {
-            path: '/login',
-            name: 'loginViews',
-            component: LoginViews,
+            path: '/',
+            component: LandingView,
         },
         {
-            path: '/',
+            path: '/login',
+            name: 'loginViews',
             component: LoginViews,
         },
         {
@@ -48,6 +50,11 @@ const router = new Router({
             path: '/share/:id',
             name: 'sharePage',
             component: SharePageView,
+        },
+        {
+            path: '/about',
+            name: 'about',
+            component: AboutView,
         },
         {
             path: '/bookshelf',

@@ -1,10 +1,10 @@
 <template>
     <v-app light>
-        <v-container text-xs-center>
+        <v-container text-xs-center style="height: 100%">
             <v-row justify="center">
                 <v-col cols="8">
-                    <div class="login-title">
-                        Create New Account
+                    <div class="display-1" style="color:dimgrey; text-align: center">
+                        BookStorage に新規登録
                     </div>
                 </v-col>
             </v-row>
@@ -25,20 +25,32 @@
                         <v-text-field
                                 v-model="password"
                                 label="Password"
-                                :type="'password'"
+                                :type="showPassword ? 'text' : 'password'"
                                 :rules="passRules"
+                                :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                                @click:append="showPassword = !showPassword"
+                                prepend-icon="mdi-lock"
+                                required
+                        ></v-text-field>
+                        <v-text-field
+                                v-model="confirmPassword"
+                                label="Confirm Password"
+                                :type="showConfirmPassword ? 'text' : 'password'"
+                                :rules="passRules"
+                                :append-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                                @click:append="showConfirmPassword = !showConfirmPassword"
                                 prepend-icon="mdi-lock"
                                 required
                         ></v-text-field>
                         <v-btn type="submit" block color="#ee82ee" dark>
-                            sign up
+                            登録
                         </v-btn>
                     </v-form>
                 </v-col>
             </v-row>
 
              <v-row justify="center" v-if="alert">
-                <v-col lg="6" md="6" sm="6" xs="12" class="pa-1" >
+                <v-col cols="6" lg="6" md="6" class="pa-1" >
                     <v-alert
                             v-if="alert"
                             v-model="alert"
@@ -53,16 +65,37 @@
             </v-row>
 
             <v-row justify="center">
-                <v-flex lg12 md12 sm12 xs12>
+                <v-col cols="12" stretch>
                     <div class="create-account-link pa-3">
-                        Already have an account?
-                        <router-link to="/login">Log in here</router-link>
+                        登録済みの場合は
+                        <router-link to="/login">こちらからログイン</router-link>
+                        できます。
                     </div>
-                </v-flex>
+                </v-col>
             </v-row>
 
         </v-container>
         <v-footer></v-footer>
+        <v-dialog
+                v-model="isLoading"
+                hide-overlay
+                persistent
+                width="300"
+        >
+            <v-card
+                    color="primary"
+                    dark
+            >
+                <v-card-text>
+                    <p>{{modalMessage}}</p>
+                    <v-progress-linear
+                            indeterminate
+                            color="white"
+                            class="mb-0"
+                    ></v-progress-linear>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
     </v-app>
 </template>
 <script lang="ts">
@@ -70,18 +103,23 @@
     import firebase from 'firebase/app';
     import 'firebase/auth';
     import Footer from '@/components/Footer.vue';
+    import {BaseComponent} from '@/utils/utils';
 
     @Component({
         components: {
             'v-footer': Footer,
         },
     })
-    export default class SignUpView extends Vue {
+    export default class SignUpView extends BaseComponent {
         private email: string = '';
         private password: string = '';
+        private confirmPassword: string = '';
+        private showPassword: boolean = false;
+        private showConfirmPassword: boolean = false;
+
         private valid = false;
         private passRules = [
-            (v: any) => !!v || 'Name is required',
+            (v: any) => !!v || 'Password is required',
         ];
 
         private emailRules = [
@@ -92,42 +130,65 @@
 
         private message = '';
         private alert = false;
+        private isLoading = false;
+        // private isLoading = true;
+        private modalMessage = '登録しています....';
 
         public mounted() {
-            window.scrollTo(0, 0);
+            super.mounted();
         }
 
         public create() {
             this.alert = false;
+            this.message = '';
             if (!this.validateInput()) {
                 return;
             }
-            firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then((res) => {
-                if (res == null) {
-                    // console.log('not get response');
-                    // alert('auth failed');
-                    return;
-                }
-                if (res.user == null) {
-                    // console.log('user not found');
-                    // alert('auth failed');
-                    return;
-                }
-                res.user.getIdToken()
-                    .then((idToken) => {
-                        this.$router.push('/bookshelf');
-                    }).catch((err) => {
-                    // console.log(err);
-                    console.log('firebase get token error');
-                });
-            }).catch((err) => {
-                this.message = 'アカウントの作成に失敗しました。';
-                if (err.code && err.code === this.alreadyExistAccountCode) {
-                    this.message = this.message + 'すでに存在するメールアドレスです。';
-                }
+            if (this.password !== this.confirmPassword) {
                 this.alert = true;
-                // console.log(err);
-            });
+                this.message = 'パスワードが一致しません';
+                return;
+            }
+            this.isLoading = true;
+            firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
+                .then((res) => {
+                    if (res == null) {
+                        // console.log('not get response');
+                        this.isLoading = false;
+                        return;
+                    }
+                    if (res.user == null) {
+                        // console.log('user not found');
+                        this.isLoading = false;
+                        return;
+                    }
+                    return res.user.getIdToken();
+                })
+                .then((idToken) => {
+                    this.modalMessage = '登録に成功しました。ログインします....';
+                    // console.log(idToken);
+                })
+                .then(() => {
+                    return new Promise((resolve) => {
+                        setTimeout(() => {
+                            resolve();
+                        }, 5 * 1000);
+                    });
+                })
+                .then(() => {
+                    this.$router.push('/bookshelf');
+                })
+                .catch((err) => {
+                    this.message = 'アカウントの作成に失敗しました。';
+                    if (err.code && err.code === this.alreadyExistAccountCode) {
+                        this.message = this.message + 'すでに存在するメールアドレスです。';
+                    }
+                    this.alert = true;
+                    // console.log(err);
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
         }
 
         private validateInput(): boolean {
@@ -148,7 +209,6 @@
         color: dimgray;
         font-size: 1.8em;
         font-weight: 600;
-        font-family: Roboto, sans-serif;
         padding: 15px;
         text-align: center;
     }

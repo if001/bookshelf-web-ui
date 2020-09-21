@@ -95,6 +95,14 @@ export default {
                 data,
             });
         },
+        createWith(token: string, data: PostBookForm) {
+            return axios.request({
+                method: 'POST',
+                headers: {Authorization: `Bearer ${token}`},
+                url: '/books_with',
+                data,
+            });
+        },
         update(token: string, data: any) {
             return axios.request({
                 method: 'PUT',
@@ -204,122 +212,7 @@ export default {
             });
         },
     },
-    rakuten: {
-        search(title: string, author: string, page: number, perPage: number, sort: string | null) {
-            const p: { [key: string]: any; } = {
-                applicationId: appID,
-                affiliateId,
-                page,
-                hits: perPage,
-                title,
-                author,
-            };
-            if (sort != null) {
-                p.sort = sort;
-            }
-            return Axios.get(rakutenBaseURL,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    params: p,
-                },
-            );
-        },
-        searchByTitle(title: string, page: number, perPage: number) {
-            const p: { [key: string]: any; } = {
-                applicationId: appID,
-                affiliateId,
-                page,
-                hits: perPage,
-                title,
-            };
-
-            return Axios.get(rakutenBaseURL,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    params: p,
-                },
-            );
-        },
-        searchByAuthor(author: string, page: number, perPage: number) {
-            const p: { [key: string]: any; } = {
-                applicationId: appID,
-                affiliateId,
-                page,
-                hits: perPage,
-                author,
-            };
-
-            return Axios.get(rakutenBaseURL,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    params: p,
-                },
-            );
-        },
-        searchByISBN(isbn: string) {
-            const p: { [key: string]: any; } = {
-                applicationId: appID,
-                affiliateId,
-                isbn,
-            };
-
-            return Axios.get(rakutenBaseURL,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    params: p,
-                },
-            );
-        },
-    },
-    googleBook: {
-        search(title: string | null, author: string | null, isbn: string | null, page: number, perPage: number) {
-            const p: { [key: string]: any; } = {
-                startIndex: page,
-                maxResult: perPage,
-                Country: 'JP',
-                orderBy: 'newest',
-                // orderBy: 'relevance',
-            };
-
-            const q = [];
-            if (title) {
-                q.push(`intitle:${title}`);
-            }
-            if (author) {
-                q.push(`inauthor:${author}`);
-            }
-            if (isbn) {
-                q.push(`isbn:${isbn}`);
-            }
-            if (q.length !== 0) {
-                p.q = q.join('+');
-            }
-            console.log(p);
-            return Axios.get(googleBookBaseURL,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    params: p,
-                },
-            );
-        },
-    },
 };
-
-const rakutenBaseURL = 'https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404';
-const appID = '1035362638897131844';
-const affiliateId = '188fe732.33eb93bf.188fe733.aaced19b';
-
-const googleBookBaseURL = 'https://www.googleapis.com/books/v1/volumes';
 
 export interface ContentResult<T> {
     status: number;
@@ -353,6 +246,7 @@ export interface Book {
     affiliate_url: string | null;
     created_at: string;
     updated_at: string;
+    read_state: number;
 }
 
 export interface PaginateBooks {
@@ -389,30 +283,6 @@ export interface Publisher {
     count: number;
 }
 
-export interface SearchResult {
-    Items: Contents[];
-    page: number;
-    pageCount: number;
-}
-
-export interface Contents {
-    Item: Content;
-}
-
-export interface Content {
-    isbn: string;
-    title: string;
-    author: string;
-    smallImageUrl: string;
-    mediumImageUrl: string;
-    largeImageUrl: string;
-    publisherName: string;
-    itemPrice: string;
-    itemUrl: string;
-    affiliateUrl: string;
-    itemCaption: string;
-}
-
 export interface CountedName {
     name: string;
     count: number;
@@ -421,6 +291,17 @@ export interface CountedName {
 export interface CountedTime {
     time: string;
     count: number;
+}
+
+export interface PostBookForm {
+    isbn: string | null;
+    title: string;
+    author_name: string;
+    publisher_name: string;
+    medium_image_url: string;
+    small_image_url: string;
+    item_url: string;
+    affiliate_url: string | null;
 }
 
 import {captureMessage, Severity} from '@sentry/browser';
@@ -439,35 +320,3 @@ export function errorRoute(errMsg: string) {
         });
 }
 
-export interface SearchResultGoogle {
-    items: ContentGoogle[];
-    totalItems: number;
-}
-
-export interface ContentGoogle {
-    saleInfo: SalesInfo;
-    volumeInfo: VolumeInfo;
-}
-
-export interface VolumeInfo {
-    authors: string[];
-    description: string;
-    title: string;
-    imageLinks: ImageLinks;
-    publisher: string;
-    industryIdentifiers: IndustryIdentifiers[];
-}
-export interface SalesInfo {
-    listPrice: ListPrice;
-}
-export interface ListPrice {
-    amount: number;
-}
-export interface ImageLinks {
-    smallThumbnail: string;
-    thumbnail: string;
-}
-export interface IndustryIdentifiers {
-    type: string;
-    identifier: string;
-}

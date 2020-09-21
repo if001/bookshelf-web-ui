@@ -49,13 +49,13 @@
                                     <span style="font-size: 0.9em">詳細を見る</span>
                                 </v-tooltip>
                             </div>
-                            <div v-else>
+                            <div v-else  style="text-align: center;">
                                 <img src="@/assets/not_found.png" alt="not_found" height="128px">
                             </div>
                         </v-col>
                     </v-row>
 
-                    <v-row justify="center">
+                    <v-row justify="center" v-if="searchResult.itemCaption !== ''">
                         <v-col cols=12 class="pa-6">
                             <div style="font-size: 1.1em;">
                                 概要
@@ -68,7 +68,7 @@
 
                     <v-divider light></v-divider>
 
-                    <v-row class="pa-2">
+                    <v-row class="pa-2" v-if="searchResult.affiliateUrl !== ''">
                         <v-col>
                             <v-btn text
                                    outlined
@@ -94,7 +94,8 @@
 
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
-    import api, {Content, SearchResult, getToken} from '../api';
+    import api, {getToken, Book} from '../api';
+    import rakutenAPI, {Content, makeEmptyQuery, SearchResult} from '../rakutenAPI';
 
     @Component
     export default class SharePageView extends Vue {
@@ -109,15 +110,20 @@
             api.book.getLimited(parseInt(id, 10))
                 .then((res) => {
                     return new Promise<string>((resolve, reject) => {
-                        if (res.data.content && res.data.content.isbn) {
-                            resolve(res.data.content.isbn);
+                        if (res.data.content) {
+                            this.searchResult = createNullContent(res.data.content);
                         } else {
                             reject('not found');
+                        }
+                        if (res.data.content && res.data.content.isbn) {
+                            resolve(res.data.content.isbn);
                         }
                     });
                 })
                 .then((isbn: string) => {
-                    return api.rakuten.searchByISBN(isbn);
+                    const query = makeEmptyQuery();
+                    query.setISBN(isbn);
+                    return rakutenAPI.search(query);
                 })
                 .then((res) => {
                     const result  = res.data as SearchResult;
@@ -146,7 +152,28 @@
         private toRegisterPage() {
             this.$router.push('/login');
         }
+    }
 
+    function createNullContent(book: Book): Content {
+        const author = book.author ? book.author.name : '';
+        const publisherName = book.publisher ? book.publisher.name : '';
+        return {
+            isbn: safeGetStr(book.isbn),
+            title: book.title,
+            author,
+            smallImageUrl: '',
+            mediumImageUrl: '',
+            largeImageUrl: safeGetStr(book.medium_image_url),
+            publisherName,
+            itemPrice: '',
+            itemUrl: safeGetStr(book.item_url),
+            affiliateUrl: safeGetStr(book.affiliate_url),
+            itemCaption: '',
+        };
+    }
+
+    function  safeGetStr(str: string | null): string {
+        return str ? str : '';
     }
 </script>
 

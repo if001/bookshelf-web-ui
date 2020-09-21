@@ -90,14 +90,15 @@
 
 <script lang="ts">
     import { Component, Vue } from 'vue-property-decorator';
+    import {BaseComponent} from '@/utils/utils';
 
     @Component
-    export default class PrivacyPolicyView extends Vue {
+    export default class PrivacyPolicyView extends BaseComponent {
         private title: string = 'BookStorage';
         private address: string = 'bookstorage.edgwbs@gmail.com';
 
-        private mounted() {
-            window.scrollTo(0, 0);
+        public mounted() {
+            super.mounted();
         }
 
     }

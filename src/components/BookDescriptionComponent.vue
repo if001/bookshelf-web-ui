@@ -9,6 +9,7 @@
             </v-btn>
         </h3>
 
+        <transition mode="out-in" name="fade-in-top">
         <div v-if="isOpenTextfield">
             <v-form
                     ref="form"
@@ -42,6 +43,7 @@
                 </div>
             </v-form>
         </div>
+        </transition>
 
         <div>
             <div v-if="isLoading" style="margin: auto;">
@@ -51,7 +53,7 @@
                 </div>
             </div>
             <div v-if="!isLoading && getDescriptions.length === 0" style="margin: auto;">
-                本のコメントを追加しましょう
+                本の感想やコメントが残せます
             </div>
 
             <div v-else v-bind:class="{ scroll_description: !$vuetify.breakpoint.xs}">

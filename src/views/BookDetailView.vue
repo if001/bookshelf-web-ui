@@ -1,8 +1,8 @@
 <template>
-    <v-container style="min-height: 87vh;">
-        <v-row class="ma-2 mb-3" justify="space-around">
+    <v-container style="min-height: calc(100vh);">
+        <v-row class="mb-3" justify="space-around" v-bind:class="[brackPointIsXS() ? 'ma-0' : 'ma-2' ]">
             <v-col cols=12 lg=4 md=5 class="ma-0 pa-0 pt-2 pb-2">
-                <v-card color="white">
+                <v-card color="white" v-bind:class="[brackPointIsXS() ? 'elevation-0' : ` elevation-2`  ]">
                     <v-row no-gutters>
                         <v-col cols=8 class="pa-3 ma-0">
                             <v-row v-if="!isOpen">
@@ -91,16 +91,14 @@
                                 </v-btn>
                         </v-col>
                         <v-col cols=4 style="height: 128px;">
-                            <div v-if="bookImage != null && bookImage !== '' && bookForShow.affiliate_url !== null">
+                            <div v-if="bookImage && bookImage !== '' && bookForShow.affiliate_url !== null">
                                 <a :href="bookForShow.affiliate_url" target="_blank">
 <!--                                    <img style="float:right;" :src="bookImage" height="128px" alt="bookImage">-->
                                     <v-tooltip bottom>
-                                              <template v-slot:activator="{ on }">                                                  
-                                                <img :src="bookImage" 
-                                                    v-on="on"
-                                                    style="float:right;" height="128px" alt="bookImage">
-                                                </template>
-                                              <span style="font-size: 0.9em">詳細を見る</span>
+                                        <template v-slot:activator="{ on }">
+                                            <img :src="bookImage" v-on="on" style="float:right;" height="128px" alt="bookImage">
+                                        </template>
+                                        <span style="font-size: 0.9em">商品ページを見る</span>
                                     </v-tooltip>
                                 </a>
                             </div>
@@ -121,23 +119,23 @@
                                     <v-tooltip top>
                                               <template v-slot:activator="{ on }">                                                  
                                                     <v-btn text
-                                                            icon
-                                                            color="dark"
-                                                            class="ma-0"
-                                                            v-on="on"
-                                                            :loading="isLoadingBookState"
-                                                            @click="changeState(startAt, endAt)">
-                                                    <v-icon large
-                                                        color="blue-grey darken-1"> {{ bookState(startAt, endAt).icon }}
-                                                    </v-icon>
+                                                           icon
+                                                           color="dark"
+                                                           class="ma-0"
+                                                           v-on="on"
+                                                           :loading="isLoadingBookState"
+                                                           @click="changeState(bookState)">
+                                                        <v-icon large
+                                                                color="blue-grey darken-1"> {{ getBookStateLabel(bookState).icon }}
+                                                        </v-icon>
                                                     </v-btn>
                                               </template>
-                                             <span style="font-size: 0.9em">状態を変更する</span>
+                                        <span style="font-size: 0.9em">状態を変更する</span>
                                     </v-tooltip>
 
                                 </v-col>
                                 <v-col cols=9 class="ma-0 pl-3" align-self="center">
-                                    {{ bookState(startAt, endAt).label }}
+                                    {{ getBookStateLabel(bookState).label }}
                                 </v-col>
                             </v-row>
                         </v-col>
@@ -196,22 +194,60 @@
                     <v-divider light></v-divider>
 
                     <v-row column justify-end class="ma-0 pr-2 pl-2 pt-1 pb-1" v-if="!isOpen">
-                        <v-col class="pa-0">
-                            <div v-if="createTwitterURL() != null" class="twitter-link share-button">
-                                <a :href="createTwitterURL()"
-                                   onClick="window.open(encodeURI(decodeURI(this.href)), 'tweetwindow', 'width=650, height=470, personalbar=0, toolbar=0, scrollbars=1, sizable=1'); return false;"
-                                   rel="nofollow"
-                                   style="text-decoration:none;">
-                                    <img src="@/assets/twitter-icon-96.png" alt="twittericon" height="24px" style="vertical-align: middle; ">
-                                    Share
-                                </a>
-                            </div>
-                            <div v-else class="twitter-link-disable share-button">
+                        <v-col class="pa-0" cols="4">
+                            <v-tooltip top v-model="showShare">
+                                <template v-slot:activator="{ on }">
+                                    <div v-if="createTwitterURL() != null" class="twitter-link share-button" v-on="on">
+                                        <a :href="createTwitterURL()"
+                                           onClick="window.open(encodeURI(decodeURI(this.href)), 'tweetwindow', 'width=650, height=470, personalbar=0, toolbar=0, scrollbars=1, sizable=1'); return false;"
+                                           rel="nofollow"
+                                           style="text-decoration:none;">
+                                            <img src="@/assets/twitter-icon-96.png" alt="twittericon" height="24px" style="vertical-align: middle; ">
+                                            Share
+                                        </a>
+                                    </div>
+                                </template>
+                                <span>読み終わった本をShareしましょう</span>
+                            </v-tooltip>
+
+                            <div v-if="createTwitterURL() == null" class="twitter-link-disable share-button">
                                 <img src="@/assets/twitter-icon-96-disable.png" alt="twittericon" height="24px" style="vertical-align: middle; padding: 2px">
                                 Share
                             </div>
                         </v-col>
                     </v-row>
+                    <v-divider light></v-divider>
+
+                    <v-row class="ma-0 pa-3" justify="center" no-gutters v-if="isEndState && !isOpen && similarBooks.length === 0">
+                        <v-col cols="12">
+                            <v-btn outlined small @click="setSimilarBookByRakutenSearch()">おすすめの本を取得</v-btn>
+                        </v-col>
+                    </v-row>
+                    <v-divider v-if="isEndState && !isOpen && similarBooks.length === 0" light></v-divider>
+
+                    <v-row class="pa-0 ma-0" v-if="isEndState && !isOpen && similarBooks.length !== 0">
+                        <v-col cols="12" class="ma-0 pa-3 pb-0" style="color: dimgrey;font-size: 0.8em;">あなたへのおすすめ</v-col>
+                        <div v-for="book in similarBooks" class="pa-3">
+                            <div>
+                                <a v-if="book.smallImageUrl"
+                                   @click="openDetailModal(book)">
+                                    <v-tooltip top>
+                                        <template v-slot:activator="{ on }">
+                                            <img :src="book.smallImageUrl"
+                                                 v-on="on"
+                                                 style="float:right;" height="80px" alt="bookImage">
+                                        </template>
+                                        <span style="font-size: 0.9em">詳細を見る</span>
+                                    </v-tooltip>
+                                </a>
+                                <img v-else src="@/assets/not_found.png" alt="not_found" height="80px">
+                            </div>
+                            <div style="color: gray;font-size: 0.8em; max-width: 56px;">
+                                {{parseBookTitleAtRecommend(book.title)}}
+                            </div>
+                        </div>
+                    </v-row>
+                    <v-divider v-if="isEndState && !isOpen && similarBooks.length !== 0" light></v-divider>
 
                         <!-- TODO Ratingはひとまずつけない -->
                         <!--<v-divider light></v-divider>-->
@@ -291,29 +327,33 @@
                 </div>
             </v-col>
         </v-row>
-        <v-fab-transition>
-            <v-btn
-                    fab
-                    right
-                    color="blue"
-                    dark
-                    fixed
-                    v-show="!hiddenFab"
-                    style="bottom: 26px"
-                    @click="toListPage()">
-                <v-icon>mdi-arrow-left</v-icon>
-            </v-btn>
-        </v-fab-transition>
+
+        <detail_modal :dialog="bookDetailDialog"
+                      :isbn="selectBookISBN"
+                      @closeDialogEvent="dialogPropsHandle"
+                      @registerSuccessEvent="registerSuccessHandle"
+                      ></detail_modal>
+        <div style="position: fixed; top: 60px; right: 1.0em; z-index: 100;">
+            <v-alert v-model="registerAlert" type="success"
+                     border="left"
+                     close-text="Close Alert"
+                     dismissible>
+                登録しました
+            </v-alert>
+        </div>
     </v-container>
 </template>
 
 <script lang="ts">
     import {Component, Prop, Vue} from 'vue-property-decorator';
     import BookDescription from '@/components/BookDescriptionComponent.vue';
-    import api, {Author, Book, Category, ContentResult, getToken, errorRoute, Publisher} from '../api';
+    import api, {Author, Book, Category, ContentResult, getToken, errorRoute, Publisher} from '@/api';
     import moment from 'moment';
     import {AxiosPromise} from 'axios';
     import AdComponent from '@/components/AdComponent.vue';
+    import rakutenAPI, {Content, makeEmptyQuery, RakutenSearchQuery, SearchResult} from '@/rakutenAPI';
+    import NotRegisterBookDetailModalComponent from '@/components/NotRegisterBookDetailModalComponent.vue';
+    import {BaseComponent} from '@/utils/utils';
 
     interface BookDetail extends Book {
         isOpen: boolean;
@@ -323,13 +363,19 @@
         chip: boolean;
     }
 
+    interface BookState {}
+    class BookStateNotRead implements BookState {}
+    class BookStateReading implements BookState {}
+    class BookStateEnd implements BookState {}
+
     @Component({
         components: {
             BookDescription,
             ad: AdComponent,
+            detail_modal: NotRegisterBookDetailModalComponent,
         },
     })
-    export default class BookDetailView extends Vue {
+    export default class BookDetailView extends BaseComponent {
         private book: Book | null = null;
         private bookForShow: BookDetail | null = null; // 表示する方
         private bookForEdit: BookDetail | null = null; // 書き換える方
@@ -350,13 +396,51 @@
             counter15: (value: any) => value.length <= 15 || 'Max 15 characters',
         };
 
+        private similarBooks: Content[] = [];
+
+        private isSearchLoading: boolean = false;
+        private isEndState: boolean = false;
+
+        private bookDetailDialog: boolean = false;
+        private selectBookISBN: string | null = null;
+        private registerAlert = false;
+        private showShare: boolean = false;
+
+        public mounted() {
+            super.mounted();
+            this.bookForEdit = null;
+            this.bookForShow = null;
+            // this.categories = [];
+            // this.loadAuthors();
+            this.loadBookDetail().then(() => this.isLoadingBook = false);
+        }
+
+        private openDetailModal(selectBook: Content) {
+            this.selectBookISBN = selectBook.isbn;
+            this.bookDetailDialog = true;
+        }
+        private dialogPropsHandle(e: boolean) {
+            this.bookDetailDialog = e;
+        }
+        private registerSuccessHandle(e: boolean) {
+            this.registerAlert = e;
+            const sleep = (second: number, func: any) => {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve(func());
+                    }, second * 1000);
+                });
+            };
+            sleep(3, () => { this.registerAlert = false; });
+        }
+
         private createTwitterURL(): string | null {
             if (this.bookForEdit == null) {
                 return '';
             } else {
                 const base = 'https://twitter.com/intent/tweet';
 
-                const state = this.bookState(this.bookForEdit.start_at, this.bookForEdit.end_at);
+                const state = this.getBookStateLabel(this.bookForEdit.read_state);
                 let text = '';
                 let bookInfo = '';
                 let bookURL = '';
@@ -383,14 +467,6 @@
                 }
                 return base + '?text=' + ' [' + bookInfo + '] ' + text + '&hashtags=' + hashTag + '&url=' + bookURL;
             }
-        }
-
-        private mounted() {
-            this.bookForEdit = null;
-            this.bookForShow = null;
-            // this.categories = [];
-            // this.loadAuthors();
-            this.loadBookDetail().then(() => this.isLoadingBook = false);
         }
 
         private loadBookDetail(): Promise<boolean> {
@@ -420,6 +496,8 @@
                         //         this.categories.push(newC);
                         //     }
                         // }
+                        // this.bookState(this.book.start_at, this.book.end_at);
+                        this.isEndState = getBookState(this.book) === BookStateEnd;
 
                         this.bookForShow = {
                             ...this.book,
@@ -740,25 +818,46 @@
                 return this.bookForEdit.end_at;
             }
         }
-
-        private changeState(startAt: string | null, endAt: string | null) {
-            if (startAt == null && endAt == null) {
-                this.doChangeStateAPI('読み始めた本に設定しますか？', api.book.startRead);
-            } else if (startAt != null && endAt == null) {
-                this.doChangeStateAPI('読み終わった本に設定しますか？', api.book.endRead);
-            } else if (startAt != null && endAt != null) {
-                this.doChangeStateAPI('読み始めた本に設定しますか？', api.book.startRead);
+        get bookState() {
+            if (this.bookForEdit == null) {
+                return null;
             } else {
+                return getBookState(this.bookForEdit);
+            }
+        }
+
+        private changeState(state: BookState) {
+            if (state === BookStateNotRead) {
+                this.doChangeStateAPI('読み始めた本に設定しますか？', api.book.startRead);
+            } else if (state === BookStateEnd) {
+                this.doChangeStateAPI('読み始めた本に設定しますか？', api.book.startRead);
+            } else if (state === BookStateReading) {
+                const result = this.doChangeStateAPI('読み終わった本に設定しますか？', api.book.endRead);
+                // TODO おすすめの本を表示するのは楽天のAPIを叩く回数を減らすため、ステータスを読了に変更したときのみとする
+                if (result) {
+                    result
+                        .then(() => {
+                            this.showShare = true;
+                            setTimeout(() => { this.showShare = false }, 3000);
+                            return this.setSimilarBookByRakutenSearch();
+                        })
+                        .then(() => {
+                            this.isEndState = true;
+                        });
+                }
+            }  else {
                 console.log('bad read state');
             }
         }
 
-        private doChangeStateAPI(msg: string, apiFunc: (token: string, id: number) => AxiosPromise<ContentResult<Book>>) {
+        private doChangeStateAPI(msg: string,
+                                 apiFunc: (token: string, id: number) => AxiosPromise<ContentResult<Book>>,
+        ): Promise<void> | undefined {
             const res = confirm(msg);
             if (res && this.bookForEdit != null) {
                 this.isLoadingBookState = true;
                 const tmp = this.bookForEdit;
-                getToken()
+                return getToken()
                     .then((token) => {
                         return apiFunc(token, tmp.id);
                     })
@@ -775,10 +874,10 @@
             }
         }
 
-        private bookState(startAt: string | null, endAt: string | null) {
-            if (endAt == null && startAt == null) {
+        private getBookStateLabel(state: BookState) {
+            if (state === BookStateNotRead) {
                 return { icon : 'fa-book', label : '未読' };
-            } else if (endAt == null) {
+            } else if (state === BookStateReading) {
                 return  { icon : 'mdi-bookmark', label : '読中' };
             } else {
                 return  { icon : 'mdi-check', label : '読了' };
@@ -807,6 +906,32 @@
             }
         }
 
+        private setSimilarBookByRakutenSearch(): Promise<void> | undefined {
+            const query = makeEmptyQuery();
+            query.setPaginate(1, 4);
+            if (this.bookForShow && this.bookForShow.author) {
+                let authorName = this.bookForShow.author.name;
+                if (this.bookForShow.author.name.includes('/')) {
+                    authorName = this.bookForShow.author.name.split('/')[0];
+                }
+                query.setAuthor(authorName);
+                query.setSort('sales');
+                return rakutenAPI.search(query).then()
+                    .then((res) => {
+                        const result  = res.data as SearchResult;
+                        this.similarBooks = result.Items.map((x) => x.Item);
+                    })
+                    .catch((e) => {
+                        // console.log(e);
+                        // this.setAlertMessage('検索エラー');
+                        // console.log('search api error');
+                    })
+                    .finally(() => {
+                        this.isSearchLoading = false;
+                    });
+            }
+        }
+
         private toListPage() {
             this.hiddenFab = true;
             this.$router.push('/bookshelf');
@@ -818,6 +943,17 @@
                 return d;
             }
         }
+        private brackPointIsXS(): boolean {
+            return this.$vuetify.breakpoint.name === 'xs';
+        }
+
+        private parseBookTitleAtRecommend(title: string): string {
+            if (title.length > 15) {
+                return title.slice(0, 15) + '...';
+            } else {
+                return title;
+            }
+        }
     }
     function formatDate(d: string | null): string | null {
         if (d != null) {
@@ -827,7 +963,14 @@
             return null;
         }
     }
-
+    function getBookState(b: Book): BookState {
+        switch (b.read_state) {
+            case 1: return BookStateNotRead;
+            case 2: return BookStateReading;
+            case 3: return BookStateEnd;
+            default: return BookStateNotRead;
+        }
+    }
 
 </script>
 
@@ -875,7 +1018,7 @@
     }
 
     .share-button {
-        width: 100px;
+        /*width: 100px;*/
     }
     @-moz-keyframes loader {
         from {

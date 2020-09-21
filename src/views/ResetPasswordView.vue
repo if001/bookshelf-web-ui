@@ -1,17 +1,17 @@
 <template>
     <v-app light>
-        <v-container>
+        <v-container style="height: 100%;">
             <v-row justify="center">
-                <v-col cols="8">
+                <v-col cols="12" lg="8" md="8">
                     <div class="login-title">
-                        Forgot your Password?
+                        パスワードをリセットします
                     </div>
                 </v-col>
             </v-row>
 
             <v-row justify="center">
                 <v-col cols="10" lg="4" md="4" sm="4">
-                    <div style="text-align: center;">Send email to reset your password.</div>
+                    <div style="text-align: center;">パスワードをリセットするためにメールを送信します。</div>
                     <v-form lazy-validation 
                             v-model="valid"
                             ref="form"
@@ -24,7 +24,7 @@
                                 prepend-icon="mdi-email"
                                 required
                         ></v-text-field>
-                        <v-btn block color="#dc143c" dark>
+                        <v-btn block color="#dc143c" type="submit" dark>
                             Reset Password
                         </v-btn>
                     </v-form>
@@ -50,8 +50,9 @@
             <v-row justify="center">
                 <v-col cols="12">
                     <div class="create-account-link pa-3">
-                        Already have an account?
-                        <router-link to="/login">Log in here</router-link>
+                        すでにアカウントを持っている場合
+                        <router-link to="/login">こちらからログイン</router-link>
+                        できます
                     </div>
                 </v-col>
             </v-row>
@@ -86,17 +87,19 @@
             if (!this.validateInput()) {
                 return;
             }
-            firebase.auth().sendPasswordResetEmail(this.email).then((res) => {
-                const ans = confirm('ご登録のメールアドレスに再設定のリンクを送付いたしました。');
-                if (ans) {
-                    this.$router.replace('/login');
-                }
-            }).catch((err) => {
-                this.message = 'ご登録のアドレスがございません。再度メールアドレスのご確認をお願いします。';
-                // alert('ログインエラー');
-                // console.log(err);
-                this.alert = true;
-            });
+            firebase.auth().sendPasswordResetEmail(this.email)
+                .then((res) => {
+                    const ans = confirm('ご登録のメールアドレスに再設定のリンクを送付いたしました。');
+                    if (ans) {
+                        this.$router.replace('/login');
+                    }
+                })
+                .catch((err) => {
+                    this.message = 'ご登録のアドレスがございません。再度メールアドレスのご確認をお願いします。';
+                    // alert('ログインエラー');
+                    // console.log(err);
+                    this.alert = true;
+                });
         }
 
         private validateInput(): boolean {
