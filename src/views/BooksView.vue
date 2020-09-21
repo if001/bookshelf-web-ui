@@ -297,8 +297,7 @@
         }
 
         get totalPageNumber() {
-            // return Math.floor(this.booksShow.length / this.perPage) + 1
-            return Math.floor(this.totalCount / this.perPage) + 1;
+            return Math.ceil(this.totalCount / this.perPage);
         }
 
         private toBookDetail(id: number) {
