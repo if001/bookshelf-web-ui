@@ -1,14 +1,6 @@
 <template>
     <v-app light>
         <v-container text-xs-center>
-            <v-row justify="center">
-                <v-col lg="8" md="8" sm="8" xs="8">
-                    <slot name="header">
-                        <div style="text-align: center;color: dimgray;font-size:1.2em;">本の登録</div>
-                    </slot>
-                </v-col>
-            </v-row>
-
             <v-row cols="8" justify="center">
                 <v-col lg="8" md="8" sm="8" xs="8">
                     <v-tabs v-model="selectTab"

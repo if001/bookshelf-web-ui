@@ -1,10 +1,5 @@
 <template>
     <v-container class="mb-5">
-        <v-row>
-            <v-col>
-                <div style="text-align: center;font-size:1.5em;color: dimgrey;">Analytics Your Book</div>
-            </v-col>
-        </v-row>
         <v-row align="center" justify="start">
             <v-col cols="6" lg="3" md="3" sm="3">
                 <v-card class="pt-5 pb-5 pr-3 pl-3">

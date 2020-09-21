@@ -36,7 +36,11 @@
             <p class="ma-2" style="color: dimgrey; font-size: 1.0em;">login info</p>
             <p class="ma-2" style="color: dimgrey; font-size: 0.8em;">user name: {{getUser()}}</p>
             <p class="ma-2" style="color: dimgrey; font-size: 0.8em;">login by: {{getProviderData()}}</p>
+            <p class="ma-2">
+                <v-btn outlined small>ログアウト</v-btn>
+            </p>
         </div>
+
     </v-list>
 </template>
 
@@ -78,6 +82,16 @@
             } else {
                 return '';
             }
+        }
+
+        private logout() {
+            firebase.auth().signOut()
+                .then(() => {
+                    this.$router.push('/login');
+                })
+                .catch(() => {
+                    console.log('firebase sign out error');
+                });
         }
     }
 
