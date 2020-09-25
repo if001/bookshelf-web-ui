@@ -66,7 +66,6 @@
             <v-row justify="center">
                 <v-col>
                     <div class="create-account-link pa-2">
-                        アカウントがない場合
                         <router-link to="/signup">アカウントを登録する</router-link>
                     </div>
                 </v-col>

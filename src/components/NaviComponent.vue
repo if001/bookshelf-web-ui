@@ -37,7 +37,7 @@
             <p class="ma-2" style="color: dimgrey; font-size: 0.8em;">user name: {{getUser()}}</p>
             <p class="ma-2" style="color: dimgrey; font-size: 0.8em;">login by: {{getProviderData()}}</p>
             <p class="ma-2">
-                <v-btn outlined small>ログアウト</v-btn>
+                <v-btn outlined small v-on:click="logout()">ログアウト</v-btn>
             </p>
         </div>
 
