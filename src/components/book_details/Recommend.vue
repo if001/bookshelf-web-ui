@@ -1,11 +1,14 @@
 <template>
     <v-row class="pa-0 ma-0" v-if="isEndState() && !isOpenEdit">
-        <v-col cols="12" v-if="recommends.length === 0">
-            <v-btn outlined small @click="setRecommendByRakutenSearch()">おすすめの本を取得</v-btn>
+        <v-col cols="12">
+            <v-btn outlined
+                   small
+                   :loading="isSearchLoading"
+                   @click="setRecommendByRakutenSearch()">おすすめの本を取得</v-btn>
         </v-col>
 
-        <v-col cols="12" class="ma-0 pa-3 pb-0"
-               style="color: dimgrey;font-size: 0.8em;"
+        <v-col cols="12" class="ma-0 pa-3 pb-0 body-2"
+               style="color: dimgrey;"
                v-if="recommends.length !== 0">
             あなたへのおすすめ
         </v-col>
@@ -25,10 +28,18 @@
                 </a>
                 <img v-else src="@/assets/not_found.png" alt="not_found" height="80px">
             </div>
-            <div style="color: gray;font-size: 0.8em; max-width: 56px;">
+            <div class="body-2" style="color: gray; max-width: 56px;">
                 {{parseBookTitleAtRecommend(book.title)}}
             </div>
         </div>
+
+        <div v-if="searchError" class="pa-3 pt-0 body-2">
+            検索に失敗しました
+        </div>
+        <div v-if="searched && recommends.length === 0" class="pa-3 pt-0 body-2">
+            現在おすすめはありません
+        </div>
+
 
         <detail_modal :dialog="openDialog"
                       :isbn="selectBookISBN"
@@ -69,6 +80,8 @@
         private openDialog: boolean = false;
         private selectBookISBN: string | null = null;
         private registerAlert = false;
+        private searchError: boolean = false;
+        private searched: boolean = false;
 
         private openDetailModal(selectBook: Content) {
             this.selectBookISBN = selectBook.isbn;
@@ -76,6 +89,9 @@
         }
 
         private setRecommendByRakutenSearch(): Promise<void> | undefined {
+            this.searched = false;
+            this.isSearchLoading = true;
+
             const query = makeEmptyQuery();
             query.setPaginate(1, 4);
             if (this.book && this.book.author) {
@@ -88,15 +104,18 @@
                 return rakutenAPI.search(query).then()
                     .then((res) => {
                         const result  = res.data as SearchResult;
+                        this.recommends = [];
                         this.recommends = result.Items.map((x) => x.Item);
                     })
                     .catch((e) => {
-                        // console.log(e);
-                        // this.setAlertMessage('検索エラー');
-                        // console.log('search api error');
+                        this.searchError = true;
+                        setTimeout(() => {
+                            this.searchError = false;
+                        }, 3000);
                     })
                     .finally(() => {
                         this.isSearchLoading = false;
+                        this.searched = true;
                     });
             }
         }

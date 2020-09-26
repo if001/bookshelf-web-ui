@@ -300,6 +300,7 @@
     } from '@/models/BookState';
     import Recommend from '@/components/book_details/Recommend.vue';
     import Share from '@/components/book_details/Share.vue';
+    import LoadingComponent from "@/components/LoadingComponent.vue";
 
     interface CategoryWithChip extends Category {
         chip: boolean;
@@ -311,6 +312,7 @@
             ad: AdComponent,
             book_recommend: Recommend,
             book_share: Share,
+            loading: LoadingComponent,
         },
     })
     export default class BookDetailView extends BaseComponent {

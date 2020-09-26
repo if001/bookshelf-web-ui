@@ -72,12 +72,7 @@
         </v-row>
 
         <v-row justify="center">
-            <div v-if="loading" class="loading-content">
-                <div style="display:inline-block; padding-right: 15px;">loading...</div>
-                <div class="loading">
-                    <v-icon large>fa-book</v-icon>
-                </div>
-            </div>
+            <loading :isLoading="loading" large :isFixedCenter="true"/>
             <div v-if="!loading && booksShow.length === 0 && selectStateFilter === null && searchKeyForBook === null" style="margin: auto;padding: 20px;height: 100%;">
                 読みたい本を登録しましょう。
                 <div align="center" class="ma-2">
@@ -160,15 +155,20 @@
 </template>
 
 <script lang="ts">
-    import {Component, Vue} from 'vue-property-decorator';
+    import {Component} from 'vue-property-decorator';
     import api, {Book, errorRoute, getToken} from '@/api';
     import {BaseComponent, toTop} from '@/utils/utils';
+    import LoadingComponent from "@/components/LoadingComponent.vue";
 
     interface BookShow extends Book {
         isOpen: boolean;
     }
 
-    @Component
+    @Component({
+        components: {
+            loading: LoadingComponent,
+        },
+    })
     export default class BooksView extends BaseComponent {
         private booksShow: BookShow[] = [];
         private books: Book[] = [];
@@ -326,26 +326,5 @@
     }
     .xs_height {
         min-height: 87vh;
-    }
-
-
-    .loading-content {
-        position: fixed;
-        top: 250px;
-        z-index: 30;
-        background-color: white;
-        padding: 20px;
-        color: gray;
-    }
-
-    .loading {
-        display: inline-block;
-        font-size: 3em;
-        animation: r1 1s linear infinite;
-    }
-
-    @keyframes r1 {
-        0%   { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
     }
 </style>
