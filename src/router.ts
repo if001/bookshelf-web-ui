@@ -15,6 +15,7 @@ const SharePageView = () => import('@/views/SharePageView.vue');
 const AnalyticsView = () => import('@/views/AnalyticsView.vue');
 const LandingView = () => import('@/views/LandingView.vue');
 const AboutView = () => import('@/views/AboutView.vue');
+const CameraView = () => import('@/views/CameraView.vue');
 
 Vue.use(Router);
 
@@ -80,6 +81,11 @@ const router = new Router({
                     path: '/analytics',
                     name: 'analytics',
                     component: AnalyticsView,
+                },
+                {
+                    path: '/camera',
+                    name: 'camera',
+                    component: CameraView,
                 },
             ],
         },

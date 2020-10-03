@@ -48,7 +48,8 @@
         ></detail_modal>
 
         <div style="position: fixed; top: 60px; right: 1.0em; z-index: 100;">
-            <v-alert v-model="registerAlert" type="success"
+            <v-alert v-model="registerAlert"
+                     type="success"
                      border="left"
                      close-text="Close Alert"
                      dismissible>

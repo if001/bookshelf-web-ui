@@ -163,20 +163,8 @@
     import rakutenAPI, {SearchResult, Content, RakutenSearchQuery} from '@/rakutenAPI';
     import {AxiosPromise} from 'axios';
     import {BaseComponent, toTop} from '@/utils/utils';
+    import {itemToResultWithCheck, SearchResultWithCheck} from '@/models/RakutenBook';
 
-    export interface SearchResultWithCheck {
-        isbn: string;
-        title: string;
-        author: string;
-        smallImageUrl: string;
-        mediumImageUrl: string;
-        publisherName: string;
-        itemPrice: string;
-        itemUrl: string;
-        affiliateUrl: string;
-        isChecked: boolean;
-        isAlreadyRegister: boolean;
-    }
     const maxRegisterNum: number = 8;
 
     @Component
@@ -254,7 +242,7 @@
                     this.searchResult = res.data as SearchResult;
                     this.totalCount = this.searchResult.pageCount;
                     this.searchResultWithCheck = this.searchResult.Items.map((x) => {
-                        return this.itemToResultWithCheck(x.Item);
+                        return itemToResultWithCheck(x.Item);
                     });
                     toSearchBox();
                 })
@@ -266,22 +254,6 @@
                 .finally(() => {
                     this.isSearchLoading = false;
                 });
-        }
-
-        private itemToResultWithCheck(item: Content): SearchResultWithCheck {
-            return {
-                isbn: item.isbn,
-                title: item.title,
-                author: item.author,
-                smallImageUrl: item.smallImageUrl,
-                mediumImageUrl: item.mediumImageUrl,
-                publisherName: item.publisherName,
-                itemPrice: item.itemPrice,
-                itemUrl: item.itemUrl,
-                affiliateUrl: item.affiliateUrl,
-                isChecked: this.isSelect(item.isbn),
-                isAlreadyRegister: false,
-            } as SearchResultWithCheck;
         }
 
         get getSearchResult() {
@@ -334,9 +306,9 @@
         private isSelect(isbn: string): boolean {
             let res = false;
             this.selectMultiBooks.forEach((x) => {
-               if (x.isbn === isbn) {
-                   res = true;
-               }
+                if (x.isbn === isbn) {
+                    res = true;
+                }
             });
             return res;
         }
@@ -386,8 +358,8 @@
                     this.$router.push('/bookshelf');
                 })
                 .catch((err) => {
-                    console.log(err);
-                    console.log(err.response);
+                    // console.log(err);
+                    // console.log(err.response);
                     if (err.response.data && err.response.data.content) {
                         this.message2 = err.response.data.content.title;
                     }
