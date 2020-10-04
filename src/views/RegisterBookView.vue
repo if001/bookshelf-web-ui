@@ -1,12 +1,14 @@
 <template>
     <v-app light>
         <v-container text-xs-center>
-            <v-row cols="8" justify="center">
-                <v-col lg="8" md="8" sm="8" xs="8">
+            <v-row cols="8" justify="center" class="ma-0 pa-0">
+                <v-col lg="8" md="8" sm="8" xs="8" class="ma-0 pa-0">
                     <v-tabs v-model="selectTab"
                             bark
-                            :centered="true"
-                            :grow="true">
+                            centered
+                            grow
+                            show-arrows
+                            v-bind:class="[$vuetify.breakpoint.xs ? 'pr-0 pl-0 pt-3 pb-3' : 'pa-3']">
                         <v-tab
                                 v-for="f in tabObject"
                                 :key="f.displayName"
@@ -185,6 +187,7 @@
 
         private tabObject = [
             {tag: searchType.web, displayName: 'Web検索から登録'},
+            {tag: searchType.input, displayName: '入力して登録'},
             {tag: searchType.input, displayName: '入力して登録'},
         ];
         private selectTab: number = searchType.web;
