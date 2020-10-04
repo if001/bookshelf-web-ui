@@ -120,7 +120,7 @@
         private rakutenSearchQuery = makeEmptyQuery();
 
         private isSearch = false;
-        private isSaving = true;
+        private isSaving = false;
         private initFail = false;
 	
         private error = { show: false, msg : '登録に失敗しました' };
@@ -211,7 +211,6 @@
                 })
                 .then(() => {
                     this.searchResults = [];
-                    this.isSaving = false;
                     this.success.show = true;
                     this.isScrollY = false;
                     setTimeout(() => {
@@ -220,6 +219,9 @@
                 })
                 .catch((e) => {
                     this.showAlert('登録に失敗しました');
+                })
+                .finally(() => {
+                    this.isSaving = false;
                 });
         }
 
