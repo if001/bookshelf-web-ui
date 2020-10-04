@@ -1,10 +1,8 @@
 <template>
     <v-container style="height: 100%">
         <v-row>
-            <v-col style="position: static; min-height: 240px;">
-                <div id="cameraArea" class="camera_content">
-                    <img v-if="code.length" src="" alt="result" class="resultImg" />
-                </div>
+            <v-col>
+                <div id="cameraArea" class="camera_content"></div>               
                 <div v-show="isSearch" class="camera_content loading">
                     <v-btn
                             :loading="isSearch"
@@ -25,25 +23,10 @@
             </v-col>
         </v-row>
 
-        <v-row justify="center" justify-content="space-around">
+        <v-row v-if="initFail" justify="center" justify-content="space-around">
             <v-col cols="2" align="center">
-                <v-btn @click="camera_loading=true">
-                    loading
-                </v-btn>
-            </v-col>
-            <v-col cols="2" align="center">
-                <v-btn @click="addBook">
-                    add
-                </v-btn>
-            </v-col>
-            <v-col cols="2" align="center">
-                <v-btn @click="startScan">
-                    Scan
-                </v-btn>
-            </v-col>
-            <v-col cols="2" align="center">
-                <v-btn aria-label="close" @click.prevent.stop="stopScan">
-                Stop
+                <v-btn v-on:click="initQuagga()">
+                    Start
                 </v-btn>
             </v-col>
         </v-row>
@@ -127,21 +110,20 @@
     @Component
     export default class CameraView extends BaseComponent {
         private quagga = require('quagga');
-        private code = '';
-        private message = '';
+        private codes: string[] = [];
 
         private books = [];
         private bookWidth = 90 + 12 + 12;
         private isScrollY = false;
         private readCode = false;
 
-        private testISBN = '4151310800';
         private searchResults: SearchResultWithCheck[] = [];
         private rakutenSearchQuery = makeEmptyQuery();
 
         private isSearch = false;
         private isSaving = false;
-
+	private initFail = false;
+	
         private error = { show: false, msg : '登録に失敗しました' };
         private success = { show: false, msg: '登録に成功しました' };
 
@@ -159,29 +141,17 @@
             }
         }
 
-        private addBook() {
-            this.readCode = true;
-            setTimeout(() => {
-                this.readCode = false;
-            }, 2000);
-
-            this.books.push({ 'title': 'hoge' });
-            setTimeout(() => {
-                this.scrollToLeft();
-            }, 500);
-
-            this.searchBook();
-        }
-
-        private searchBook() {
+        private searchBook(isbn: string) {
             this.isSearch = true;
-            this.rakutenSearchQuery.setISBN(this.testISBN);
+            this.rakutenSearchQuery.setISBN(isbn);
             rakutenAPI.search(this.rakutenSearchQuery)
                 .then((res) => {
                     const result = res.data as SearchResult;
                     if (result.Items.length === 1) {
                         this.searchResults.push(itemToResultWithCheck(result.Items[0].Item));
-                        console.log(this.searchResults);
+			   setTimeout(() => {
+			       this.scrollToLeft();
+			   }, 500);
                     }
                 })
                 .catch((e) => {
@@ -194,10 +164,12 @@
                             show: false,
                             msg: '',
                         };
-                    }, 5000);
+                    }, 5000);		   
                 })
                 .finally(() => {
                     this.isSearch = false;
+		    this.quagga.start();
+		    console.log("finale!!!!")
                 });
         }
 
@@ -285,8 +257,12 @@
 
         private onInit(err: any) {
             if (err) {
-                this.message = err;
+		this.error = { show: true, msg : 'カメラの起動に失敗しました' };
+		setTimeout(() => {
+		    this.error.show = false;
+		}, 3000);
                 console.log(err);
+		this.initFail = true;
                 return;
             }
             console.info('Initialization finished. Ready to start');
@@ -294,11 +270,13 @@
         }
 
         private onDetected(success: any) {
-            this.code = success.codeResult.code;
-            // 取得時の画像を表示
-            const $resultImg: any = document.querySelector('.resultImg');
-            $resultImg.setAttribute('src', this.quagga.canvas.dom.image.toDataURL());
-            this.quagga.stop();
+	    const code: string = success.codeResult.code.toSring();
+	    console.log(code)
+	    if (!this.isSearch && !this.codes.includes(code)) {
+	    	this.quagga.stop();
+	    	this.codes.push(code);
+	    	this.searchBook(code);
+	    }
         }
 
         private onProcessed(result: any) {
@@ -330,18 +308,18 @@
                 );
             }
 
-            // // 検出に成功した瞬間の水平の赤い線
-            // if (resutl && result.codeResult && result.codeResult.code) {
-            //     this.quagga.ImageDebug.drawPath(
-            //         result.line,
-            //         {x: 'x', y: 'y'},
-            //         drawingCtx,
-            //         {
-            //             color: 'red',
-            //             lineWidth: 3
-            //         }
-            //     );
-            // }
+            // 検出に成功した瞬間の水平の赤い線
+            if (result && result.codeResult && result.codeResult.code) {
+                this.quagga.ImageDebug.drawPath(
+                    result.line,
+                    {x: 'x', y: 'y'},
+                    drawingCtx,
+                    {
+                        color: 'red',
+                        lineWidth: 3
+                    }
+                );
+            }
         }
     }
 </script>
@@ -388,17 +366,17 @@
         max-width: 60%;
     }
     .camera_content {
-        margin:auto;
+        /*margin:auto;
         width: 320px;
         height: 240px;
         left: 0;
         right: 0;
         position: absolute;
-        border: solid 1px gray;
+        border: solid 1px gray;*/
     }
     .camera_content.loading {
-        opacity: 0.4;
+        /*opacity: 0.4;
         z-index:10;
-        background-color: gray;
+        background-color: gray;*/
     }
 </style>
