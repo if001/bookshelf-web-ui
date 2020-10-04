@@ -130,6 +130,10 @@
             this.initQuagga();
         }
 
+        private destroyed() {
+            this.stopScan();
+        }
+
         private showAlert(msg: string) {
             this.error = {
                 show: true,
