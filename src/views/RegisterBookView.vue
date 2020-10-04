@@ -187,7 +187,7 @@
 
         private tabObject = [
             {tag: searchType.web, displayName: 'Web検索から登録'},
-            {tag: searchType.input, displayName: '入力して登録'},
+            {tag: searchType.camera, displayName: 'バーコードから登録'},
             {tag: searchType.input, displayName: '入力して登録'},
         ];
         private selectTab: number = searchType.web;
@@ -199,7 +199,7 @@
 
         public mounted() {
             super.mounted();
-            this.hasCameraSearch();
+            // this.hasCameraSearch();
 
             // this.categories = [];
             this.authors = [];
