@@ -3,38 +3,38 @@
         <v-row>
             <v-col style="position: static">
               <div id="cameraArea" class="camera_content">
-		<div v-show="isSearch" class="camera_content loading">
-                  <v-btn
-                    :loading="isSearch"
-                    color="blue-grey"
-                    class="ma-2 white--text"
-                    fab
-                    style="position: absolute; left: 120px; top:92px; z-index: 50;opacity: 1">
-                    <v-icon dark>
-                      mdi-check
-                    </v-icon>
-                  </v-btn>
-                </div>
-	      </div>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col align="center" style="min-height: 60px">
-                <v-icon v-if="readCode" color="green" x-large>mdi-check-circle</v-icon>
+                  <div v-show="isSearch" class="camera_content loading">
+                      <v-btn
+                              :loading="isSearch"
+                              color="blue-grey"
+                              class="ma-2 white--text"
+                              fab
+                              style="position: absolute; left: 120px; top:92px; z-index: 50;opacity: 1">
+                          <v-icon dark>
+                              mdi-check
+                          </v-icon>
+                      </v-btn>
+                  </div>
+              </div>
             </v-col>
         </v-row>
 
         <v-row v-if="initFail" justify="center" justify-content="space-around">
             <v-col cols="2" align="center">
                 <v-btn v-on:click="initQuagga()">
-                    Start
+                    ReStart Camera
                 </v-btn>
             </v-col>
+<!--            <v-col cols="2" align="center">-->
+<!--                <v-btn v-on:click="addBook()">-->
+<!--                    add-->
+<!--                </v-btn>-->
+<!--            </v-col>-->
         </v-row>
 
         <div id="books"
              class="pa-3 pl-0 register_content"
-             style="width:0;"
+             style="width:0; position: static"
              v-bind:class="{ register_scroll: isScrollY,
              register_max90 : this.$vuetify.breakpoint.xs,
              register_max60: !this.$vuetify.breakpoint.xs}">
@@ -104,26 +104,24 @@
 <script lang="ts">
     import {BaseComponent} from '@/utils/utils';
     import {Component} from 'vue-property-decorator';
-    import rakutenAPI, {SearchResult, Content, RakutenSearchQuery, makeEmptyQuery} from '@/rakutenAPI';
+    import rakutenAPI, {SearchResult, makeEmptyQuery} from '@/rakutenAPI';
     import {itemToResultWithCheck, SearchResultWithCheck} from '@/models/RakutenBook';
     import api, {getToken, PostBookForm} from '@/api';
 
     @Component
-    export default class CameraView extends BaseComponent {
+    export default class CameraRegisterComponent extends BaseComponent {
         private quagga = require('quagga');
         private codes: string[] = [];
 
-        private books = [];
         private bookWidth = 90 + 12 + 12;
         private isScrollY = false;
-        private readCode = false;
 
         private searchResults: SearchResultWithCheck[] = [];
         private rakutenSearchQuery = makeEmptyQuery();
 
         private isSearch = false;
-        private isSaving = false;
-	private initFail = false;
+        private isSaving = true;
+        private initFail = false;
 	
         private error = { show: false, msg : '登録に失敗しました' };
         private success = { show: false, msg: '登録に成功しました' };
@@ -132,8 +130,8 @@
             this.initQuagga();
         }
 
-	private showAlert(msg: string) {
-	    this.error = {
+        private showAlert(msg: string) {
+            this.error = {
                 show: true,
                 msg,
             };
@@ -142,19 +140,21 @@
                     show: false,
                     msg: '',
                 };
-            }, 5000);	   
-	}
+            }, 5000);
+        }
 
         private scrollToLeft() {
             const w = document && document.getElementById('books');
-	    console.log("aaaaa", w)
-            if (w && this.books.length * this.bookWidth > w.clientWidth) {
-		console.log("in!!!!!!!")
+            if (w && this.searchResults.length * this.bookWidth > w.clientWidth) {
                 const width = parseInt(w.style.width);
                 w.style.width = (width + this.bookWidth) + 'px';
                 this.isScrollY = true;
-                w.scrollLeft += ((this.books.length + 1) * this.bookWidth);
+                w.scrollLeft += ((this.searchResults.length + 1) * this.bookWidth);
             }
+        }
+
+        private addBook() {
+            this.searchBook('4151310800')
         }
 
         private searchBook(isbn: string) {
@@ -166,16 +166,15 @@
                     const result = res.data as SearchResult;
                     if (result.Items.length === 1) {
                         this.searchResults.push(itemToResultWithCheck(result.Items[0].Item));
-			   setTimeout(() => {
-			       this.scrollToLeft();
-			   }, 500);
+                        setTimeout(() => {
+                            this.scrollToLeft();
+                        }, 500);
                     } else {
-			this.showAlert('本が見つかりませんでした');
-		    }
+                        this.showAlert('本が見つかりませんでした');
+                    }
                 })
                 .catch((e) => {
-		    console.log("search ", e)
-		    this.showAlert('検索でエラーが発生しました');
+                    this.showAlert('検索でエラーが発生しました');
                 })
                 .finally(() => {
                     this.isSearch = false;
@@ -211,15 +210,16 @@
                     return Promise.all(p);
                 })
                 .then(() => {
-                    this.isSaving = false;
                     this.searchResults = [];
+                    this.isSaving = false;
                     this.success.show = true;
+                    this.isScrollY = false;
                     setTimeout(() => {
                         this.success.show = false;
                     }, 5000);
                 })
                 .catch((e) => {
-		    this.showAlert('登録に失敗しました');
+                    this.showAlert('登録に失敗しました');
                 });
         }
 
@@ -257,8 +257,8 @@
 
         private onInit(err: any) {
             if (err) {
-		this.showAlert('カメラの起動に失敗しました');
-		this.initFail = true;
+                this.showAlert('カメラの起動に失敗しました');
+                this.initFail = true;
                 return;
             }
             console.info('Initialization finished. Ready to start');
@@ -266,14 +266,13 @@
         }
 
         private onDetected(success: any) {
-	    const code: string = success.codeResult.code;
-	    
-	    if (!this.isSearch && !this.codes.includes(code)) {
-	    	this.codes.push(code);
-		setTimeout(() => {
-		    this.searchBook(code);    
-		}, 500);	    	
-	    }
+            const code: string = success.codeResult.code;
+            if (!this.isSearch && !this.codes.includes(code)) {
+                this.codes.push(code);
+                setTimeout(() => {
+                    this.searchBook(code);
+                }, 500);
+            }
         }
 
         private onProcessed(result: any) {
@@ -313,8 +312,8 @@
                     drawingCtx,
                     {
                         color: 'red',
-                        lineWidth: 3
-                    }
+                        lineWidth: 3,
+                    },
                 );
             }
         }
@@ -339,7 +338,7 @@
 
     .remove_button {
         position: relative;
-        top: -200px;
+        top: -180px;
         left: 65px;
     }
     .register_content {

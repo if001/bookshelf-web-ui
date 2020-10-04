@@ -21,11 +21,15 @@
             <transition name="fade-right">
                 <v-row key=1 justify="center" cols="12" v-if="isSearchWeb">
                     <v-col justify="center">
-                        <SearchComponent
-                                @select="searchSelect"></SearchComponent>
+                        <SearchRegisterComponent @select="searchSelect" />
                     </v-col>
                 </v-row>
-                <v-row key=2 cols="12" v-else>
+                <v-row key=2 justify="center" cols="12" v-else-if="isSearchCamera">
+                    <v-col justify="center">
+                        <CameraRegisterComponent />
+                    </v-col>
+                </v-row>
+                <v-row key=3 cols="12" v-else>
                     <v-col cols="12">
                         <v-row justify="center">
                             <v-col lg="8" md="8" sm="12" xs="12" class="pa-2">
@@ -140,11 +144,13 @@
 
 <script lang="ts">
     import {Component, Prop, Vue} from 'vue-property-decorator';
-    import SearchComponent from '@/components/SearchComponent.vue';
+    import SearchRegisterComponent from '@/components/book_register/SearchRegisterComponent.vue';
+    import CameraRegisterComponent from '@/components/book_register/CameraRegisterComponent.vue';
     import api, {Author, Category, errorRoute, getToken, Publisher} from '@/api';
     import Footer from '@/components/Footer.vue';
     import {Content} from '@/rakutenAPI';
     import {BaseComponent} from '@/utils/utils';
+
 
     interface CategoryWithChip extends Category {
         chip: boolean;
@@ -152,10 +158,12 @@
     enum searchType {
         web = 0,
         input = 1,
+        camera = 2,
     }
     @Component({
         components: {
-            SearchComponent,
+            SearchRegisterComponent,
+            CameraRegisterComponent,
             'v-footer': Footer,
         },
     })
@@ -181,16 +189,28 @@
         ];
         private selectTab: number = searchType.web;
         private isSearchWeb: boolean = true;
+        private isSearchCamera: boolean = false;
+
         private inputTitleForSarch: string = '';
         private inputAuthorForSarch: string = '';
 
         public mounted() {
             super.mounted();
+            this.hasCameraSearch();
+
             // this.categories = [];
             this.authors = [];
             this.publishers = [];
             this.loadAuthors();
             this.loadPublishers();
+        }
+
+        private hasCameraSearch() {
+            navigator.mediaDevices.getUserMedia({video: {facingMode: "environment"}, audio: false}).then(() => {
+                this.tabObject.push({tag: searchType.camera, displayName: 'バーコードから登録'});
+            }).catch((e) => {
+                this.isSearchCamera = false;
+            });
         }
 
         private loadAuthors() {
@@ -423,7 +443,12 @@
         private changeTab(tab: number) {
             if (tab === searchType.web) {
                 this.isSearchWeb = true;
+                this.isSearchCamera = false;
             }  else if (tab === searchType.input) {
+                this.isSearchWeb = false;
+                this.isSearchCamera = false;
+            }  else if (tab === searchType.camera) {
+                this.isSearchCamera = true;
                 this.isSearchWeb = false;
             }
         }
@@ -436,6 +461,7 @@
             this.mediumBookImage = select.mediumImageUrl;
             this.publisherName = select.publisherName;
             this.isSearchWeb = false;
+            this.isSearchCamera = false;
         }
 
     }

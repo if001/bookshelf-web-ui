@@ -158,7 +158,7 @@
     import {Component} from 'vue-property-decorator';
     import api, {Book, errorRoute, getToken} from '@/api';
     import {BaseComponent, toTop} from '@/utils/utils';
-    import LoadingComponent from "@/components/LoadingComponent.vue";
+    import LoadingComponent from '@/components/LoadingComponent.vue';
 
     interface BookShow extends Book {
         isOpen: boolean;

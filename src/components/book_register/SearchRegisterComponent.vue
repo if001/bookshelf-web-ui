@@ -168,7 +168,7 @@
     const maxRegisterNum: number = 8;
 
     @Component
-    export default class SearchComponent extends BaseComponent {
+    export default class SearchRegisterComponent extends BaseComponent {
         private validTitleSearchBox: boolean = true;
         private validAuthorSearchBox: boolean = true;
         private searchResult: SearchResult | null = null;
