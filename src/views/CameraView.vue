@@ -1,20 +1,21 @@
 <template>
     <v-container style="height: 100%">
         <v-row>
-            <v-col>
-                <div id="cameraArea" class="camera_content"></div>               
-                <div v-show="isSearch" class="camera_content loading">
-                    <v-btn
-                            :loading="isSearch"
-                            color="blue-grey"
-                            class="ma-2 white--text"
-                            fab
-                            style="position: absolute; left: 120px; top:92px; z-index: 50;opacity: 1">
-                        <v-icon dark>
-                            mdi-check
-                        </v-icon>
-                    </v-btn>
+            <v-col style="position: static">
+              <div id="cameraArea" class="camera_content">
+		<div v-show="isSearch" class="camera_content loading">
+                  <v-btn
+                    :loading="isSearch"
+                    color="blue-grey"
+                    class="ma-2 white--text"
+                    fab
+                    style="position: absolute; left: 120px; top:92px; z-index: 50;opacity: 1">
+                    <v-icon dark>
+                      mdi-check
+                    </v-icon>
+                  </v-btn>
                 </div>
+	      </div>
             </v-col>
         </v-row>
         <v-row>
@@ -33,7 +34,7 @@
 
         <div id="books"
              class="pa-3 pl-0 register_content"
-             style="width: 0;"
+             style="width:0;"
              v-bind:class="{ register_scroll: isScrollY,
              register_max90 : this.$vuetify.breakpoint.xs,
              register_max60: !this.$vuetify.breakpoint.xs}">
@@ -131,9 +132,24 @@
             this.initQuagga();
         }
 
+	private showAlert(msg: string) {
+	    this.error = {
+                show: true,
+                msg,
+            };
+            setTimeout(() => {
+                this.error = {
+                    show: false,
+                    msg: '',
+                };
+            }, 5000);	   
+	}
+
         private scrollToLeft() {
             const w = document && document.getElementById('books');
+	    console.log("aaaaa", w)
             if (w && this.books.length * this.bookWidth > w.clientWidth) {
+		console.log("in!!!!!!!")
                 const width = parseInt(w.style.width);
                 w.style.width = (width + this.bookWidth) + 'px';
                 this.isScrollY = true;
@@ -142,6 +158,7 @@
         }
 
         private searchBook(isbn: string) {
+	    console.log("search!!!", isbn);
             this.isSearch = true;
             this.rakutenSearchQuery.setISBN(isbn);
             rakutenAPI.search(this.rakutenSearchQuery)
@@ -152,24 +169,16 @@
 			   setTimeout(() => {
 			       this.scrollToLeft();
 			   }, 500);
-                    }
+                    } else {
+			this.showAlert('本が見つかりませんでした');
+		    }
                 })
                 .catch((e) => {
-                    this.error = {
-                        show: true,
-                        msg: '検索エラーです',
-                    };
-                    setTimeout(() => {
-                        this.error = {
-                            show: false,
-                            msg: '',
-                        };
-                    }, 5000);		   
+		    console.log("search ", e)
+		    this.showAlert('検索でエラーが発生しました');
                 })
                 .finally(() => {
                     this.isSearch = false;
-		    this.quagga.start();
-		    console.log("finale!!!!")
                 });
         }
 
@@ -210,16 +219,7 @@
                     }, 5000);
                 })
                 .catch((e) => {
-                    this.error = {
-                        show: true,
-                        msg: '登録に失敗しました',
-                    };
-                    setTimeout(() => {
-                        this.error = {
-                            show: false,
-                            msg: '',
-                        };
-                    }, 5000);
+		    this.showAlert('登録に失敗しました');
                 });
         }
 
@@ -257,11 +257,7 @@
 
         private onInit(err: any) {
             if (err) {
-		this.error = { show: true, msg : 'カメラの起動に失敗しました' };
-		setTimeout(() => {
-		    this.error.show = false;
-		}, 3000);
-                console.log(err);
+		this.showAlert('カメラの起動に失敗しました');
 		this.initFail = true;
                 return;
             }
@@ -270,12 +266,13 @@
         }
 
         private onDetected(success: any) {
-	    const code: string = success.codeResult.code.toSring();
-	    console.log(code)
+	    const code: string = success.codeResult.code;
+	    
 	    if (!this.isSearch && !this.codes.includes(code)) {
-	    	this.quagga.stop();
 	    	this.codes.push(code);
-	    	this.searchBook(code);
+		setTimeout(() => {
+		    this.searchBook(code);    
+		}, 500);	    	
 	    }
         }
 
@@ -342,7 +339,7 @@
 
     .remove_button {
         position: relative;
-        top: -165px;
+        top: -200px;
         left: 65px;
     }
     .register_content {
@@ -366,17 +363,17 @@
         max-width: 60%;
     }
     .camera_content {
-        /*margin:auto;
+        margin:auto;
         width: 320px;
         height: 240px;
         left: 0;
         right: 0;
         position: absolute;
-        border: solid 1px gray;*/
+        border: solid 1px gray;
     }
     .camera_content.loading {
-        /*opacity: 0.4;
+        opacity: 0.9;
         z-index:10;
-        background-color: gray;*/
+        background-color: gray;
     }
 </style>
